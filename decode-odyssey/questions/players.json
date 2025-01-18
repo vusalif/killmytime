@@ -1,0 +1,30 @@
+{
+    "messi": {
+        "emojis": "🐐🇦🇷1️⃣0️⃣",
+        "hint": "_ _ _ _ _",
+        "time": 30,
+        "color": "#1565C0",
+        "additionalHint": "The Argentinian GOAT"
+    },
+    "ronaldo": {
+        "emojis": "⚽️🇵🇹7️⃣",
+        "hint": "_ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#C62828",
+        "additionalHint": "SIUUUU!"
+    },
+    "haaland": {
+        "emojis": "🤖⚡️🇳🇴",
+        "hint": "_ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#0277BD",
+        "additionalHint": "The Norwegian goal machine"
+    },
+    "mbappe": {
+        "emojis": "⚡️🐢🇫🇷",
+        "hint": "_ _ _ _ _ _",
+        "time": 30,
+        "color": "#1565C0",
+        "additionalHint": "Fast as lightning, from Paris"
+    }
+} 

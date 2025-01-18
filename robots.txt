@@ -1,0 +1,11 @@
+User-agent: *
+Allow: /
+Allow: /miniGames/
+Allow: /countryOdyssey/
+Allow: /decode-odyssey/
+
+Disallow: /icons/
+Disallow: /*.js$
+Disallow: /*.css$
+
+Sitemap: https://killmytime.fun/sitemap.xml 

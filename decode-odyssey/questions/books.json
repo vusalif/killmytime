@@ -1,0 +1,30 @@
+{
+    "lordoftherings": {
+        "emojis": "💍🧙‍♂️🗻",
+        "hint": "_ _ _ _  _ _  _ _ _  _ _ _ _ _",
+        "time": 30,
+        "color": "#4A148C",
+        "additionalHint": "One ring to rule them all"
+    },
+    "thehobbit": {
+        "emojis": "🏔️🐉💰",
+        "hint": "_ _ _  _ _ _ _ _ _",
+        "time": 30,
+        "color": "#33691E",
+        "additionalHint": "There and back again"
+    },
+    "aliceinwonderland": {
+        "emojis": "🐰☕️👸",
+        "hint": "_ _ _ _ _  _ _  _ _ _ _ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#7B1FA2",
+        "additionalHint": "Down the rabbit hole"
+    },
+    "sherlock": {
+        "emojis": "🔍🎩🚬",
+        "hint": "_ _ _ _ _ _ _ _  _ _ _ _ _ _",
+        "time": 30,
+        "color": "#263238",
+        "additionalHint": "Elementary, my dear Watson!"
+    }
+} 

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tough Decisions - Level 2</title>
+    <a href="/index.html" class="corner-link">killmytime</a>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Copy all styles from index.html -->
+    <style>
+        /* Copy all styles from index.html */
+        /* Add new styles for Level 2 */
+        .level-title {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            padding: 8px 16px;
+            background: var(--surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #question {
+            font-size: 28px;
+            line-height: 1.4;
+            padding: 32px;
+        }
+
+        .choice .text {
+            font-size: 32px;
+            text-align: center;
+            line-height: 1.3;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="level-title">Level 2: Deep Questions</div>
+    <div id="game-over-container">
+        <div class="game-over-title">Game Over!</div>
+        <div class="answers-list"></div>
+    </div>
+    <div id="game-container">
+        <div id="question">Loading...</div>
+        <div id="timer">
+            <div id="timer-inner"></div>
+        </div>
+        <div id="choices-container">
+            <div id="left-choice" class="choice">
+                <div class="text">LEFT</div>
+                <div class="results-overlay">
+                    <div class="percentage">0%</div>
+                    <div class="votes">0 votes</div>
+                </div>
+            </div>
+            <div id="right-choice" class="choice">
+                <div class="text">RIGHT</div>
+                <div class="results-overlay">
+                    <div class="percentage">0%</div>
+                    <div class="votes">0 votes</div>
+                </div>
+            </div>
+        </div>
+        <div id="progress-container">
+            <div id="questions-progress">Question 1/15</div>
+            <div id="timer-bar">
+                <div id="timer-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Copy all JavaScript from index.html
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Supabase configuration (use different table for level 2)
+            const SUPABASE_URL = 'https://rcagbgmdmuoxvziumqrx.supabase.co';
+            const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJjYWdiZ21kbXVveHZ6aXVtcXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NTczNjksImV4cCI6MjA1MDUzMzM2OX0.jw60EiOrxG8_Ou8RkWaVOoZxqo-Ky6vMrQ9S5ftl18w';
+            
+            const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+            const questions = [
+                { question: "Would you rather lose all your money or all your memories?", left: "MONEY", right: "MEMORIES" },
+                { question: "If lying could save someone's life, would you do it?", left: "YES", right: "NO" },
+                { question: "Would you rather forget your worst memory or your best one?", left: "WORST", right: "BEST" },
+                { question: "If you could erase one emotion forever, would it be fear or anger?", left: "FEAR", right: "ANGER" },
+                { question: "Which is more important: Freedom or Security?", left: "FREEDOM", right: "SECURITY" },
+                { question: "Would you save a drowning animal or a drowning stranger?", left: "ANIMAL", right: "STRANGER" },
+                { question: "If you could teleport anywhere instantly, but never return to the same place twice, would you do it?", left: "YES", right: "NO" },
+                { question: "Is it better to live a short, meaningful life or a long, uneventful one?", left: "SHORT", right: "LONG" },
+                { question: "Do people do good things for others because it makes them feel better about themselves?", left: "YES", right: "NO" },
+                { question: "Would you rather be deeply loved by one person or liked by many?", left: "LOVED", right: "LIKED" },
+                { question: "If you could change one aspect of your personality, would you do it?", left: "YES", right: "NO" },
+                { question: "Would you press a button to receive $1 million if someone you don't know dies?", left: "YES", right: "NO" },
+                { question: "Is the meaning of life something we create or something we discover?", left: "CREATE", right: "DISCOVER" },
+                { question: "Does the end always justify the means?", left: "YES", right: "NO" },
+                { question: "Would you betray your best friend to save your own life?", left: "YES", right: "NO" }
+            ];
+
+            // Copy rest of the JavaScript from index.html, but update table name to 'votes_level2'
+            // ... rest of the code ...
+        });
+    </script>
+</body>
+</html> 

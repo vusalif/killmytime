@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stop Motion Sketchbook</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <a href="/index.html" class="corner-link">killmytime</a>
+</head>
+<body>
+    <div class="container">
+        <div class="canvas-container">
+            <div id="sticky-notes-container">
+                <canvas id="current-canvas" width="400" height="400"></canvas>
+            </div>
+            <button id="add-frame" class="minimal-button">+ Add Frame</button>
+            <button id="show-all-frames" class="minimal-button" style="display: none;">Show All Frames</button>
+        </div>
+        <div class="controls">
+            <button id="play-animation" class="minimal-button">Play Animation</button>
+            <button id="clear-current" class="minimal-button">Clear Current Frame</button>
+            <button id="pen-settings-btn" class="minimal-button">Pen Settings</button>
+            <button id="done-editing" class="minimal-button" style="display: none;">Done Editing</button>
+        </div>
+    </div>
+    <div id="frames-grid" class="frames-grid" style="display: none;">
+        <div class="grid-content"></div>
+        <button id="close-grid" class="minimal-button">Close</button>
+    </div>
+
+    <!-- Pen Settings Panel -->
+    <div id="pen-settings-panel" class="pen-settings-panel">
+        <div class="panel-header">
+            <h3>Pen Settings</h3>
+            <button class="minimize-btn">_</button>
+            <button class="close-btn">×</button>
+        </div>
+        <div class="panel-content">
+            <div class="setting-group buttons-group">
+                <button id="undo-btn" class="minimal-button" title="Undo (Ctrl+Z)">↩ Undo</button>
+                <button id="redo-btn" class="minimal-button" title="Redo (Ctrl+Y)">↪ Redo</button>
+                <button id="copy-prev-frame" class="minimal-button" title="Copy Previous Frame">Copy Previous</button>
+            </div>
+            <div class="setting-group">
+                <label>Tools</label>
+                <div class="tools-group">
+                    <button id="pen-tool" class="tool-btn active" title="Pen Tool">✏️</button>
+                    <button id="eraser-tool" class="tool-btn" title="Eraser">🧹</button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>Pen Size</label>
+                <input type="range" id="pen-size" min="1" max="50" value="2">
+                <span class="value-display">2px</span>
+            </div>
+            <div class="setting-group">
+                <label>Opacity</label>
+                <input type="range" id="pen-opacity" min="1" max="100" value="100">
+                <span class="value-display">100%</span>
+            </div>
+            <div class="setting-group">
+                <label>Color</label>
+                <input type="color" id="pen-color" value="#000000">
+                <div class="color-presets">
+                    <button class="color-preset" style="background: #000000"></button>
+                    <button class="color-preset" style="background: #ff0000"></button>
+                    <button class="color-preset" style="background: #00ff00"></button>
+                    <button class="color-preset" style="background: #0000ff"></button>
+                    <button class="color-preset" style="background: #ffff00"></button>
+                </div>
+            </div>
+            <div class="setting-group">
+                <label>Pen Type</label>
+                <select id="pen-type">
+                    <option value="round">Round</option>
+                    <option value="square">Square</option>
+                    <option value="butt">Flat</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>Line Style</label>
+                <select id="line-style">
+                    <option value="solid">Solid</option>
+                    <option value="dashed">Dashed</option>
+                    <option value="dotted">Dotted</option>
+                </select>
+            </div>
+            <div class="setting-group">
+                <label>Smoothing</label>
+                <input type="range" id="pen-smoothing" min="0" max="100" value="50">
+                <span class="value-display">50%</span>
+            </div>
+            <div class="setting-group">
+                <label>Pressure Sensitivity</label>
+                <input type="checkbox" id="pressure-sensitivity">
+            </div>
+            <div class="setting-group presets">
+                <label>Presets</label>
+                <button class="preset-btn" data-preset="pencil">Pencil</button>
+                <button class="preset-btn" data-preset="marker">Marker</button>
+                <button class="preset-btn" data-preset="brush">Brush</button>
+                <button class="preset-btn" data-preset="highlighter">Highlighter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load scripts -->
+    <script src="gif.js"></script>
+    <script src="game.js"></script>
+</body>
+</html> 

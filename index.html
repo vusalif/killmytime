@@ -1,0 +1,4658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Kill My Time - Free Online Games Collection featuring Snake, 2048, Maze Runner, Country Quiz and more. Play engaging mini-games to pass time and have fun!">
+    <meta name="keywords" content="online games, free games, browser games, mini games, time killer games, 2048 game, snake game, maze game, country quiz, puzzle games">
+    <meta name="author" content="Kill My Time Gaming">
+    <meta property="og:title" content="Kill My Time - Free Online Games Collection">
+    <meta property="og:description" content="Play free online games including Snake, 2048, Maze Runner, and Country Quiz. Perfect for quick entertainment and challenging fun!">
+    <meta property="og:image" content="gifreal.gif">
+    <meta property="og:url" content="https://killmytime.fun">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://killmytime.fun">
+    <title>Kill My Time - Free Online Games Collection</title>
+    <link href="https://fonts.googleapis.com/css2?family=Funnel+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.cdnfonts.com/css/instagram-sans-script" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geo&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="9cc6c551-6e17-4bec-8465-47a629f52743"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:wght@400;500;600&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    
+
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="manifest" href="icons/site.webmanifest">
+    <style>
+        @font-face {
+            font-family: 'Instagram Sans Bold';
+            src: url('Instagram Sans Bold.ttf') format('truetype');
+            font-weight: bold;
+            font-style: normal;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #dfe1e5;
+            font-family: Inter, sans-serif;
+            color: #2c3e50;
+            position: relative;
+            padding-bottom: 100px;
+            overflow-y: auto;
+        }
+
+        .site-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 3rem;
+            font-weight: 900;
+            margin: 2rem 0;
+            color: #000;
+        }
+
+        .cards-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .game-card {
+            background: #fbfbfb;
+            border-radius: 15px;
+            padding: 1.5rem;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid #000000;
+        }
+
+        .game-card2 {
+            background: #161616;
+            border-radius: 15px;
+            padding: 1.5rem;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1);
+            border: 2px solid #ffffff;
+        }
+
+        .game-title2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            color: #ffffff;
+            position: relative;
+            display: inline-block;
+            font-weight: 900;
+        }
+
+        .game-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            margin-top: 1rem;
+            color: #000;
+            position: relative;
+            display: inline-block;
+            font-weight: 900;
+        }
+
+        .beta-tag {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ffd700;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: #000;
+            margin-top: 2px;
+        }
+
+        .game-subtitle {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .game-subtitle2 {
+            font-size: 0.9rem;
+            color: #b8b8b8;
+            margin-bottom: 1rem;
+        }
+
+        .map-preview {
+            width: 100%;
+            height: 180px;
+            background-image: url('path-to-map-image.png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            margin-bottom: 1rem;
+            filter: grayscale(0.5);
+        }
+
+        .action-button {
+            all: unset;
+            position: relative;
+            border: 1px solid rgb(255 255 255 / .12);
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 20px;
+            background-color: #2b2b2b;
+            color: #dcdadb;
+            -webkit-mask-image: -webkit-radial-gradient(#fff, #000);
+            mask-image: radial-gradient(#fff, #000);
+            cursor: pointer;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .action-button::after {
+            content: '';
+            position: absolute;
+            top: var(--y);
+            left: var(--x);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            width: 5em;
+            height: 5em;
+            background-image: conic-gradient(#00f, #0ff, #0f0, #ff0, #f00, #f0f, #00f);
+            filter: blur(14px);
+            mix-blend-mode: overlay;
+            opacity: 0;
+            transition: opacity .2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .action-button:hover::after {
+            opacity: .4;
+        }
+        .action-button2 {
+            all: unset;
+            position: relative;
+            border: 1px solid rgb(255 255 255 / .12);
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 20px;
+            background-color: #2b2b2b;
+            color: #dcdadb;
+            -webkit-mask-image: -webkit-radial-gradient(#fff, #000);
+            mask-image: radial-gradient(#fff, #000);
+            cursor: pointer;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            margin: 0 auto;
+            font-family: 'Inter', sans-serif;
+            display: block;
+            box-sizing: border-box;
+        }
+
+        .action-button2::after {
+            content: '';
+            position: absolute;
+            top: var(--y);
+            left: var(--x);
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            width: 5em;
+            height: 5em;
+            background-image: conic-gradient(#00f, #0ff, #0f0, #ff0, #f00, #f0f, #00f);
+            filter: blur(14px);
+            mix-blend-mode: overlay;
+            opacity: 0;
+            transition: opacity .2s ease-in-out;
+            pointer-events: none;
+        }
+
+        .action-button2:hover::after {
+            opacity: .4;
+        }
+
+        .credit {
+            position: absolute;
+            cursor: pointer;
+            bottom: 370px;
+            font-size: 1rem;
+            color: #666;
+        }
+
+        .credit span {
+            font-weight: bold;
+            font-style: normal;
+            position: relative;
+            display: inline-block;
+        }
+
+        .credit span a {
+            text-decoration: none;
+            color: inherit;
+            position: relative;
+            display: inline-block;
+            transition: color 0.3s ease;
+        }
+
+        .credit span a::before {
+            content: 'imranli';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            color: #af4c4c;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            transition-delay: 0.1s;
+        }
+
+        .credit span a:hover::before {
+            opacity: 1;
+        }
+
+        .credit span a:hover {
+            color: transparent;
+            transition-delay: 0.1s;
+        }
+
+      
+
+        .divider {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            position: relative;
+            text-align: center;
+        }
+
+        .fancy-line {
+            border: none;
+            height: 2px;
+            background: #000;
+            margin: 2rem 0;
+        }
+
+        .divider-text {
+            background: #dfe1e5;
+            padding: 0 1rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: bold;
+            color: #000;
+        }
+
+        .button-games-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            padding: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-bottom: 100px;
+        }
+
+        .game-button {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            padding: 1rem 2rem;
+            width: 300px;
+            height: 100px;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .game-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .game-button-title {
+            color: #000000;
+            font-size: 1.2rem;
+            text-align: center;
+            top: 36px;
+            position: relative;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            z-index: 1002;
+            pointer-events: none;
+        }
+        .dodge-game-button-title {
+            color: #ffffffc2;
+            font-size: 1.2rem;
+            text-align: center;
+            top: 36px;
+            position: relative;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            z-index: 1002;
+            pointer-events: none;
+        }
+
+        @keyframes floatEmoji {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        .collectible-emoji {
+            position: fixed;
+            font-size: 16px;
+            cursor: pointer;
+            user-select: none;
+            z-index: 1001;
+            transition: transform 0.2s ease;
+            animation: floatEmoji 3s infinite ease-in-out;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.2));
+        }
+
+        .emoji-cursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 1000;
+            font-size: 20px;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            filter: drop-shadow(0 0 2px rgba(0,0,0,0.3));
+        }
+
+        .emoji-trail {
+            position: absolute;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 28px;
+            opacity: 0.8;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+            animation: fadeOut 1s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+
+        @keyframes cowboyExplode {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.1); 
+                opacity: 1; 
+            }
+            50% { 
+                opacity: 0.8; 
+                transform: translate(-50%, -50%) scale(1.5) rotate(180deg);
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(2) rotate(360deg); 
+                opacity: 0; 
+            }
+        }
+
+        .cowboy-explosion {
+            position: absolute;
+            pointer-events: none;
+            animation: cowboyExplode 0.8s ease-out forwards;
+            z-index: 1001;
+            font-size: 28px;
+        }
+
+        .emoji-odyssey-button {
+            width: 300px !important;
+            height: 100px !important;
+            background: #1A1A1A !important;
+            border: 2.5px solid #1A1A1A !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease !important;
+            overflow: hidden !important;
+            position: relative !important;
+        }
+
+        .background-circle {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(25px);
+            opacity: 0.3;
+            z-index: 1;
+            animation: floatCircle 6s infinite linear;
+            transform-origin: center center;
+            will-change: transform;
+        }
+
+        .emoji-odyssey-title {
+            font-family: 'Instagram Sans Bold', sans-serif !important;
+            font-size: 1.8rem !important;
+            color: #e2e2e2 !important;
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.1);
+            margin-bottom: 0.5rem;
+            position: relative;
+            top: 25px !important;
+            z-index: 2 !important;
+            letter-spacing: -0.5px !important;
+            font-weight: normal !important;
+        }
+
+        .emoji-odyssey-subtitle {
+            font-family: 'Instagram Sans Bold', sans-serif !important;
+            font-size: 0.85rem !important;
+            color: #e2e2e2 !important;
+            opacity: 0.5;
+            position: relative;
+            top: 16px !important;
+            z-index: 2 !important;
+            font-weight: 200 !important;
+            letter-spacing: -0.2px !important;
+        }
+
+        @keyframes floatCircle {
+            0% { 
+                transform: translate(0, 0) rotate(0deg);
+            }
+            25% {
+                transform: translate(50px, 20px) rotate(90deg);
+            }
+            50% { 
+                transform: translate(0, 50px) rotate(180deg);
+            }
+            75% {
+                transform: translate(-50px, 20px) rotate(270deg);
+            }
+            100% { 
+                transform: translate(0, 0) rotate(360deg);
+            }
+        }
+
+        .game-2048-button {
+            background: #faf8ef !important;
+            border: 2px solid #bbada0 !important;
+            overflow: hidden !important;
+            position: relative;
+            display: flex;
+            justify-content: center;
+        }
+
+        .game-2048-title {
+            color: #776e65 !important;
+            font-family: "Inter", sans-serif !important;
+            font-size: 1.6rem !important;
+            font-weight: bold;
+            text-shadow: none !important;
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            top: 5px;
+            background: rgba(250, 248, 239, 0.85);
+            padding: 0 15px;
+            border-radius: 4px;
+        }
+
+        .tile-2048 {
+            position: absolute;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: "Inter", sans-serif;
+            font-weight: bold;
+            font-size: 20px;
+            color: #776e65;
+            border-radius: 4px;
+            animation: tileAppear 0.3s ease-out forwards;
+            opacity: 0;
+            transform: scale(0);
+            z-index: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        @keyframes tileAppear {
+            0% {
+                opacity: 0;
+                transform: scale(0);
+            }
+            50% {
+                opacity: 0.9;
+                transform: scale(1.1);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .dodge-square-button {
+            position: relative;
+            overflow: hidden !important;
+            background: radial-gradient(circle at center, #6565b4 0%, #415fb3 50%, #3c5ba5 100%) !important;
+            border: 2px solid #334155 !important;
+        }
+
+        .moving-square {
+            position: absolute;
+            width: 15px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            z-index: 1;
+            animation: squareRain 2s linear forwards;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        @keyframes squareRain {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        @keyframes particleExplode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--particle-end) scale(0));
+                opacity: 0;
+            }
+        }
+
+        .explosion-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            animation: particleExplode 0.6s ease-out forwards;
+            pointer-events: none;
+        }
+
+        .exploding {
+            animation: explode 0.5s ease-out forwards !important;
+        }
+
+        .block-brick-button {
+            background: radial-gradient(circle at center, #302d2d 0%, #161616 50%, #19191a 100%) !important;
+            border: 2px solid #444444 !important;
+            overflow: hidden !important;
+            position: relative;
+        }
+
+        .number-block {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border-radius: 4px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .number-block.disappearing {
+            transform: scale(0) rotate(180deg);
+            opacity: 0;
+            filter: brightness(1.5);
+        }
+
+        @keyframes blockParticle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .block-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .block-connection {
+            position: absolute;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            transform-origin: left center;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.4s ease;
+            opacity: 1;
+            transform-origin: left center;
+        }
+
+        .block-connection.disappearing {
+            opacity: 0;
+            transform: scaleX(0);
+        }
+
+        .block-connection.active {
+            background: rgba(255, 255, 255, 0.4);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        .number-block:hover {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+
+        .number-block.moving {
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .block-brick-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 15px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+            opacity: 0.9;
+            font-weight: 900;
+        }
+
+        /* Trade Simulator Button Styles */
+        .trade-simulator-button {
+            background: #282827 !important;
+            border: 2px solid #444444 !important;
+            overflow: hidden !important;
+            position: relative;
+        }
+
+        .graph-paper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: 1;
+        }
+
+        .candlestick {
+            position: absolute;
+            width: 6px;
+            background: #ff4444;
+            z-index: 2;
+            transition: all 0.5s ease;
+        }
+
+        .candlestick.green {
+            background: #4CAF50;
+        }
+
+        .candlestick-wick {
+            position: absolute;
+            width: 2px;
+            background: inherit;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .trade-simulator-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 5px 15px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+            opacity: 0.9;
+            font-weight: 900;
+            position: relative;
+            z-index: 3;
+        }
+
+        .empty-cell {
+            background: rgba(238, 228, 218, 0.35);
+            border-radius: 4px;
+            min-height: 35px;
+        }
+
+        /* Dream Interpreter Button Styles */
+        .dream-interpreter-button {
+            border: 2px solid #e7cfa2 !important;
+            overflow: hidden !important;
+            position: relative;
+            background: #000000;
+        }
+
+        .dream-clouds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            background: 
+                url('imgs/asdw.gif') center/cover;
+            filter: blur(3px);
+            transition: all 0.5s ease;
+        }
+
+        .dream-interpreter-button:hover .dream-clouds {
+            filter: blur(1px);
+        }
+
+        .dream-interpreter-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: rgba(68, 68, 48, 0.281);
+            padding: 1px 15px;
+            font-family: 'Instrument Serif', sans-serif;
+            border-radius: 4px;
+            font-size: 1.6rem;
+            opacity: 1;
+            top: 30px;
+            font-weight: 900;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Ragdolling Button Styles */
+        .ragdolling-button {
+            background: #1a1a1a !important;
+            border: 2px solid #333 !important;
+            overflow: hidden !important;
+            position: relative;
+        }
+
+        .stickman-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .ragdoll {
+            position: absolute;
+            width: 40px;
+            height: 60px;
+            transition: all 0.2s ease;
+        }
+
+        .ragdoll svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .ragdolling-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 15px;
+            font-family: 'Inter', sans-serif;
+            border-radius: 4px;
+            opacity: 0.9;
+            font-weight: 900;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Dilemmas Button Styles */
+        .dilemmas-button {
+            background: #1a1a1a !important;
+            border: 2px solid #333 !important;
+            overflow: hidden !important;
+            position: relative;
+            width: 360px !important;
+            font-family: 'Funnel Display', sans-serif;
+            height: 132px !important;
+            padding: 0 !important;
+        }
+
+        .dilemma-container {
+            position: absolute;
+            width: 100%;
+            font-family: 'Funnel Display', sans-serif;
+            height: 100%;
+            display: flex;
+            z-index: 1;
+        }
+
+        .dilemma-side {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            font-family: 'Funnel Display', sans-serif;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.5rem;
+            transition: all 0.5s ease;
+            position: relative;
+        }
+
+        .dilemma-yes {
+            background: #4c5baf71;
+            font-family: 'Funnel Display', sans-serif;
+        }
+
+        .dilemma-no {
+            background: #f4433694;
+            font-family: 'Funnel Display', sans-serif;
+        }
+
+        .vote-count {
+            position: absolute;
+            bottom: 10px;
+            font-size: 0.9rem;
+            font-family: 'Funnel Display', sans-serif;
+            opacity: 0.8;
+        }
+
+        .winning-side {
+            flex: 1.2;
+            font-family: 'Funnel Display', sans-serif;
+            font-size: 1.7rem;
+            z-index: 2;
+        }
+
+        .dilemmas-title {
+            color: #ffffff !important;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.4);
+            padding: 5px 15px;
+            font-family: 'Funnel Display', sans-serif;
+            border-radius: 4px;
+            opacity: 0.9;
+            font-weight: 900;
+            position: relative;
+            z-index: 2;
+            pointer-events: none;
+            text-align: center;
+            position: absolute;
+            width: 100%;
+            top: 5px;
+        }
+
+        .corner-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .corner-link:hover {
+            transform: scale(1.1);
+            color: #666;
+        }
+
+        .sandbox-button {
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a) !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: pointer;
+        }
+
+        .sandbox-button:hover {
+            background: linear-gradient(145deg, #333333, #222222) !important;
+            border-color: #505050 !important;
+            transform: translateY(-2px);
+        }
+
+        .sand-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: linear-gradient(to bottom, transparent, rgba(212, 180, 131, 0.05));
+            z-index: 1;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            overflow: hidden;
+        }
+
+        .sand-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #d4b483;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            transform-origin: center center;
+            box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+            left: 0;
+            top: 0;
+        }
+
+        .sandbox-title {
+            color: #e6d5bc !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 1.4rem !important;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.2);
+            padding: 8px 20px;
+            border-radius: 6px;
+            opacity: 0.95;
+            font-weight: 800;
+            position: relative;
+            z-index: 2;
+            top: 36px;
+            transition: all 0.3s ease;
+        }
+
+        .sandbox-button:hover .sandbox-title {
+            color: #f0e0c8 !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        .maze-runner-button {
+            background: #2c2c2c !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: pointer;
+        }
+
+        .start-text {
+            position: absolute;
+            right: -2px;
+            background-color: #00000000;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #4CAF50;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: bold;
+            z-index: 4;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            opacity: 1;
+        }
+
+        .start-text:hover {
+            background: rgba(76, 175, 80, 0.2);
+        }
+
+        .start-text.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .maze-runner-title {
+            color: #ffffff !important;
+            font-family: 'Inter', sans-serif !important;
+            font-size: 1.4rem !important;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0);
+            padding: 8px 20px;
+            border-radius: 6px;
+            opacity: 0.95;
+            font-weight: 100;
+            position: relative;
+            z-index: 2;
+            top: 30px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .circle-football-button .maze-runner-title {
+            font-weight: 500;
+        }
+
+        .cursor-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #4CAF50;
+            border-radius: 50%;
+            position: absolute;
+            pointer-events: none;
+            z-index: 3;
+            transform-origin: center;
+            left: -5px;
+            top: -5px;
+        }
+
+        .obstacle {
+            width: 15px;
+            height: 15px;
+            background-color: #ff4444;
+            position: absolute;
+            z-index: 2;
+            transform-origin: center;
+            border-radius: 3px;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+        }
+
+        .game-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* Circle Football Button Styles */
+        .circle-football-button {
+            background: #2d572c !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: pointer;
+        }
+
+        .football-field {
+            position: absolute;
+            width: 100%;
+            height: 90%;  /* Reduced from 100% to move up */
+            top: 5px;    /* Added to move field up */
+            background: linear-gradient(to right,
+                #2d572c 0%, #2d572c 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .field-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .penalty-area {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            height: 50px;  /* Slightly reduced height */
+            width: 35px;  /* Slightly reduced width */
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .penalty-area.left {
+            left: 10px;
+        }
+
+        .penalty-area.right {
+            right: 10px;
+        }
+
+        .center-circle {
+            position: absolute;
+            width: 35px;  /* Slightly reduced size */
+            height: 35px;  /* Slightly reduced size */
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .center-dot {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .center-line {
+            position: absolute;
+            width: 2px;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.4);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .goal {
+            position: absolute;
+            width: 6px;
+            height: 35px;  /* Adjusted to match penalty area */
+            background: rgba(255, 255, 255, 0.8);
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .goal.left {
+            left: 10px;
+        }
+
+        .goal.right {
+            right: 10px;
+        }
+
+        .field-border {
+            position: absolute;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            width: calc(100% - 20px);
+            height: calc(100% - 10px);  /* Adjusted to match new height */
+            left: 10px;
+            top: 5px;  /* Adjusted to match new position */
+        }
+
+        .score-display {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .goal-particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 10;
+            box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+        }
+
+        @keyframes goalParticle {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: var(--final-pos);
+                opacity: 0;
+                scale: 0;
+            }
+        }
+
+        .football {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .ai-player {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+            transition: transform 0.1s ease;
+        }
+
+        .ai-player.team-left {
+            background: rgba(65, 105, 225, 0.8);
+            box-shadow: 0 0 5px rgba(65, 105, 225, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .ai-player.team-right {
+            background: rgba(220, 20, 60, 0.8);
+            box-shadow: 0 0 5px rgba(220, 20, 60, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .score-display {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Flick Frenzy Game Styles */
+        .flick-target {
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.2s ease;
+            z-index: 3;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+
+        .flick-target.good {
+            background: #4CAF50;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5);
+        }
+
+        .flick-target.bad {
+            background: #ff4444;
+            box-shadow: 0 0 10px rgba(255, 68, 68, 0.5);
+        }
+
+        .flick-target.hit {
+            animation: targetHit 0.3s ease-out forwards;
+        }
+
+        .flick-target.hit-bad {
+            animation: targetHitBad 0.4s ease-out forwards;
+        }
+
+        @keyframes targetHitBad {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.8);
+                opacity: 0.7;
+                background: #ff0000;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .flick-particle.bad {
+            background: #ff4444;
+        }
+
+        .score-flash {
+            animation: scoreFlash 0.3s ease-out;
+        }
+
+        @keyframes scoreFlash {
+            0% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.2); }
+            100% { transform: translateX(-50%) scale(1); }
+        }
+
+        .flick-score {
+            position: absolute;
+            top: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            font-size: 1.4rem;
+            font-weight: bold;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 15px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 10;
+        }
+
+        @keyframes targetHit {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.5);
+                opacity: 0.5;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .flick-particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #4CAF50;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        @keyframes flickParticle {
+            0% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: var(--final-pos) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Flick Frenzy Game Styles */
+        .flick-cursor-trail {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: rgba(76, 175, 80, 0.6);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            mix-blend-mode: screen;
+            filter: blur(2px);
+            box-shadow: 
+                0 0 4px #4CAF50,
+                0 0 8px #4CAF50,
+                0 0 12px #4CAF50;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .flick-cursor-trail.fade {
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        .flick-cursor-trail.bad {
+            background: rgba(255, 68, 68, 0.6);
+            box-shadow: 
+                0 0 4px #ff4444,
+                0 0 8px #ff4444,
+                0 0 12px #ff4444;
+        }
+
+        /* Flick Frenzy Button Styles */
+        .flick-frenzy-button {
+            background: #1a1a1a !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: pointer;
+        }
+
+        .flick-frenzy-title {
+            color: #ffffff !important;
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.4rem !important;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0);
+            padding: 8px 20px;
+            border-radius: 6px;
+            opacity: 0.95;
+            font-weight: 100;
+            position: relative;
+            z-index: 2;
+            top: 30px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .flick-frenzy-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, 
+                #1a0f2e,
+                #2d1b4e,
+                #1f1f3d,
+                #2e1b4e,
+                #1a0f2e
+            );
+            background-size: 400% 400%;
+            filter: blur(10px) brightness(0.7);
+            opacity: 0.8;
+            z-index: 1;
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .flick-frenzy-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center,
+                rgba(0, 0, 0, 0) 0%,
+                rgba(0, 0, 0, 0.3) 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Modern Snake Button Styles */
+        .modern-snake-button {
+            background: #1a1a1a !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: none;
+        }
+
+        .snake-title {
+            font-family: 'Geo', sans-serif;
+            color: #ffffff;
+            font-size: 1.8rem;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .modern-snake-button:hover .snake-title {
+            opacity: 0.1;
+        }
+
+        .snake-segment {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 2;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .snake-head {
+            background: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            width: 10px;
+            height: 10px;
+        }
+
+        .snake-body {
+            animation: rainbow 2s linear infinite;
+            box-shadow: none;
+        }
+
+        .snake-body.glowing {
+            animation: rainbow 2s linear infinite;
+            box-shadow: 0 0 15px var(--current-color);
+            transition: box-shadow 0.3s ease;
+        }
+
+        .snake-food {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        @keyframes rainbow {
+            0% { background: #ff0000; --current-color: #ff0000; }
+            17% { background: #ff8800; --current-color: #ff8800; }
+            33% { background: #ffff00; --current-color: #ffff00; }
+            50% { background: #00ff00; --current-color: #00ff00; }
+            67% { background: #0000ff; --current-color: #0000ff; }
+            83% { background: #8800ff; --current-color: #8800ff; }
+            100% { background: #ff0000; --current-color: #ff0000; }
+        }
+
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 10px 10px;
+            z-index: 1;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .modern-snake-button .maze-runner-title {
+            font-family: 'Geo', sans-serif !important;
+            font-size: 1.8rem !important;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            position: relative;
+            z-index: 3;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+
+        /* Sketchbook Button Styles */
+        .sketchbook-button {
+            background: #FFFDD4 !important;
+            border: 2px solid #404040 !important;
+            overflow: hidden !important;
+            position: relative;
+            width: 300px !important;
+            height: 100px !important;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25z"/></svg>') 0 24, auto;
+        }
+
+        .sketchbook-title {
+            font-family: 'Pangolin', cursive !important;
+            color: #333333 !important;
+            font-size: 1.8rem !important;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .sketchbook-title span {
+            display: inline-block;
+            animation: floatingLetters 2s ease-in-out infinite;
+            opacity: 0.7;
+        }
+
+        .sketchbook-button:hover .sketchbook-title span {
+            animation: none;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes floatingLetters {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-4px) rotate(4deg);
+            }
+            75% {
+                transform: translateY(4px) rotate(-4deg);
+            }
+        }
+
+        .background-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .background-line {
+            position: absolute;
+            background: #333;
+            border-radius: 2px;
+            pointer-events: none;
+            opacity: 0.1;
+        }
+
+        .drawing-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .drawing-line {
+            position: absolute;
+            background: #333;
+            border-radius: 2px;
+            pointer-events: none;
+        }
+
+        /* Social Share Buttons */
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .share-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .share-btn.facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background: #1da1f2;
+            cursor: pointer;
+            color: white;
+        }
+
+        .share-btn.whatsapp {
+            background: #25d366;
+            color: white;
+        }
+
+        .share-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .social-share-container {
+            position: fixed;
+            bottom: 60px;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+        }
+
+        .share-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .share-btn {
+            background: none;
+            border: none;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .share-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .share-btn.facebook {
+            background: #1877f2;
+            color: white;
+        }
+
+        .share-btn.twitter {
+            background: #000000;
+            cursor: pointer;
+            color: white;
+        }
+
+        .share-btn.whatsapp {
+            background: #25d366;
+            color: white;
+        }
+
+        .share-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+
+        /* Updated Social Share Styles */
+        .social-share-container {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            padding: 1rem;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.1), transparent);
+        }
+
+        .share-text {
+            color: #666;
+            font-size: 0.9rem;
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .social-share {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin: 0.5rem 0;
+        }
+
+
+        .share-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .share-btn svg {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .share-btn:hover svg {
+            transform: scale(1.1);
+        }
+
+        .share-btn.facebook {
+            background: linear-gradient(45deg, #1877f2, #0a4da1);
+            border-color: #1877f2;
+        }
+
+        .share-btn.twitter {
+            background: linear-gradient(45deg, #000000, #333333);
+            cursor: pointer;
+            border-color: #000000;
+        }
+
+        .share-btn.whatsapp {
+            background: linear-gradient(45deg, #25d366, #128c7e);
+            border-color: #25d366;
+        }
+
+        .share-btn.reddit {
+            background: linear-gradient(45deg, #ff4500, #ff6a00);
+            border-color: #ff4500;
+        }
+
+        .share-btn.retro {
+            background: linear-gradient(45deg, #4a4a4a, #2a2a2a);
+            border-color: #4a4a4a;
+        }
+
+        .retro-mode {
+            filter: grayscale(100%) sepia(50%) hue-rotate(320deg);
+            background: #008080 !important;
+            font-family: "Courier New", monospace !important;
+        }
+
+        .retro-mode .game-button {
+            border: 4px double #000000 !important;
+            background: #c0c0c0 !important;
+            box-shadow: inset 2px 2px #ffffff, inset -2px -2px #808080 !important;
+        }
+
+        .retro-mode .game-button-title {
+            color: #000080 !important;
+            text-shadow: 1px 1px #ffffff !important;
+        }
+
+        .retro-mode .share-btn {
+            background: #c0c0c0 !important;
+            border: 2px outset #ffffff !important;
+            box-shadow: 2px 2px #000000 !important;
+        }
+
+        .retro-mode * {
+            font-family: "Courier New", monospace !important;
+        }
+
+        .retro-mode {
+            filter: grayscale(100%) sepia(50%) hue-rotate(320deg);
+            background: #008080 !important;
+        }
+
+        .share-btn svg {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+            fill: #ffffff;
+        }
+
+        .share-btn.reddit {
+            background: linear-gradient(45deg, #ff4500, #ff6a00);
+            border-color: #ff4500;
+        }
+
+        .share-btn.reddit svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Add new styles for hover effects and confetti */
+        @keyframes randomColors {
+            0% { background: linear-gradient(45deg, #ff0000, #ff8800); }
+            20% { background: linear-gradient(45deg, #00ff00, #88ff00); }
+            40% { background: linear-gradient(45deg, #0000ff, #0088ff); }
+            60% { background: linear-gradient(45deg, #ff00ff, #ff88ff); }
+            80% { background: linear-gradient(45deg, #00ffff, #88ffff); }
+            100% { background: linear-gradient(45deg, #ffff00, #ff8800); }
+        }
+
+        .share-btn.retro:hover {
+            animation: randomColors 2s infinite;
+        }
+
+        .confetti {
+            pointer-events: none;
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+            z-index: 9999;
+        }
+
+        /* Add blog styles */
+        .blog-section {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .blog-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .blog-toggle-icon {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: transform 0.3s ease;
+        }
+        
+        .blog-toggle-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .blog-post {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        
+        .blog-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+        
+        .blog-post h3 {
+            color: #1a1a1a;
+            font-size: 1.3rem;
+            margin: 0 0 0.5rem 0;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+        
+        .post-date {
+            color: #6b7280;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .blog-post ul {
+            padding-left: 1.2rem;
+            margin: 0;
+        }
+        
+        .blog-post li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+        
+        .blog-post li strong {
+            color: #1a1a1a;
+            font-weight: 600;
+        }
+
+        #blog-content {
+            transition: all 0.3s ease;
+        }
+
+        .blog-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .blog-header h2 {
+            font-size: 1.8rem;
+            color: #1a1a1a;
+            margin: 0;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .blog-description {
+            color: #4a5568;
+            font-size: 1rem;
+            line-height: 1.6;
+            margin: 1rem 0;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .blog-post h4 {
+            color: #2d3748;
+            font-size: 1.1rem;
+            margin: 1.5rem 0 1rem 0;
+            font-weight: 600;
+        }
+
+        .blog-post ol {
+            padding-left: 1.2rem;
+            margin: 0.5rem 0;
+            list-style-type: decimal;
+        }
+
+        .blog-post ol li {
+            margin-bottom: 0.8rem;
+            line-height: 1.6;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .blog-post ul li {
+            position: relative;
+            padding-left: 0.5rem;
+        }
+
+        .blog-post ul li::before {
+            content: "•";
+            color: #4a5568;
+            font-weight: bold;
+            position: absolute;
+            left: -1rem;
+        }
+
+        .blog-toggle-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .hover-counter {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0.9;
+            transition: all 0.3s ease;
+        }
+
+        .share-button.blog-toggle {
+            background: #f0f0f0;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border: 0.1px solid #0000000e;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .share-button.blog-toggle:hover {
+            background: #e0e0e0;
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+
+        .share-button.blog-toggle svg {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .cursor-confetti {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 9999;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 9999;
+        }
+
+        /* Add after the credit styles */
+        .confetti {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+
+        .hover-counter {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #666;
+            white-space: nowrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 4px 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .blog-toggle-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        /* Add confetti style */
+        .confetti {
+            position: fixed;
+            width: 6px;
+            height: 6px;
+            pointer-events: none;
+            border-radius: 50%;
+            z-index: 9999;
+            transition: all 0.5s ease;
+        }
+    </style>
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Kill My Time",
+    "description": "Free online games collection featuring Snake, 2048, Maze Runner, Country Quiz and more",
+    "url": "https://killmytime.fun",
+    "potentialAction": {
+        "@type": "PlayAction",
+        "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://killmytime.fun/{game}",
+            "actionPlatform": [
+                "http://schema.org/DesktopWebPlatform",
+                "http://schema.org/MobileWebPlatform"
+            ]
+        }
+    },
+    "applicationCategory": "Game",
+    "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1000"
+    }
+}
+</script>
+</head>
+<body>
+    <h1 class="site-title">kill my time</h1>
+
+    <div class="cards-container">
+        <div class="game-card">
+            <h2 class="game-title">
+                Country - Odyssey
+                <span class="beta-tag">FEATURED</span>
+            </h2>
+            <p class="game-subtitle">think u know countries? prove it!</p>
+            <img src="gifreal.gif" alt="Interactive online games collection - Kill My Time gaming platform featuring various mini-games and entertainment options" style="width: 100%; height: 300px; object-fit: cover; margin-bottom: 1rem;">
+            <a href="countryOdyssey/countryFinder.html" class="action-button">start</a>
+        </div>
+    </div>
+
+    <div class="divider">
+        <hr class="fancy-line">
+        <span class="divider-text">More Interesting Things</span>
+    </div>
+
+    <div class="button-games-container">
+        <a href="decode-odyssey/index.html" class="game-button emoji-odyssey-button">
+            <div class="game-button-title emoji-odyssey-title">Emoji Odyssey</div>
+            <div class="emoji-odyssey-subtitle">Crack the code, win the game!</div>
+        </a>
+        <a href="miniGames/2048/index.html" class="game-button game-2048-button">
+            <span class="game-button-title">2048</span>
+        </a>
+        <a href="miniGames/square/index.html" class="game-button dodge-square-button">
+            <span class="dodge-game-button-title">Dodge Square</span>
+        </a>
+        <a href="miniGames/brickOne/index.html" class="game-button block-brick-button">
+            <span class="game-button-title block-brick-title">Block Brick</span>
+        </a>
+        <a href="miniGames/invest/index.html" class="game-button trade-simulator-button">
+            <div class="graph-paper"></div>
+            <span class="game-button-title trade-simulator-title">Trade Simulator</span>
+        </a>    
+        <a href="miniGames/dream/index.html" class="game-button dream-interpreter-button">
+            <div class="dream-clouds"></div>
+            <span class="game-button-title dream-interpreter-title">Dream Interpreter</span>
+        </a>
+
+        <a href="miniGames/tdecision/index.html" class="game-button dilemmas-button">
+            <span class="dilemmas-title">Dilemmas</span>
+            <div class="dilemma-container">
+                <div class="dilemma-side dilemma-yes">
+                    YES
+                    <span class="vote-count">50%</span>
+                </div>
+                <div class="dilemma-side dilemma-no">
+                    NO
+                    <span class="vote-count">50%</span>
+                </div>
+            </div>
+        </a>
+
+        <a href="https://ragdoll0.vercel.app/" class="game-button ragdolling-button">
+            <div class="stickman-container">
+                <div class="ragdoll">
+                    <svg viewBox="0 0 40 60" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round">
+                        <circle cx="20" cy="10" r="8"/>
+                        <line x1="20" y1="18" x2="20" y2="40"/>
+                        <line x1="20" y1="40" x2="10" y2="55"/>
+                        <line x1="20" y1="40" x2="30" y2="55"/>
+                        <line x1="20" y1="30" x2="8" y2="40"/>
+                        <line x1="20" y1="30" x2="32" y2="40"/>
+                    </svg>
+                </div>
+            </div>
+            <span class="game-button-title ragdolling-title">Ragdolling<span class="beta-tag">BETA</span></span>
+        </a>
+
+        <a href="miniGames/sandbox/index.html" class="game-button sandbox-button">
+            <div class="sand-container"></div>
+            <span class="game-button-title sandbox-title">Sandbox</span>
+        </a>
+
+        <a href="miniGames/maze/index.html" class="game-button maze-runner-button">
+            <div class="sand-container"></div>
+            <span class="game-button-title maze-runner-title">Maze Cursor Runner</span>
+        </a>
+
+        <a href="miniGames/flick/index.html" class="game-button flick-frenzy-button">
+            <div class="flick-frenzy-background"></div>
+            <div class="flick-frenzy-overlay"></div>
+            <span class="game-button-title flick-frenzy-title">Flick Frenzy</span>
+        </a>
+
+        <a href="miniGames/circlefootball/index.html" class="game-button circle-football-button">
+            <div class="sand-container"></div>
+            <span class="game-button-title maze-runner-title">Circle Football</span>
+        </a>
+
+        <a href="miniGames/modernSnake/" class="game-button modern-snake-button">
+            <div class="sand-container"></div>
+            <span class="game-button-title maze-runner-title">Modern Snake</span>
+        </a>
+
+        <a href="miniGames/sketchbook/index.html" class="game-button sketchbook-button">
+            <div class="drawing-canvas"></div>
+            <span class="game-button-title sketchbook-title">Sketchbook</span>
+        </a>
+    </div>
+
+    <div class="credit">made by <span><a href="https://read.cv/imranli" target="_blank" rel="noopener noreferrer">vusal</a></span></div>
+
+    <!-- Updated Social Share Buttons -->
+    <div class="social-share-container">
+        <p class="share-text">Share the fun</p>
+        <div class="social-share">
+            <button class="share-button" onclick="shareOnTwitter()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M22 4C22 4 21.3 6.1 20 7.4C21.6 17.4 10.6 24.7 2 19C4.2 19.1 6.4 18.4 8 17C3 15.5 0.5 9.6 3 5C5.2 7.6 8.6 9.1 12 9C11.1 4.8 16 2.4 19 5.2C20.1 5.2 22 4 22 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button class="share-button" onclick="shareOnFacebook()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+            <button class="share-button" onclick="shareOnReddit()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0zm5.01 4.744c.688 0 1.25.561 1.25 1.249a1.25 1.25 0 0 1-2.498.056l-2.597-.547-.8 3.747c1.824.07 3.48.632 4.674 1.488.308-.309.73-.491 1.207-.491.968 0 1.754.786 1.754 1.754 0 .716-.435 1.333-1.01 1.614a3.111 3.111 0 0 1 .042.52c0 2.694-3.13 4.87-7.004 4.87-3.874 0-7.004-2.176-7.004-4.87 0-.183.015-.366.043-.534A1.748 1.748 0 0 1 4.028 12c0-.968.786-1.754 1.754-1.754.463 0 .898.196 1.207.49 1.207-.883 2.878-1.43 4.744-1.487l.885-4.182a.342.342 0 0 1 .14-.197.35.35 0 0 1 .238-.042l2.906.617a1.214 1.214 0 0 1 1.108-.701zM9.25 12C8.561 12 8 12.562 8 13.25c0 .687.561 1.248 1.25 1.248.687 0 1.248-.561 1.248-1.249 0-.688-.561-1.249-1.249-1.249zm5.5 0c-.687 0-1.248.561-1.248 1.25 0 .687.561 1.248 1.249 1.248.688 0 1.249-.561 1.249-1.249 0-.687-.562-1.249-1.25-1.249zm-5.466 3.99a.327.327 0 0 0-.231.094.33.33 0 0 0 0 .463c.842.842 2.484.913 2.961.913.477 0 2.105-.056 2.961-.913a.361.361 0 0 0 .029-.463.33.33 0 0 0-.464 0c-.547.533-1.684.73-2.512.73-.828 0-1.979-.196-2.512-.73a.326.326 0 0 0-.232-.095z" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="blog-toggle-container">
+                <span class="hover-counter">Hover me 41 times!</span>
+                <button class="share-button blog-toggle" onclick="toggleBlog()" title="Gaming Tips & Updates">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: none;">
+        <audio id="preloaded-music1" preload="auto">
+            <source src="music1.mp3" type="audio/mp3">
+        </audio>
+        <audio id="preloaded-music2" preload="auto">
+            <source src="music2.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+        document.querySelector('.action-button').addEventListener('mousemove', (e) => {
+            const rect = e.target.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            e.target.style.setProperty('--x', x + 'px');
+            e.target.style.setProperty('--y', y + 'px');
+        });
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
+
+    
+    </div>
+
+
+    <script>
+    // Add emoji collection functionality
+    const TRAIL_EMOJIS = ['💣','💰','📸','🔋','😎','🎁','🛒','🗑','🧸','💎','🤠','🙏','🍀','🌚','🌍','❄️','🍓','🍎','🌮','⚽️','🎭','🎱','🪀','🌌','⌛️', '🎈', '🎭', '🎪', '🎯', '🎮', '🎲', '🎱', '🎳', '🎪'];
+
+    // Add styles
+    const emojiStyles = document.createElement('style');
+    emojiStyles.textContent = `
+        .emoji-trail {
+            position: fixed;
+            pointer-events: none;
+            z-index: 999;
+            font-size: 28px;
+            opacity: 0.8;
+            transform: translate(-50%, -50%);
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 0 1px rgba(0,0,0,0.2));
+            animation: fadeOut 1s ease forwards;
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 0.8; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.5); }
+        }
+    `;
+    document.head.appendChild(emojiStyles);
+
+    // Create a class to manage the emoji trail
+    class EmojiTrailManager {
+        constructor(button) {
+            this.button = button;
+            this.isTrailActive = false;
+            this.lastEmojiTime = 0;
+            this.EMOJI_SPAWN_RATE = 50;
+            this.setupEventListeners();
+        }
+
+        isInsideButton(x, y) {
+            const rect = this.button.getBoundingClientRect();
+            return (
+                x >= rect.left &&
+                x <= rect.right &&
+                y >= rect.top &&
+                y <= rect.bottom
+            );
+        }
+
+        getRelativeCoordinates(e) {
+            const rect = this.button.getBoundingClientRect();
+            return {
+                x: e.clientX - rect.left,
+                y: e.clientY - rect.top
+            };
+        }
+
+        setupEventListeners() {
+            this.button.addEventListener('mouseenter', () => this.activate());
+            this.button.addEventListener('mouseleave', () => this.deactivate());
+            this.updateCursorPosition = this.updateCursorPosition.bind(this);
+        }
+
+        activate() {
+            this.isTrailActive = true;
+            document.addEventListener('mousemove', this.updateCursorPosition);
+        }
+
+        deactivate() {
+            this.isTrailActive = false;
+            document.removeEventListener('mousemove', this.updateCursorPosition);
+            this.clearTrails();
+        }
+
+        clearTrails() {
+            document.querySelectorAll('.emoji-trail').forEach(trail => {
+                trail.style.opacity = '0';
+                setTimeout(() => trail.remove(), 300);
+            });
+        }
+
+        updateCursorPosition(e) {
+            const currentTime = Date.now();
+            if (!this.isInsideButton(e.clientX, e.clientY)) return;
+            
+            const coords = this.getRelativeCoordinates(e);
+            
+            if (currentTime - this.lastEmojiTime > this.EMOJI_SPAWN_RATE && this.isTrailActive) {
+                this.createTrailEmoji(coords.x, coords.y);
+                this.lastEmojiTime = currentTime;
+            }
+        }
+
+        createTrailEmoji(x, y) {
+            const trailEmoji = document.createElement('div');
+            trailEmoji.className = 'emoji-trail';
+            trailEmoji.textContent = TRAIL_EMOJIS[Math.floor(Math.random() * TRAIL_EMOJIS.length)];
+            trailEmoji.style.left = `${x}px`;
+            trailEmoji.style.top = `${y}px`;
+            this.button.appendChild(trailEmoji);
+            setTimeout(() => trailEmoji.remove(), 1000);
+        }
+    }
+
+    function createBackgroundCircles(button) {
+        const colors = [
+            '#FF3366', '#6633FF', '#33CCFF', '#FF33CC', // Original colors
+            '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', // Cool tones
+            '#FF9999', '#9D50BB', '#6C63FF', '#4A90E2', // Purple and blue tones
+            '#FF7EB3', '#7F00FF', '#00FFFF', '#50C878'  // Vibrant mix
+        ];
+        const numCircles = 8;
+
+        for (let i = 0; i < numCircles; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'background-circle';
+            
+            // Larger, more subtle circles
+            const size = Math.random() * 70 + 50;  // Slightly smaller to fit more
+            circle.style.width = `${size}px`;
+            circle.style.height = `${size}px`;
+            
+            // Random position within button
+            circle.style.left = `${10 + Math.random() * 80}%`;
+            circle.style.top = `${10 + Math.random() * 80}%`;
+            
+            // Random color
+            circle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random animation delay and duration
+            circle.style.animationDelay = `-${Math.random() * 8}s`;
+            circle.style.animationDuration = `${6 + Math.random() * 4}s`;  // Slightly faster
+            
+            button.appendChild(circle);
+        }
+    }
+
+    // Initialize only for Emoji-Odyssey button
+    const emojiOdysseyButton = document.querySelector('a[href="decode-odyssey/index.html"]');
+    if (emojiOdysseyButton) {
+        new EmojiTrailManager(emojiOdysseyButton);
+        createBackgroundCircles(emojiOdysseyButton);
+    }
+    </script>
+
+    <script>
+    function createDodgeSquares(button) {
+        const numSquares = 5;  // Start with fewer squares
+        
+        // Clear existing squares and keep the title
+        button.innerHTML = '<span class="dodge-game-button-title">Dodge Square</span>';
+
+        // Recreate squares more frequently
+        setInterval(() => {
+            const square = document.createElement('div');
+            square.className = 'moving-square';
+            // Random horizontal position
+            square.style.left = `${12 + Math.random() * 325}px`;
+            const duration = 2;
+            square.style.animationDuration = `${duration}s`;
+            
+            // Add hover effect
+            square.addEventListener('mouseover', () => {
+                if (!square.classList.contains('exploding')) {
+                    square.classList.add('exploding');
+                    
+                    // Create explosion particles
+                    const numParticles = 12;
+                    const squareRect = square.getBoundingClientRect();
+                    const centerX = parseFloat(square.style.left) + 7.5;
+                    const centerY = squareRect.top - button.getBoundingClientRect().top + 7.5;
+
+                    for (let i = 0; i < numParticles; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'explosion-particle';
+                        
+                        // Calculate particle trajectory
+                        const angle = (i / numParticles) * Math.PI * 2;
+                        const distance = 30 + Math.random() * 20;
+                        const endX = Math.cos(angle) * distance;
+                        const endY = Math.sin(angle) * distance;
+                        
+                        particle.style.left = `${centerX}px`;
+                        particle.style.top = `${centerY}px`;
+                        particle.style.setProperty('--particle-end', 
+                            `translate(${endX}px, ${endY}px)`);
+                        
+                        // Random delays for more natural effect
+                        particle.style.animationDelay = `${Math.random() * 0.1}s`;
+                        button.appendChild(particle);
+                        
+                        setTimeout(() => particle.remove(), 500);
+                    }
+                    
+                    // Remove the original square earlier
+                    setTimeout(() => square.remove(), 500);
+                }
+            });
+            
+            button.appendChild(square);
+            
+            // Remove square after animation completes
+            setTimeout(() => {
+                if (square.parentNode && !square.classList.contains('exploding')) {
+                    square.remove();
+                }
+            }, duration * 1000);
+        }, 400);  // Create new square every 400ms
+    }
+
+    // Initialize the squares immediately when the button is created
+    const dodgeSquareButton = document.querySelector('a[href="miniGames/square/index.html"]');
+    if (dodgeSquareButton) {
+        dodgeSquareButton.classList.add('dodge-square-button');
+        createDodgeSquares(dodgeSquareButton);
+    }
+    </script>
+
+    <script>
+    function createBlockBrickBlocks(button) {
+        // Clear existing blocks and keep the title
+        button.innerHTML = '<span class="game-button-title block-brick-title">Block Brick</span>';
+
+        const numBlocks = 12;
+        const usedPositions = new Set();
+        const blocks = [];
+        const connections = [];
+
+        // Define safe zones
+        const titleSafeZone = {
+            top: 0,
+            bottom: 45,  // Height of title area
+            left: 0,
+            right: button.offsetWidth
+        };
+
+        function createConnection(block1, block2) {
+            const connection = document.createElement('div');
+            connection.className = 'block-connection';
+            button.appendChild(connection);
+            
+            // Calculate position and dimensions
+            const x1 = parseFloat(block1.style.left) + 15;
+            const y1 = parseFloat(block1.style.top) + 15;
+            const x2 = parseFloat(block2.style.left) + 15;
+            const y2 = parseFloat(block2.style.top) + 15;
+            
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            connection.style.width = `${length}px`;
+            connection.style.left = `${x1}px`;
+            connection.style.top = `${y1}px`;
+            connection.style.transform = `rotate(${angle}rad)`;
+            
+            return connection;
+        }
+
+        function updateConnections() {
+            // Add disappearing animation to existing connections
+            connections.forEach(conn => {
+                conn.classList.add('disappearing');
+                setTimeout(() => conn.remove(), 400); // Match the transition duration
+            });
+            connections.length = 0;
+
+            // Create new connections between blocks
+            for (let i = 0; i < blocks.length; i++) {
+                for (let j = i + 1; j < blocks.length; j++) {
+                    const distance = Math.sqrt(
+                        Math.pow(parseFloat(blocks[j].style.left) - parseFloat(blocks[i].style.left), 2) +
+                        Math.pow(parseFloat(blocks[j].style.top) - parseFloat(blocks[i].style.top), 2)
+                    );
+                    
+                    // Only connect blocks within a certain distance
+                    if (distance < 100) {
+                        const connection = createConnection(blocks[i], blocks[j]);
+                        // Start with 0 opacity and scale
+                        connection.style.opacity = '0';
+                        connection.style.transform = `rotate(${Math.atan2(
+                            parseFloat(blocks[j].style.top) - parseFloat(blocks[i].style.top),
+                            parseFloat(blocks[j].style.left) - parseFloat(blocks[i].style.left)
+                        )}rad) scaleX(0)`;
+                        
+                        // Force reflow
+                        connection.offsetHeight;
+                        
+                        // Animate to full opacity and scale
+                        requestAnimationFrame(() => {
+                            connection.style.opacity = '1';
+                            connection.style.transform = `rotate(${Math.atan2(
+                                parseFloat(blocks[j].style.top) - parseFloat(blocks[i].style.top),
+                                parseFloat(blocks[j].style.left) - parseFloat(blocks[i].style.left)
+                            )}rad) scaleX(1)`;
+                        });
+                        
+                        connections.push(connection);
+                    }
+                }
+            }
+        }
+
+        for (let i = 0; i < numBlocks; i++) {
+            const block = document.createElement('div');
+            block.className = 'number-block';
+            
+            // Random number between 1 and 99
+            const number = Math.floor(Math.random() * 99) + 1;
+            block.textContent = number;
+
+            // Calculate color based on number
+            let backgroundColor;
+            if (number <= 33) {
+                backgroundColor = `rgb(${40 + number * 2}, 200, 40)`;
+            } else if (number <= 66) {
+                backgroundColor = `rgb(200, ${200 - (number-33)}, 40)`;
+            } else {
+                backgroundColor = `rgb(200, ${40 + (99-number) * 2}, 40)`;
+            }
+            block.style.backgroundColor = backgroundColor;
+
+            // Find unique position
+            let position;
+            let attempts = 0;
+            const maxAttempts = 50;
+
+            do {
+                position = {
+                    x: 15 + Math.random() * (button.offsetWidth - 60),
+                    y: titleSafeZone.bottom + Math.random() * (button.offsetHeight - titleSafeZone.bottom - 45)
+                };
+                attempts++;
+                
+                if (attempts > maxAttempts) break;
+            } while (isPositionTaken(position, usedPositions, 40));
+
+            if (attempts <= maxAttempts) {
+                usedPositions.add(`${Math.round(position.x)},${Math.round(position.y)}`);
+                block.style.left = `${position.x}px`;
+                block.style.top = `${position.y}px`;
+
+                // Add hover effect with number decrease
+                let currentNumber = number;
+                block.addEventListener('mouseover', () => {
+                    if (currentNumber > 0) {
+                        currentNumber--;
+                        block.textContent = currentNumber;
+                        
+                        // Update color based on new number
+                        if (currentNumber <= 33) {
+                            backgroundColor = `rgb(${40 + currentNumber * 2}, 200, 40)`;
+                        } else if (currentNumber <= 66) {
+                            backgroundColor = `rgb(200, ${200 - (currentNumber-33)}, 40)`;
+                        } else {
+                            backgroundColor = `rgb(200, ${40 + (99-currentNumber) * 2}, 40)`;
+                        }
+                        block.style.backgroundColor = backgroundColor;
+
+                        // 1/3 chance to move to a random position
+                        if (Math.random() < 0.20) {
+                            const newPosition = {
+                                x: 15 + Math.random() * (button.offsetWidth - 60),
+                                y: titleSafeZone.bottom + Math.random() * (button.offsetHeight - titleSafeZone.bottom - 45)
+                            };
+                            
+                            block.classList.add('moving');
+                            block.style.left = `${newPosition.x}px`;
+                            block.style.top = `${newPosition.y}px`;
+                            
+                            // Update connections when block moves
+                            setTimeout(() => {
+                                block.classList.remove('moving');
+                                updateConnections();
+                            }, 600);
+                        }
+
+                        if (currentNumber === 0) {
+                            // Create particles
+                            const numParticles = 8;
+                            const blockRect = block.getBoundingClientRect();
+                            const buttonRect = button.getBoundingClientRect();
+                            const centerX = parseFloat(block.style.left) + 15;
+                            const centerY = parseFloat(block.style.top) + 15;
+
+                            // Add disappearing class for rotation animation
+                            block.classList.add('disappearing');
+
+                            // Create particles
+                            for (let i = 0; i < numParticles; i++) {
+                                const particle = document.createElement('div');
+                                particle.className = 'block-particle';
+                                particle.style.left = `${centerX}px`;
+                                particle.style.top = `${centerY}px`;
+                                
+                                // Calculate random direction
+                                const angle = (i / numParticles) * Math.PI * 2;
+                                const distance = 30 + Math.random() * 20;
+                                const tx = Math.cos(angle) * distance;
+                                const ty = Math.sin(angle) * distance;
+                                
+                                particle.style.setProperty('--tx', `${tx}px`);
+                                particle.style.setProperty('--ty', `${ty}px`);
+                                particle.style.animation = `blockParticle 0.6s ease-out forwards`;
+                                particle.style.backgroundColor = backgroundColor;
+                                
+                                button.appendChild(particle);
+                                
+                                // Remove particle after animation
+                                setTimeout(() => particle.remove(), 600);
+                            }
+
+                            setTimeout(() => {
+                                // Remove block from blocks array
+                                const index = blocks.indexOf(block);
+                                if (index > -1) {
+                                    blocks.splice(index, 1);
+                                }
+                                updateConnections();
+                                setTimeout(() => block.remove(), 50);
+                            }, 400);
+                        }
+                    }
+                });
+
+                blocks.push(block);
+                button.appendChild(block);
+            }
+        }
+
+        // Initial connection creation
+        updateConnections();
+    }
+
+    function isPositionTaken(newPos, usedPositions, minDistance) {
+        for (let posStr of usedPositions) {
+            const [x, y] = posStr.split(',').map(Number);
+            const distance = Math.sqrt(
+                Math.pow(newPos.x - x, 2) + 
+                Math.pow(newPos.y - y, 2)
+            );
+            if (distance < minDistance) return true;
+        }
+        return false;
+    }
+
+    // Initialize Block Brick button
+    const blockBrickButton = document.querySelector('a[href="miniGames/brickOne/index.html"]');
+    if (blockBrickButton) {
+        blockBrickButton.classList.add('block-brick-button');
+        createBlockBrickBlocks(blockBrickButton);
+    }
+    </script>
+
+    <script>
+    function create2048Grid(button) {
+        button.innerHTML = '<span class="game-button-title game-2048-title">2048</span>';
+        
+        const tileValues = [2, 4, 8, 16, 32, 64];
+        const tileColors = {
+            2: { bg: '#eee4da', text: '#776e65' },
+            4: { bg: '#ede0c8', text: '#776e65' },
+            8: { bg: '#f2b179', text: '#f9f6f2' },
+            16: { bg: '#f59563', text: '#f9f6f2' },
+            32: { bg: '#f67c5f', text: '#f9f6f2' },
+            64: { bg: '#f65e3b', text: '#f9f6f2' }
+        };
+
+        const titleSafeZone = 45;  // Space for title
+        const padding = 10;  // Padding from edges
+
+        function createRandomTile() {
+            const value = tileValues[Math.floor(Math.random() * tileValues.length)];
+            const tile = document.createElement('div');
+            tile.className = 'tile-2048';
+            tile.textContent = value;
+            tile.style.backgroundColor = tileColors[value].bg;
+            tile.style.color = tileColors[value].text;
+            
+            // Random position within button, avoiding title area
+            tile.style.left = `${padding + Math.random() * (button.offsetWidth - 60)}px`;
+            tile.style.top = `${titleSafeZone + Math.random() * (button.offsetHeight - titleSafeZone - 60)}px`;
+            
+            tile.style.animationDelay = `${Math.random() * 0.3}s`;
+            return tile;
+        }
+
+        function refreshTiles() {
+            button.querySelectorAll('.tile-2048').forEach(tile => tile.remove());
+            
+            const numTiles = 10;  // More tiles for better coverage
+            for (let i = 0; i < numTiles; i++) {
+                button.appendChild(createRandomTile());
+            }
+        }
+
+        refreshTiles();
+        setInterval(refreshTiles, 2500);  // Slower refresh for better visibility
+    }
+
+    // Initialize 2048 button
+    const game2048Button = document.querySelector('a[href="miniGames/2048/index.html"]');
+    if (game2048Button) {
+        create2048Grid(game2048Button);
+    }
+    </script>
+
+    <script>
+    function createTradeSimulator(button) {
+        // Clear existing content and keep the title
+        button.innerHTML = '<div class="graph-paper"></div><span class="game-button-title trade-simulator-title">Trade Simulator</span>';
+
+        const numCandlesticks = 22;
+        const candlesticks = [];
+
+        function createCandlestick(index) {
+            const candlestick = document.createElement('div');
+            candlestick.className = 'candlestick';
+            
+            // Create wick elements
+            const upperWick = document.createElement('div');
+            upperWick.className = 'candlestick-wick upper-wick';
+            const lowerWick = document.createElement('div');
+            lowerWick.className = 'candlestick-wick lower-wick';
+            
+            candlestick.appendChild(upperWick);
+            candlestick.appendChild(lowerWick);
+
+            // Position horizontally
+            const spacing = (button.offsetWidth - 100) / (numCandlesticks - 1);
+            candlestick.style.left = `${50 + index * spacing}px`;
+            
+            return candlestick;
+        }
+
+        function updateCandlestick(candlestick) {
+            const isGreen = Math.random() > 0.5;
+            const bodyHeight = 20 + Math.random() * 30;
+            const upperWickHeight = 5 + Math.random() * 15;
+            const lowerWickHeight = 5 + Math.random() * 15;
+            const totalHeight = bodyHeight + upperWickHeight + lowerWickHeight;
+            
+            // Position vertically (leaving space for title)
+            const maxTop = button.offsetHeight - 50 - totalHeight;
+            const top = 45 + Math.random() * maxTop;
+            
+            candlestick.style.height = `${bodyHeight}px`;
+            candlestick.style.top = `${top}px`;
+            candlestick.classList.toggle('green', isGreen);
+            
+            const upperWick = candlestick.querySelector('.upper-wick');
+            const lowerWick = candlestick.querySelector('.lower-wick');
+            
+            upperWick.style.height = `${upperWickHeight}px`;
+            upperWick.style.top = `-${upperWickHeight}px`;
+            
+            lowerWick.style.height = `${lowerWickHeight}px`;
+            lowerWick.style.top = `${bodyHeight}px`;
+        }
+
+        // Create initial candlesticks
+        for (let i = 0; i < numCandlesticks; i++) {
+            const candlestick = createCandlestick(i);
+            button.appendChild(candlestick);
+            candlesticks.push(candlestick);
+            updateCandlestick(candlestick);
+        }
+
+        // Update candlesticks every 10 seconds
+        setInterval(() => {
+            candlesticks.forEach(candlestick => {
+                updateCandlestick(candlestick);
+            });
+        }, 10000);
+    }
+
+    // Initialize Trade Simulator button
+    const tradeSimulatorButton = document.querySelector('a[href="miniGames/invest/index.html"]');
+    if (tradeSimulatorButton) {
+        tradeSimulatorButton.classList.add('trade-simulator-button');
+        createTradeSimulator(tradeSimulatorButton);
+    }
+    </script>
+
+    <script>
+    // Add Ragdolling button animation
+    function initRagdollingButton() {
+        const button = document.querySelector('.ragdolling-button');
+        const ragdoll = button.querySelector('.ragdoll');
+        let isDragging = false;
+        let currentX = 150;
+        let currentY = 50;
+        let velocityX = 0;
+        let velocityY = 0;
+        let isHovered = false;
+        let floatAngle = 0;
+        let floatRadius = 95;
+        let floatSpeed = 0.002;
+
+        function updateFloatingAnimation() {
+            if (!isHovered) {
+                // Calculate new position in a circular pattern
+                const centerX = button.offsetWidth / 2;
+                const centerY = button.offsetHeight / 2;
+                
+                currentX = centerX + Math.cos(floatAngle) * floatRadius;
+                currentY = centerY + Math.sin(floatAngle * 0.7) * floatRadius;
+                
+                // Slowly rotate the ragdoll
+                const rotation = Math.sin(floatAngle * 2) * 15;
+                
+                ragdoll.style.transform = `translate(${currentX - 20}px, ${currentY - 30}px) rotate(${rotation}deg)`;
+                
+                floatAngle += floatSpeed;
+                requestAnimationFrame(updateFloatingAnimation);
+            }
+        }
+
+        button.addEventListener('mouseenter', () => {
+            isHovered = true;
+        });
+
+        button.addEventListener('mousemove', (e) => {
+            if (!isHovered) return;
+            
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Update ragdoll position with physics
+            const targetX = x;
+            const targetY = y;
+            
+            velocityX += (targetX - currentX) * 0.1;
+            velocityY += (targetY - currentY) * 0.1;
+            
+            velocityX *= 0.8;
+            velocityY *= 0.8;
+            
+            currentX += velocityX;
+            currentY += velocityY;
+
+            // Keep ragdoll within bounds
+            currentX = Math.max(20, Math.min(currentX, button.offsetWidth - 20));
+            currentY = Math.max(20, Math.min(currentY, button.offsetHeight - 20));
+
+            // Calculate rotation based on movement
+            const rotation = Math.atan2(velocityY, velocityX) * (180 / Math.PI);
+
+            ragdoll.style.transform = `translate(${currentX - 20}px, ${currentY - 30}px) rotate(${rotation}deg)`;
+        });
+
+        button.addEventListener('mouseleave', () => {
+            isHovered = false;
+            updateFloatingAnimation();
+        });
+
+        // Start the floating animation immediately
+        updateFloatingAnimation();
+    }
+
+    // Initialize the ragdolling button
+    document.addEventListener('DOMContentLoaded', () => {
+        initRagdollingButton();
+    });
+    </script>
+
+    <script>
+    function initDilemmasButton() {
+        const button = document.querySelector('.dilemmas-button');
+        const yesDiv = button.querySelector('.dilemma-yes');
+        const noDiv = button.querySelector('.dilemma-no');
+        const yesVotes = yesDiv.querySelector('.vote-count');
+        const noVotes = noDiv.querySelector('.vote-count');
+
+        function updateVotes() {
+            // Generate random votes
+            const total = 100;
+            const yesPercent = Math.floor(Math.random() * 101); // 0-100
+            const noPercent = 100 - yesPercent;
+
+            // Update vote counts
+            yesVotes.textContent = `${yesPercent}%`;
+            noVotes.textContent = `${noPercent}%`;
+
+            // Reset classes
+            yesDiv.classList.remove('winning-side');
+            noDiv.classList.remove('winning-side');
+
+            // Add winning-side class to the side with more votes
+            if (yesPercent > noPercent) {
+                yesDiv.classList.add('winning-side');
+            } else if (noPercent > yesPercent) {
+                noDiv.classList.add('winning-side');
+            }
+        }
+
+        // Update votes every 3 seconds
+        setInterval(updateVotes, 3000);
+        // Initial update
+        updateVotes();
+    }
+
+    // Initialize all buttons when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        initRagdollingButton();
+        initDilemmasButton();
+        initSandboxButton();
+    });
+
+    function initSandboxButton() {
+        const button = document.querySelector('.sandbox-button');
+        const particles = [];
+        const maxParticles = 500;
+        let isMouseOver = false;
+        let mouseX = 0;
+        let mouseY = 0;
+
+        function createParticle(x, y) {
+            const particle = document.createElement('div');
+            particle.className = 'sand-particle';
+            
+            // Random sand colors with more variety
+            const colors = [
+                '#d4b483', '#c19a6b', '#ab7f51', '#8b6d4c',
+                '#e6c89b', '#d4aa6a', '#c49355', '#b37840'
+            ];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Random size with slightly larger particles
+            const size = 2 + Math.random() * 2;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            button.appendChild(particle);
+            particle.style.transform = `translate(${x}px, ${y}px)`;
+            
+            return { 
+                element: particle, 
+                x, 
+                y, 
+                size,
+                velocity: {
+                    x: (Math.random() - 0.5) * 2,
+                    y: 0
+                },
+                settled: false
+            };
+        }
+
+        function updateParticles() {
+            const gravity = 0.5;
+            const friction = 0.98;
+
+            // Create new particles if mouse is over
+            if (isMouseOver && particles.length < maxParticles) {
+                const numNewParticles = 2;
+                for (let i = 0; i < numNewParticles; i++) {
+                    const offsetX = (Math.random() - 0.5) * 6;
+                    const offsetY = (Math.random() - 0.5) * 6;
+                    const particle = createParticle(
+                        mouseX + offsetX,
+                        mouseY + offsetY
+                    );
+                    particles.push(particle);
+                }
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const particle = particles[i];
+                
+                if (!particle.settled) {
+                    // Apply gravity and update position
+                    particle.velocity.y += gravity;
+                    particle.velocity.x *= friction;
+                    
+                    particle.x += particle.velocity.x;
+                    particle.y += particle.velocity.y;
+
+                    // Boundary collision
+                    if (particle.x < 0) {
+                        particle.x = 0;
+                        particle.velocity.x *= -0.3;
+                    } else if (particle.x > button.offsetWidth - particle.size) {
+                        particle.x = button.offsetWidth - particle.size;
+                        particle.velocity.x *= -0.3;
+                    }
+
+                    // Bottom collision
+                    if (particle.y >= button.offsetHeight - particle.size) {
+                        particle.y = button.offsetHeight - particle.size;
+                        particle.settled = true;
+                        particle.velocity.y = 0;
+                        particle.velocity.x = 0;
+                    }
+
+                    // Particle collision
+                    for (let j = 0; j < particles.length; j++) {
+                        if (i !== j) {
+                            const other = particles[j];
+                            const dx = particle.x - other.x;
+                            const dy = particle.y - other.y;
+                            const distance = Math.sqrt(dx * dx + dy * dy);
+                            const minDist = (particle.size + other.size);
+
+                            if (distance < minDist && other.settled) {
+                                particle.settled = true;
+                                particle.y = other.y - particle.size;
+                                particle.velocity.y = 0;
+                                particle.velocity.x = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                // Update particle position
+                particle.element.style.transform = `translate(${particle.x}px, ${particle.y}px)`;
+            }
+
+            requestAnimationFrame(updateParticles);
+        }
+        
+        function updateMousePosition(e) {
+            const rect = button.getBoundingClientRect();
+            mouseX = e.clientX - rect.left;
+            mouseY = e.clientY - rect.top;
+        }
+
+        button.addEventListener('mouseenter', () => {
+            isMouseOver = true;
+        });
+
+        button.addEventListener('mouseleave', () => {
+            isMouseOver = false;
+        });
+
+        button.addEventListener('mousemove', updateMousePosition);
+
+        // Create initial sand bed
+        for (let i = 0; i < 50; i++) {
+            const x = Math.random() * button.offsetWidth;
+            const y = button.offsetHeight - Math.random() * 20;
+            const particle = createParticle(x, y);
+            particle.settled = true;
+            particles.push(particle);
+        }
+
+        updateParticles();
+    }
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        initRagdollingButton();
+        initDilemmasButton();
+        initSandboxButton();
+        initMazeRunnerButton();
+        initCircleFootballButton();
+        initFlickFrenzyButton();
+        initModernSnakeButton();
+        initSketchbookButton();
+    });
+
+    function initMazeRunnerButton() {
+        const button = document.querySelector('.maze-runner-button');
+        // Remove sand container from maze runner button
+        const sandContainer = button.querySelector('.sand-container');
+        if (sandContainer) {
+            sandContainer.remove();
+        }
+        
+        // Create start text
+        const startText = document.createElement('div');
+        startText.className = 'start-text';
+        startText.textContent = 'start';
+        button.appendChild(startText);
+        
+        // Create game container
+        const gameContainer = document.createElement('div');
+        gameContainer.className = 'game-container';
+        button.appendChild(gameContainer);
+        
+        const cursorDot = document.createElement('div');
+        cursorDot.className = 'cursor-dot';
+        gameContainer.appendChild(cursorDot);
+
+        const title = button.querySelector('.maze-runner-title');
+        const originalTitleText = title.textContent;
+        let startTime;
+        let timerInterval;
+
+        let obstacles = [];
+        let gameActive = false;
+        let animationFrameId;
+        let lastObstacleTime = 0;
+        const obstacleInterval = 800;
+
+        function updateTimer() {
+            const currentTime = Date.now();
+            const elapsedTime = currentTime - startTime;
+            
+            const minutes = Math.floor(elapsedTime / 60000);
+            const seconds = Math.floor((elapsedTime % 60000) / 1000);
+            const milliseconds = elapsedTime % 1000;
+            
+            title.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}:${milliseconds.toString().padStart(3, '0')}`;
+        }
+
+        function updateCursorDot(e) {
+            const rect = button.getBoundingClientRect();
+            cursorDot.style.left = (e.clientX - rect.left) + 'px';
+            cursorDot.style.top = (e.clientY - rect.top) + 'px';
+        }
+
+        function startGame() {
+            if (!gameActive) {
+                gameActive = true;
+                startTime = Date.now();
+                timerInterval = setInterval(updateTimer, 10); // Update every 10ms for smooth milliseconds
+                lastObstacleTime = performance.now() - obstacleInterval;
+                updateGame(performance.now());
+                startText.classList.add('hidden');
+            }
+        }
+
+        function resetGame() {
+            obstacles.forEach(obs => obs.element.remove());
+            obstacles = [];
+            gameActive = false;
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+            title.textContent = originalTitleText;
+            startText.classList.remove('hidden');
+        }
+
+        function createObstacle() {
+            const obstacle = document.createElement('div');
+            obstacle.className = 'obstacle';
+            
+            // Get title element and its position
+            const title = button.querySelector('.maze-runner-title');
+            const titleRect = title.getBoundingClientRect();
+            const buttonRect = button.getBoundingClientRect();
+            
+            // Calculate spawn position relative to title
+            const titleTop = 36; // Title's top position
+            const titleHeight = title.offsetHeight;
+            
+            // Spawn exactly in title area
+            const y = titleTop + (Math.random() * titleHeight);
+            
+            // Start from right side of button
+            const startX = button.offsetWidth - 20;
+            
+            obstacle.style.left = startX + 'px';
+            obstacle.style.top = y + 'px';
+            
+            gameContainer.appendChild(obstacle);
+            return {
+                element: obstacle,
+                x: startX,
+                y: y,
+                speed: 2
+            };
+        }
+
+        function checkCollision(dot, obstacle) {
+            const dotRect = dot.getBoundingClientRect();
+            const obstacleRect = obstacle.element.getBoundingClientRect();
+            const buttonRect = button.getBoundingClientRect();
+            
+            const dotLeft = dotRect.left - buttonRect.left;
+            const dotTop = dotRect.top - buttonRect.top;
+            const obstacleLeft = obstacleRect.left - buttonRect.left;
+            const obstacleTop = obstacleRect.top - buttonRect.top;
+            
+            return !(dotLeft + 10 < obstacleLeft || 
+                    dotLeft > obstacleLeft + 15 || 
+                    dotTop + 10 < obstacleTop || 
+                    dotTop > obstacleTop + 15);
+        }
+
+        function updateGame(currentTime) {
+            if (!gameActive) return;
+
+            // Create new obstacles
+            if (currentTime - lastObstacleTime > obstacleInterval) {
+                if (obstacles.length < 5) {
+                    obstacles.push(createObstacle());
+                }
+                lastObstacleTime = currentTime;
+            }
+
+            // Update obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                const obstacle = obstacles[i];
+                obstacle.x -= obstacle.speed;
+                obstacle.element.style.left = obstacle.x + 'px';
+
+                // Check collision
+                if (checkCollision(cursorDot, obstacle)) {
+                    resetGame();
+                    return;
+                }
+
+                // Remove obstacles that are off screen
+                if (obstacle.x < -15) {
+                    obstacle.element.remove();
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            animationFrameId = requestAnimationFrame(updateGame);
+        }
+
+        button.addEventListener('mousemove', updateCursorDot);
+
+        startText.addEventListener('mouseenter', startGame);
+
+        button.addEventListener('mouseleave', () => {
+            resetGame();
+        });
+    }
+
+    function initCircleFootballButton() {
+        const button = document.querySelector('.circle-football-button');
+        const title = button.querySelector('.maze-runner-title');
+        const originalTitleText = title.textContent;
+
+        // Remove sand container
+        const sandContainer = button.querySelector('.sand-container');
+        if (sandContainer) {
+            sandContainer.remove();
+        }
+
+        // Create football field
+        const field = document.createElement('div');
+        field.className = 'football-field';
+        button.appendChild(field);
+
+        // Add field border
+        const fieldBorder = document.createElement('div');
+        fieldBorder.className = 'field-border';
+        field.appendChild(fieldBorder);
+
+        // Add penalty areas
+        const leftPenaltyArea = document.createElement('div');
+        leftPenaltyArea.className = 'penalty-area left';
+        field.appendChild(leftPenaltyArea);
+
+        const rightPenaltyArea = document.createElement('div');
+        rightPenaltyArea.className = 'penalty-area right';
+        field.appendChild(rightPenaltyArea);
+
+        // Add center circle
+        const centerCircle = document.createElement('div');
+        centerCircle.className = 'center-circle';
+        field.appendChild(centerCircle);
+
+        // Add center dot
+        const centerDot = document.createElement('div');
+        centerDot.className = 'center-dot';
+        field.appendChild(centerDot);
+
+        // Add center line
+        const centerLine = document.createElement('div');
+        centerLine.className = 'center-line';
+        field.appendChild(centerLine);
+
+        // Add goals
+        const leftGoal = document.createElement('div');
+        leftGoal.className = 'goal left';
+        field.appendChild(leftGoal);
+
+        const rightGoal = document.createElement('div');
+        rightGoal.className = 'goal right';
+        field.appendChild(rightGoal);
+
+        // Add football
+        const football = document.createElement('div');
+        football.className = 'football';
+        football.style.cssText = `
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #ffffff;
+            border-radius: 50%;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s ease;
+            pointer-events: none;
+            z-index: 2;
+        `;
+        field.appendChild(football);
+
+        // Add score display
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.className = 'score-display';
+        scoreDisplay.textContent = '0 - 0';
+        field.appendChild(scoreDisplay);
+
+        // Game state
+        let scores = { left: 0, right: 0 };
+        let ballPos = { x: 150, y: 50 };
+        let ballVel = { x: 0, y: 0 };
+        let lastMousePos = { x: 0, y: 0 };
+        let isPlaying = false;
+
+        function resetBall() {
+            ballPos = { x: button.offsetWidth / 2, y: button.offsetHeight / 2 };
+            ballVel = { x: 0, y: 0 };
+            updateBallPosition();
+        }
+
+        function updateBallPosition() {
+            football.style.left = ballPos.x + 'px';
+            football.style.top = ballPos.y + 'px';
+        }
+
+        function checkGoal() {
+            const goalY = button.offsetHeight / 2;
+            const goalHeight = 35;  // Match the goal height we set in CSS
+
+            // Left goal
+            if (ballPos.x <= 16 && Math.abs(ballPos.y - goalY) < goalHeight / 2) {
+                scores.right++;
+                createGoalParticles(16, ballPos.y);  // Create particles at goal position
+                updateScore();
+                resetBall();
+                return true;
+            }
+            // Right goal
+            if (ballPos.x >= button.offsetWidth - 16 && Math.abs(ballPos.y - goalY) < goalHeight / 2) {
+                scores.left++;
+                createGoalParticles(button.offsetWidth - 16, ballPos.y);  // Create particles at goal position
+                updateScore();
+                resetBall();
+                return true;
+            }
+            return false;
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `${scores.left} - ${scores.right}`;
+            scoreDisplay.style.opacity = '1';  // Changed from classList.add
+            title.style.opacity = '0';
+        }
+
+        function updateGame() {
+            if (!isPlaying) return;
+
+            // Apply velocity
+            ballPos.x += ballVel.x;
+            ballPos.y += ballVel.y;
+
+            // Apply friction
+            ballVel.x *= 0.98;
+            ballVel.y *= 0.98;
+
+            // Boundary collision
+            if (ballPos.x < 6) {
+                ballPos.x = 6;
+                ballVel.x *= -0.8;
+            } else if (ballPos.x > button.offsetWidth - 6) {
+                ballPos.x = button.offsetWidth - 6;
+                ballVel.x *= -0.8;
+            }
+
+            if (ballPos.y < 6) {
+                ballPos.y = 6;
+                ballVel.y *= -0.8;
+            } else if (ballPos.y > button.offsetHeight - 6) {
+                ballPos.y = button.offsetHeight - 6;
+                ballVel.y *= -0.8;
+            }
+
+            checkGoal();
+            updateBallPosition();
+            requestAnimationFrame(updateGame);
+        }
+
+        button.addEventListener('mousemove', (e) => {
+            if (!isPlaying) return;
+
+            const rect = button.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+
+            // Calculate mouse velocity
+            const mouseVelX = mouseX - lastMousePos.x;
+            const mouseVelY = mouseY - lastMousePos.y;
+
+            // Calculate distance between ball and mouse
+            const dx = mouseX - ballPos.x;
+            const dy = mouseY - ballPos.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            // If mouse is close to ball, apply force
+            if (distance < 30) {
+                ballVel.x += mouseVelX * 0.2;
+                ballVel.y += mouseVelY * 0.2;
+            }
+
+            lastMousePos = { x: mouseX, y: mouseY };
+        });
+
+        button.addEventListener('mouseenter', () => {
+            isPlaying = true;
+            resetBall();
+            updateGame();
+            title.style.opacity = '1';
+            scoreDisplay.classList.remove('visible');
+        });
+
+        button.addEventListener('mouseleave', () => {
+            isPlaying = false;
+            scores = { left: 0, right: 0 };
+            title.style.opacity = '1';
+            title.textContent = originalTitleText;
+            scoreDisplay.classList.remove('visible');
+        });
+
+        // Initial setup
+        resetBall();
+
+        function updateGame() {
+            if (!isPlaying) return;
+
+            // Apply velocity
+            ballPos.x += ballVel.x;
+            ballPos.y += ballVel.y;
+
+            // Apply friction
+            ballVel.x *= 0.98;
+            ballVel.y *= 0.98;
+
+            // Boundary collision
+            if (ballPos.x < 6) {
+                ballPos.x = 6;
+                ballVel.x *= -0.8;
+            } else if (ballPos.x > button.offsetWidth - 6) {
+                ballPos.x = button.offsetWidth - 6;
+                ballVel.x *= -0.8;
+            }
+
+            if (ballPos.y < 6) {
+                ballPos.y = 6;
+                ballVel.y *= -0.8;
+            } else if (ballPos.y > button.offsetHeight - 6) {
+                ballPos.y = button.offsetHeight - 6;
+                ballVel.y *= -0.8;
+            }
+
+            checkGoal();
+            updateBallPosition();
+            requestAnimationFrame(updateGame);
+        }
+
+        button.addEventListener('mouseleave', () => {
+            isPlaying = false;
+            scores = { left: 0, right: 0 };
+            title.style.opacity = '1';
+            title.textContent = originalTitleText;
+            scoreDisplay.style.opacity = '0';
+            resetBall();
+        });
+    }
+
+    function createGoalParticles(x, y) {
+        const numParticles = 30;  // Increased number of particles
+        const colors = ['#ffffff', '#f0f0f0', '#ffff00', '#ffd700'];  // Added some gold colors
+        const field = document.querySelector('.football-field');
+        
+        for (let i = 0; i < numParticles; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'goal-particle';
+            particle.style.left = `${x}px`;
+            particle.style.top = `${y}px`;
+            particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            
+            // Calculate random direction with more spread
+            const angle = (i / numParticles) * Math.PI * 2;
+            const distance = 40 + Math.random() * 50;  // Increased distance
+            const finalX = Math.cos(angle) * distance;
+            const finalY = Math.sin(angle) * distance;
+            
+            // Randomize particle size
+            const size = 4 + Math.random() * 4;
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            
+            particle.style.setProperty('--final-pos', `translate(${finalX}px, ${finalY}px) rotate(${Math.random() * 360}deg)`);
+            particle.style.animation = 'goalParticle 0.8s ease-out forwards';  // Longer animation
+            
+            field.appendChild(particle);
+            
+            // Remove particle after animation
+            setTimeout(() => particle.remove(), 800);
+        }
+    }
+
+    function initFlickFrenzyButton() {
+        const button = document.querySelector('a[href="miniGames/flick/index.html"]');
+        const title = button.querySelector('.flick-frenzy-title');
+        const originalTitleText = title.textContent;
+
+        // Remove sand container if it exists
+        const sandContainer = button.querySelector('.sand-container');
+        if (sandContainer) {
+            sandContainer.remove();
+        }
+
+        // Create game container
+        const gameContainer = document.createElement('div');
+        gameContainer.className = 'game-container';
+        button.appendChild(gameContainer);
+
+        // Add score display
+        const scoreDisplay = document.createElement('div');
+        scoreDisplay.className = 'flick-score';
+        scoreDisplay.textContent = '0';
+        gameContainer.appendChild(scoreDisplay);
+
+        // Game state
+        let score = 0;
+        let isPlaying = false;
+        let targets = [];
+        let lastHoverTime = 0;
+        const maxTargets = 8;
+        let cursorTrails = [];
+        let lastCursorPos = { x: 0, y: 0 };
+        let isOverBadTarget = false;
+
+        function createParticles(x, y, isBad = false) {
+            const numParticles = 8;
+            
+            for (let i = 0; i < numParticles; i++) {
+                const particle = document.createElement('div');
+                particle.className = `flick-particle ${isBad ? 'bad' : ''}`;
+                particle.style.left = `${x}px`;
+                particle.style.top = `${y}px`;
+                
+                const angle = (i / numParticles) * Math.PI * 2;
+                const distance = 20 + Math.random() * 20;
+                const finalX = Math.cos(angle) * distance;
+                const finalY = Math.sin(angle) * distance;
+                
+                particle.style.setProperty('--final-pos', `translate(${finalX}px, ${finalY}px)`);
+                particle.style.animation = 'flickParticle 0.5s ease-out forwards';
+                
+                gameContainer.appendChild(particle);
+                
+                setTimeout(() => particle.remove(), 500);
+            }
+        }
+
+        function createCursorTrail(x, y) {
+            const trail = document.createElement('div');
+            trail.className = `flick-cursor-trail ${isOverBadTarget ? 'bad' : ''}`;
+            trail.style.left = `${x}px`;
+            trail.style.top = `${y}px`;
+            gameContainer.appendChild(trail);
+            
+            cursorTrails.push({
+                element: trail,
+                timeCreated: Date.now()
+            });
+
+            // Remove old trails if we have too many
+            if (cursorTrails.length > 20) {
+                const oldTrail = cursorTrails.shift();
+                oldTrail.element.classList.add('fade');
+                setTimeout(() => oldTrail.element.remove(), 300);
+            }
+
+            // Remove this trail after a delay
+            setTimeout(() => {
+                trail.classList.add('fade');
+                setTimeout(() => trail.remove(), 300);
+                cursorTrails = cursorTrails.filter(t => t.element !== trail);
+            }, 500);
+        }
+
+        function updateCursorTrail(e) {
+            if (!isPlaying) return;
+
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            // Only create new trail if mouse has moved enough
+            const dx = x - lastCursorPos.x;
+            const dy = y - lastCursorPos.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance > 5) {
+                createCursorTrail(x, y);
+                lastCursorPos = { x, y };
+            }
+        }
+
+        function createTarget(isGood = true) {
+            const target = document.createElement('div');
+            target.className = `flick-target ${isGood ? 'good' : 'bad'}`;
+            
+            const margin = 15;
+            const x = margin + Math.random() * (button.offsetWidth - 2 * margin);
+            const y = margin + Math.random() * (button.offsetHeight - 2 * margin);
+            
+            target.style.left = `${x}px`;
+            target.style.top = `${y}px`;
+            
+            target.addEventListener('mouseenter', () => {
+                isOverBadTarget = !isGood;
+                handleTargetHover(target, isGood);
+            });
+            
+            target.addEventListener('mouseleave', () => {
+                isOverBadTarget = false;
+            });
+            
+            gameContainer.appendChild(target);
+            targets.push(target);
+
+            if (targets.length > maxTargets) {
+                const oldTarget = targets.shift();
+                oldTarget.remove();
+            }
+        }
+
+        function handleTargetHover(target, isGood) {
+            if (!isPlaying) return;
+
+            const currentTime = Date.now();
+            const timeDiff = currentTime - lastHoverTime;
+            lastHoverTime = currentTime;
+
+            // Add appropriate hit animation class
+            target.classList.add(isGood ? 'hit' : 'hit-bad');
+
+            // Create particles at target location
+            createParticles(
+                parseFloat(target.style.left),
+                parseFloat(target.style.top),
+                !isGood
+            );
+
+            // Update score based on target type
+            if (isGood) {
+                score++;
+                scoreDisplay.textContent = score;
+            } else {
+                score = 0;
+                scoreDisplay.textContent = '0';
+                scoreDisplay.classList.add('score-flash');
+                setTimeout(() => scoreDisplay.classList.remove('score-flash'), 300);
+            }
+
+            scoreDisplay.style.opacity = '1';
+            title.style.opacity = '0';
+
+            // Remove this target from our tracking array
+            const index = targets.indexOf(target);
+            if (index > -1) {
+                targets.splice(index, 1);
+            }
+
+            // Create new targets
+            setTimeout(() => {
+                if (isPlaying) {
+                    createTarget(Math.random() > 0.3); // 70% chance of good target
+                    if (Math.random() > 0.7) { // 30% chance of extra target
+                        createTarget(Math.random() > 0.3);
+                    }
+                }
+            }, 200);
+        }
+
+        function spawnInitialTargets() {
+            // Clear existing targets
+            targets.forEach(target => target.remove());
+            targets = [];
+            
+            // Create initial set of targets
+            for (let i = 0; i < maxTargets; i++) {
+                createTarget(Math.random() > 0.3);
+            }
+        }
+
+        // Add event listeners
+        button.addEventListener('mousemove', updateCursorTrail);
+
+        button.addEventListener('mouseenter', () => {
+            isPlaying = true;
+            score = 0;
+            scoreDisplay.textContent = '0';
+            scoreDisplay.style.opacity = '1';
+            title.style.opacity = '0';
+            spawnInitialTargets();
+            isOverBadTarget = false;
+        });
+
+        button.addEventListener('mouseleave', () => {
+            isPlaying = false;
+            targets.forEach(target => target.remove());
+            targets = [];
+            cursorTrails.forEach(trail => {
+                trail.element.classList.add('fade');
+                setTimeout(() => trail.element.remove(), 300);
+            });
+            cursorTrails = [];
+            score = 0;
+            title.style.opacity = '1';
+            title.textContent = originalTitleText;
+            scoreDisplay.style.opacity = '0';
+            isOverBadTarget = false;
+        });
+    }
+
+    function initModernSnakeButton() {
+        const button = document.querySelector('a[href="miniGames/modernSnake/"]');
+        if (!button) return;
+
+        // Clear existing content
+        button.innerHTML = '<div class="snake-title">Modern Snake</div>';
+
+        let snake = [];
+        let food = [];
+        let isPlaying = false;
+        let score = 0;
+        const originalTitle = "Modern Snake";
+
+        function updateTitle() {
+            const title = button.querySelector('.snake-title');
+            if (score >= 100) {
+                title.textContent = "JUST CLICK IT TO PLAY";
+            } else if (score >= 50) {
+                title.textContent = "bro..";
+            } else if (score >= 20) {
+                title.textContent = "What abt playing real one?";
+            }
+        }
+
+        function createSnakeSegment(isHead = false) {
+            const segment = document.createElement('div');
+            segment.className = `snake-segment ${isHead ? 'snake-head' : 'snake-body'}`;
+            button.appendChild(segment);
+            return segment;
+        }
+
+        function createFood() {
+            const foodElement = document.createElement('div');
+            foodElement.className = 'snake-food';
+            const x = Math.random() * (button.offsetWidth - 10);
+            const y = Math.random() * (button.offsetHeight - 10);
+            foodElement.style.left = x + 'px';
+            foodElement.style.top = y + 'px';
+            button.appendChild(foodElement);
+            return { element: foodElement, x, y };
+        }
+
+        function makeSegmentsGlow() {
+            snake.forEach((segment, index) => {
+                if (index > 0) { // Skip head
+                    const computedStyle = window.getComputedStyle(segment.element);
+                    const currentColor = computedStyle.backgroundColor;
+                    segment.element.style.setProperty('--current-color', currentColor);
+                    segment.element.classList.add('glowing');
+                    setTimeout(() => {
+                        segment.element.classList.remove('glowing');
+                    }, 300);
+                }
+            });
+        }
+
+        function updateSnake(mouseX, mouseY) {
+            // Update head position to follow mouse exactly
+            if (snake.length === 0) {
+                snake.push({
+                    x: mouseX,
+                    y: mouseY,
+                    element: createSnakeSegment(true)
+                });
+            } else {
+                snake[0].x = mouseX;
+                snake[0].y = mouseY;
+                snake[0].element.style.left = (mouseX - 5) + 'px';
+                snake[0].element.style.top = (mouseY - 5) + 'px';
+            }
+
+            // Update body segments
+            for (let i = snake.length - 1; i >= 1; i--) {
+                const target = snake[i - 1];
+                const current = snake[i];
+                const dx = target.x - current.x;
+                const dy = target.y - current.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance > 10) {
+                    const ratio = 10 / distance;
+                    current.x += dx * ratio;
+                    current.y += dy * ratio;
+                    current.element.style.left = (current.x - 4) + 'px';
+                    current.element.style.top = (current.y - 4) + 'px';
+                }
+            }
+
+            // Check food collision
+            food.forEach((f, index) => {
+                const dx = f.x - mouseX;
+                const dy = f.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 10) {
+                    // Collect food
+                    f.element.remove();
+                    food.splice(index, 1);
+                    score++;
+                    updateTitle();
+                    
+                    // Add new segment
+                    const lastSegment = snake[snake.length - 1];
+                    snake.push({
+                        x: lastSegment.x,
+                        y: lastSegment.y,
+                        element: createSnakeSegment(false)
+                    });
+
+                    // Make segments glow
+                    makeSegmentsGlow();
+                }
+            });
+
+            // Spawn new food if needed
+            while (food.length < 5) {
+                food.push(createFood());
+            }
+        }
+
+        function handleMouseMove(e) {
+            if (!isPlaying) return;
+            const rect = button.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            updateSnake(mouseX, mouseY);
+        }
+
+        button.addEventListener('mouseenter', () => {
+            isPlaying = true;
+            // Clear any existing elements except title
+            const title = button.querySelector('.snake-title');
+            button.innerHTML = '';
+            button.appendChild(title);
+            snake = [];
+            food = [];
+            score = 0;
+            title.textContent = originalTitle;
+            // Create initial food
+            for (let i = 0; i < 5; i++) {
+                food.push(createFood());
+            }
+        });
+
+        button.addEventListener('mouseleave', () => {
+            isPlaying = false;
+            // Clear any existing elements except title
+            const title = button.querySelector('.snake-title');
+            button.innerHTML = '';
+            button.appendChild(title);
+            snake = [];
+            food = [];
+            score = 0;
+            title.textContent = originalTitle;
+        });
+
+        button.addEventListener('mousemove', handleMouseMove);
+    }
+
+    function initSketchbookButton() {
+        const button = document.querySelector('a[href="miniGames/sketchbook/index.html"]');
+        if (!button) return;
+
+        // Wrap each letter in a span for animation
+        const title = button.querySelector('.sketchbook-title');
+        const text = title.textContent;
+        title.textContent = '';
+        text.split('').forEach((char, i) => {
+            const span = document.createElement('span');
+            span.textContent = char;
+            span.style.animationDelay = `${i * 0.1}s`;
+            title.appendChild(span);
+        });
+
+        // Create background canvas for automatic drawing
+        const backgroundCanvas = document.createElement('div');
+        backgroundCanvas.className = 'background-canvas';
+        button.insertBefore(backgroundCanvas, button.firstChild);
+
+        const backgroundLines = [];
+        let isAnimating = true;
+
+        function createBackgroundLine(x1, y1, x2, y2) {
+            const line = document.createElement('div');
+            line.className = 'background-line';
+            
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            line.style.width = `${length}px`;
+            line.style.height = '2px';
+            line.style.left = `${x1}px`;
+            line.style.top = `${y1}px`;
+            line.style.transform = `rotate(${angle}rad)`;
+            line.style.transformOrigin = '0 50%';
+            
+            backgroundCanvas.appendChild(line);
+            backgroundLines.push(line);
+            
+            // Remove oldest line if too many
+            if (backgroundLines.length > 50) {
+                const oldLine = backgroundLines.shift();
+                oldLine.remove();
+            }
+        }
+
+        function animateBackground() {
+            if (!isAnimating) return;
+
+            const x1 = Math.random() * button.offsetWidth;
+            const y1 = Math.random() * button.offsetHeight;
+            const angle = Math.random() * Math.PI * 2;
+            const length = 20 + Math.random() * 40;
+            const x2 = x1 + Math.cos(angle) * length;
+            const y2 = y1 + Math.sin(angle) * length;
+
+            createBackgroundLine(x1, y1, x2, y2);
+            setTimeout(animateBackground, 200);
+        }
+
+        // Start background animation
+        animateBackground();
+
+        // Drawing functionality
+        const canvas = button.querySelector('.drawing-canvas');
+        let lastX = null;
+        let lastY = null;
+        const lines = [];
+
+        function createLine(x1, y1, x2, y2) {
+            const line = document.createElement('div');
+            line.className = 'drawing-line';
+            
+            const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+            const angle = Math.atan2(y2 - y1, x2 - x1);
+            
+            line.style.width = `${length}px`;
+            line.style.height = '2px';
+            line.style.left = `${x1}px`;
+            line.style.top = `${y1}px`;
+            line.style.transform = `rotate(${angle}rad)`;
+            line.style.transformOrigin = '0 50%';
+            
+            canvas.appendChild(line);
+            lines.push(line);
+            
+            // Remove oldest line if too many
+            if (lines.length > 100) {
+                const oldLine = lines.shift();
+                oldLine.remove();
+            }
+        }
+
+        button.addEventListener('mousemove', (e) => {
+            const rect = button.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            
+            if (lastX !== null && lastY !== null) {
+                createLine(lastX, lastY, x, y);
+            }
+            
+            lastX = x;
+            lastY = y;
+        });
+
+        button.addEventListener('mouseenter', (e) => {
+            const rect = button.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+        });
+
+        button.addEventListener('mouseleave', () => {
+            lastX = null;
+            lastY = null;
+            // Clear drawing lines but keep background animation
+            lines.forEach(line => line.remove());
+            lines.length = 0;
+        });
+    }
+
+    // Initialize all buttons when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        initRagdollingButton();
+        initDilemmasButton();
+        initSandboxButton();
+        initMazeRunnerButton();
+        initCircleFootballButton();
+        initFlickFrenzyButton();
+        initModernSnakeButton();
+        initSketchbookButton();
+    });
+    </script>
+
+    <script>
+    // Confetti and cursor tracking
+    let confettiEnabled = false;
+    const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+    let hoverCount = 41;
+    const blogToggle = document.querySelector('.blog-toggle');
+    const hoverCounter = document.querySelector('.hover-counter');
+
+    function createConfettiParticle(x, y) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = x + 'px';
+        confetti.style.top = y + 'px';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+        document.body.appendChild(confetti);
+
+        setTimeout(() => {
+            confetti.style.transition = 'all 0.5s ease';
+            confetti.style.opacity = '0';
+            confetti.style.transform = `translate(${(Math.random() - 0.5) * 50}px, ${Math.random() * 50}px) rotate(${Math.random() * 360}deg)`;
+            setTimeout(() => confetti.remove(), 500);
+        }, 50);
+    }
+
+    // Mouse move event for confetti
+    document.addEventListener('mousemove', (e) => {
+        if (!confettiEnabled) return;
+        createConfettiParticle(e.clientX, e.clientY);
+    });
+
+    // Blog toggle hover counter
+    blogToggle.addEventListener('mouseenter', (e) => {
+        if (hoverCount > 0) {
+            hoverCount--;
+            hoverCounter.textContent = hoverCount > 0 ? `Hover me ${hoverCount} times!` : 'You did it! Click me!';
+            hoverCounter.style.opacity = '1';
+            hoverCounter.style.visibility = 'visible';
+            
+            if (hoverCount === 0) {
+                confettiEnabled = true;
+                setTimeout(() => {
+                    confettiEnabled = false;
+                }, 60000); // Changed from 3000 to 60000 (1 minute)
+            }
+        }
+    });
+
+    blogToggle.addEventListener('mouseleave', () => {
+        setTimeout(() => {
+            if (!blogToggle.matches(':hover') && !hoverCounter.matches(':hover')) {
+                hoverCounter.style.opacity = '0';
+                hoverCounter.style.visibility = 'hidden';
+            }
+        }, 300);
+    });
+
+    function toggleBlog() {
+        if (hoverCount === 0) {
+            const blogSection = document.querySelector('.blog-section');
+            const blogContent = document.getElementById('blog-content');
+            const isHidden = blogContent.style.display === 'none';
+            
+            blogContent.style.display = isHidden ? 'block' : 'none';
+            blogSection.classList.toggle('visible', isHidden);
+            
+            if (isHidden) {
+                confettiEnabled = true;
+                setTimeout(() => {
+                    confettiEnabled = false;
+                }, 60000); // Changed from 3000 to 60000 (1 minute)
+                blogSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+    }
+
+    // Share functions
+    function shareOnTwitter() {
+        const url = encodeURIComponent(window.location.href);
+        const text = encodeURIComponent('Check out Kill My Time - A Collection of Free Online Games!');
+        window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank');
+    }
+
+    function shareOnFacebook() {
+        const url = encodeURIComponent(window.location.href);
+        window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank');
+    }
+
+    function shareOnReddit() {
+        const url = encodeURIComponent(window.location.href);
+        const title = encodeURIComponent('Check out Kill My Time - A Collection of Free Online Games!');
+        window.open(`https://www.reddit.com/submit?url=${url}&title=${title}`, '_blank');
+    }
+</script>
+
+    <div class="blog-section">
+        <div class="blog-header">
+            <h2>Gaming Tips & Updates</h2>
+            <p class="blog-subtitle">Expert strategies and latest updates for Kill My Time gaming platform</p>
+        </div>
+        <div id="blog-content" style="display: none;">
+            <article class="blog-post">
+                <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=500&q=80" 
+                     alt="Kill My Time Gaming Platform Updates - Free online browser games for casual gaming entertainment" 
+                     class="blog-image">
+                <h3>Latest Gaming Platform Updates</h3>
+                <p class="post-date">March 20, 2024</p>
+                <div class="blog-description">
+                    Welcome to Kill My Time, your ultimate destination for free online browser games! We're constantly improving our platform to provide you with the best casual gaming experience. Here are our latest updates:
+                </div>
+                <ul>
+                    <li>🎮 <strong>New Country Odyssey Expansion:</strong> Test your geography knowledge with our expanded quiz game. We've added new regions, improved flag recognition gameplay, and enhanced the learning experience with detailed country information.</li>
+                    <li>⚡ <strong>Enhanced 2048 Performance:</strong> Experience smoother animations and more responsive controls in our addictive number puzzle game. Perfect for quick gaming sessions during breaks!</li>
+                    <li>📱 <strong>Mobile Gaming Optimization:</strong> All our games are now fully optimized for mobile devices. Enjoy seamless touch controls and responsive design across all screen sizes.</li>
+                    <li>🏆 <strong>Achievement System Preview:</strong> Coming soon - track your progress, earn badges, and compete globally in our community leaderboards.</li>
+                </ul>
+                <div class="blog-tags">
+                    <span>#FreeOnlineGames</span>
+                    <span>#BrowserGames</span>
+                    <span>#KillMyTime</span>
+                    <span>#CasualGaming</span>
+                </div>
+            </article>
+            
+            <article class="blog-post">
+                <img src="https://images.unsplash.com/photo-1522152302542-71a8e5172aa1?w=500&q=80" 
+                     alt="2048 Game Strategy Guide - Free online puzzle game tips and tricks on Kill My Time platform" 
+                     class="blog-image">
+                <h3>2048 Puzzle Game: Complete Strategy Guide</h3>
+                <p class="post-date">March 20, 2024</p>
+                <div class="blog-description">
+                    2048 is an addictive puzzle game where you combine numbered tiles to reach the elusive 2048 tile. Perfect for puzzle enthusiasts and casual gamers alike, this free browser game challenges your strategic thinking and planning skills.
+                </div>
+                <h4>How to Play 2048:</h4>
+                <ol>
+                    <li>Use arrow keys or swipe to move all tiles on the grid</li>
+                    <li>When two tiles with the same number collide, they merge into one tile with the sum</li>
+                    <li>After each move, a new tile (2 or 4) appears randomly on the board</li>
+                    <li>Continue combining tiles until you reach 2048!</li>
+                </ol>
+                <h4>Advanced Strategies:</h4>
+                <ul>
+                    <li><strong>Corner Mastery Strategy:</strong> Keep your highest value tile in one corner (preferably bottom-right) to maintain organization and prevent tile lock</li>
+                    <li><strong>Snake Pattern Technique:</strong> Build numbers in a descending snake-like pattern, ensuring smooth combinations and preventing scattered tiles</li>
+                    <li><strong>Merge Optimization:</strong> Focus on combining smaller numbers first to create space for larger combinations</li>
+                    <li><strong>Strategic Planning:</strong> Always think several moves ahead and maintain a clear path to your corner tile</li>
+                </ul>
+                <div class="blog-tags">
+                    <span>#2048Game</span>
+                    <span>#PuzzleGames</span>
+                    <span>#BrainTeaser</span>
+                    <span>#FreeGames</span>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <img src="https://images.unsplash.com/photo-1473163928189-364b2c4e1135?w=500&q=80" 
+                     alt="Country Odyssey Geography Quiz Game - Learn world geography while playing on Kill My Time" 
+                     class="blog-image">
+                <h3>Country Odyssey: Ultimate Geography Quiz Guide</h3>
+                <p class="post-date">March 20, 2024</p>
+                <div class="blog-description">
+                    Country Odyssey is an educational geography quiz game that makes learning about countries and flags fun! Perfect for students, travelers, or anyone interested in world geography, this free online game combines entertainment with education.
+                </div>
+                <h4>Game Features:</h4>
+                <ul>
+                    <li>Interactive world map exploration</li>
+                    <li>Flag recognition challenges</li>
+                    <li>Capital city quizzes</li>
+                    <li>Regional focus modes</li>
+                </ul>
+                <h4>Expert Strategies:</h4>
+                <ul>
+                    <li><strong>Flag Recognition Mastery:</strong> Learn common patterns in flags - many countries use similar colors based on their region or historical connections</li>
+                    <li><strong>Geographic Strategy:</strong> Start with Europe's well-known flags, then progressively learn other regions</li>
+                    <li><strong>Visual Memory Tips:</strong> Associate flag designs with memorable features (e.g., Nordic crosses, pan-African colors)</li>
+                    <li><strong>Learning Progression:</strong> Use practice mode to learn systematically without pressure</li>
+                </ul>
+                <div class="blog-tags">
+                    <span>#GeographyGame</span>
+                    <span>#Educational</span>
+                    <span>#CountryFlags</span>
+                    <span>#LearnWhileGaming</span>
+                </div>
+            </article>
+
+            <article class="blog-post">
+                <img src="https://images.unsplash.com/photo-1585504198199-20277593b94f?w=500&q=80" 
+                     alt="Snake Game Strategy Guide - Classic arcade game tips on Kill My Time gaming platform" 
+                     class="blog-image">
+                <h3>Modern Snake Game: Complete Player's Guide</h3>
+                <p class="post-date">March 20, 2024</p>
+                <div class="blog-description">
+                    Experience the classic Snake game reimagined for modern browsers! Our version combines traditional gameplay with exciting new features, making it perfect for both nostalgic gamers and newcomers to this arcade classic.
+                </div>
+                <h4>How to Play:</h4>
+                <ol>
+                    <li>Control the snake using arrow keys or swipe gestures</li>
+                    <li>Collect food to grow longer and earn points</li>
+                    <li>Avoid hitting walls and your own tail</li>
+                    <li>Collect power-ups for special abilities</li>
+                </ol>
+                <h4>Pro Strategies:</h4>
+                <ul>
+                    <li><strong>Space Optimization:</strong> Keep close to the walls to maximize available movement area and prevent getting trapped</li>
+                    <li><strong>Strategic Planning:</strong> Always plan several moves ahead, considering your snake's length and available space</li>
+                    <li><strong>Speed Management:</strong> Use different speeds strategically - faster for open areas, slower for tight spaces</li>
+                    <li><strong>Power-up Mastery:</strong> Time your power-up usage for maximum effectiveness, especially in challenging situations</li>
+                </ul>
+                <div class="blog-tags">
+                    <span>#SnakeGame</span>
+                    <span>#ArcadeClassic</span>
+                    <span>#RetroGaming</span>
+                    <span>#FreeArcadeGames</span>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <style>
+        /* Blog styles */
+        .blog-section {
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .blog-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .blog-subtitle {
+            color: #666;
+            font-size: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .blog-post {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid #000000;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .blog-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .blog-post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .blog-tags {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .blog-tags span {
+            background: #f5f5f5;
+            color: #666;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.85rem;
+        }
+
+        .share-button.blog-toggle {
+            background: #f0f0f0;
+            border: none;
+            width: 40px;
+            border: 1px solid #000000;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: -10px;
+            position: relative;
+        }
+
+        .blog-toggle-container {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        .hover-counter {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%) translateY(0);
+            font-size: 0.85rem;
+            color: #d1d1d1a8;
+            white-space: nowrap;
+            background: rgba(20, 15, 15, 0.527);
+            padding: 4px 8px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .blog-toggle:hover + .hover-counter,
+        .blog-toggle:hover ~ .hover-counter,
+        .hover-counter:hover {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        
+    </style>
+
+    <script>
+    function toggleBlog() {
+        const blogSection = document.querySelector('.blog-section');
+        const blogContent = document.getElementById('blog-content');
+        const isHidden = blogContent.style.display === 'none';
+        
+        blogContent.style.display = isHidden ? 'block' : 'none';
+        blogSection.classList.toggle('visible', isHidden);
+        
+        // Smooth scroll to blog section if showing
+        if (isHidden) {
+            blogSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+    </script>
+
+    <script>
+        let hoverCount = 41;
+        const blogToggle = document.querySelector('.blog-toggle');
+        const hoverCounter = document.querySelector('.hover-counter');
+        
+        blogToggle.addEventListener('mouseenter', (e) => {
+            if (hoverCount > 0) {
+                hoverCount--;
+                hoverCounter.textContent = hoverCount > 0 ? `Hover me ${hoverCount} times!` : 'You did it! Click me!';
+                hoverCounter.style.opacity = '1';
+                hoverCounter.style.visibility = 'visible';
+                
+                if (hoverCount === 0) {
+                    confettiEnabled = true;
+                    setTimeout(() => {
+                        confettiEnabled = false;
+                    }, 60000); // Changed from 3000 to 60000 (1 minute)
+                }
+            }
+        });
+
+        blogToggle.addEventListener('mouseleave', () => {
+            setTimeout(() => {
+                if (!blogToggle.matches(':hover') && !hoverCounter.matches(':hover')) {
+                    hoverCounter.style.opacity = '0';
+                    hoverCounter.style.visibility = 'hidden';
+                }
+            }, 300);
+        });
+
+        function toggleBlog() {
+            if (hoverCount === 0) {
+                const blogSection = document.querySelector('.blog-section');
+                const blogContent = document.getElementById('blog-content');
+                const isHidden = blogContent.style.display === 'none';
+                
+                blogContent.style.display = isHidden ? 'block' : 'none';
+                blogSection.classList.toggle('visible', isHidden);
+                
+                if (isHidden) {
+                    confettiEnabled = true;
+                    setTimeout(() => {
+                        confettiEnabled = false;
+                    }, 60000); // Changed from 3000 to 60000 (1 minute)
+                    blogSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>

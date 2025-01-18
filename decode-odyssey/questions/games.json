@@ -1,0 +1,23 @@
+{
+    "minecraft": {
+        "emojis": "⛏️📦🌳",
+        "hint": "_ _ _ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#2E7D32",
+        "additionalHint": "Dig, build, and survive!"
+    },
+    "angrybirds": {
+        "emojis": "😠🐦🐷",
+        "hint": "_ _ _ _ _  _ _ _ _ _",
+        "time": 30,
+        "color": "#C62828",
+        "additionalHint": "Slingshot those feathered friends!"
+    },
+    "pacman": {
+        "emojis": "😮👻🟡",
+        "hint": "_ _ _ - _ _ _",
+        "time": 30,
+        "color": "#FFD600",
+        "additionalHint": "Waka waka waka..."
+    }
+} 

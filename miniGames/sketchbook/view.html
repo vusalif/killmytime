@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Animation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Pangolin&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Pangolin', cursive;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .animation-container {
+            margin: 20px 0;
+        }
+
+        .animation-container img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 4px;
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin: 20px 0;
+        }
+
+        .minimal-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Pangolin', cursive;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .minimal-button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Shared Animation</h1>
+        <div class="animation-container" id="animation-container">
+            Loading animation...
+        </div>
+        <a href="index.html" class="minimal-button">Create Your Own</a>
+    </div>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Function to display animation
+        function displayAnimation() {
+            const container = document.getElementById('animation-container');
+            const animationData = getUrlParameter('animation');
+
+            if (!animationData) {
+                container.innerHTML = '<p class="error-message">No animation data found.</p>';
+                return;
+            }
+
+            try {
+                const img = document.createElement('img');
+                img.src = animationData;
+                img.alt = 'Shared Animation';
+                img.onerror = () => {
+                    container.innerHTML = '<p class="error-message">Failed to load animation.</p>';
+                };
+                container.innerHTML = '';
+                container.appendChild(img);
+            } catch (error) {
+                console.error('Error displaying animation:', error);
+                container.innerHTML = '<p class="error-message">Failed to display animation.</p>';
+            }
+        }
+
+        // Display animation when page loads
+        displayAnimation();
+    </script>
+</body>
+</html> 

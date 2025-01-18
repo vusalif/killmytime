@@ -1,0 +1,44 @@
+{
+  "manchesterunited": {
+    "emojis": "👿🔴⚽",
+    "hint": "_ _ _ _ _ _ _ _ _ _  _ _ _ _ _ _",
+    "time": 30,
+    "color": "#C62828",
+    "additionalHint": "The Red Devils from Old Trafford"
+  },
+  "barcelona": {
+    "emojis": "🔵🔴🏰",
+    "hint": "_ _ _ _ _ _ _ _ _",
+    "time": 30,
+    "color": "#1565C0",
+    "additionalHint": "Més que un club"
+  },
+  "realmadrid": {
+    "emojis": "👑⚪️🏰",
+    "hint": "_ _ _ _  _ _ _ _ _ _",
+    "time": 30,
+    "color": "#303F9F",
+    "additionalHint": "Los Blancos"
+  },
+  "liverpool": {
+    "emojis": "🔴🦅⚽",
+    "hint": "_ _ _ _ _ _ _ _ _",
+    "time": 30,
+    "color": "#C62828",
+    "additionalHint": "You'll Never Walk Alone"
+  },
+  "chelsea": {
+    "emojis": "🔵👑🦁",
+    "hint": "_ _ _ _ _ _ _",
+    "time": 30,
+    "color": "#0D47A1",
+    "additionalHint": "The Pride of London"
+  },
+  "arsenal": {
+    "emojis": "🔴⚪️🔫",
+    "hint": "_ _ _ _ _ _ _",
+    "time": 30,
+    "color": "#C62828",
+    "additionalHint": "The Gunners from North London"
+  }
+} 

@@ -1,0 +1,44 @@
+{
+    "turkey": {
+        "emojis": "🌙⭐️🔴",
+        "hint": "_ _ _ _ _ _",
+        "time": 30,
+        "color": "#C62828",
+        "additionalHint": "Where Europe meets Asia"
+    },
+    "brazil": {
+        "emojis": "⚽️🌴💚",
+        "hint": "_ _ _ _ _ _",
+        "time": 30,
+        "color": "#1B5E20",
+        "additionalHint": "Home of Samba and Football"
+    },
+    "japan": {
+        "emojis": "🗻🍜⛩️",
+        "hint": "_ _ _ _ _",
+        "time": 30,
+        "color": "#D32F2F",
+        "additionalHint": "Land of the Rising Sun"
+    },
+    "france": {
+        "emojis": "🗼🥖🍷",
+        "hint": "_ _ _ _ _ _",
+        "time": 30,
+        "color": "#1565C0",
+        "additionalHint": "City of Love and Lights"
+    },
+    "egypt": {
+        "emojis": "🔺🐪🏺",
+        "hint": "_ _ _ _ _",
+        "time": 30,
+        "color": "#FFB300",
+        "additionalHint": "Land of Pyramids and Pharaohs"
+    },
+    "australia": {
+        "emojis": "🦘🐨🏖️",
+        "hint": "_ _ _ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#00897B",
+        "additionalHint": "Down Under"
+    }
+} 

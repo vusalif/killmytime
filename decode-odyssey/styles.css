@@ -1,0 +1,545 @@
+@font-face {
+    font-family: 'Instagram Sans';
+    src: url('./fonts/Instagram Sans.ttf') format('truetype');
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(circle at center, #171717 0%, #121212 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Instagram Sans', sans-serif;
+    overflow: hidden;
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.game-box {
+    position: relative;
+    background-color: #181818;
+    padding: 3rem;
+    border-radius: 20px;
+    text-align: center;
+    z-index: 1;
+    color: white;
+    min-width: 400px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    margin-bottom: 60px;
+}
+
+.timer {
+    font-size: 42px;
+    margin-bottom: 2rem;
+    font-weight: 300;
+}
+
+.emojis {
+    font-size: 48px;
+    margin-bottom: 2rem;
+    letter-spacing: 10px;
+}
+
+.answer-display {
+    font-size: 32px;
+    margin-bottom: 2rem;
+    letter-spacing: 8px;
+    color: #474747;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    font-family: 'Instagram Sans', sans-serif;
+    gap: 10px;
+    margin-bottom: 1rem;
+}
+
+#guess-input {
+    flex: 1;
+    padding: 1rem;
+    border-radius: 10px;
+    border: none;
+    font-family: 'Instagram Sans', sans-serif;
+    font-size: 24px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    letter-spacing: 8px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+.submit-arrow {
+    background: none;
+    border: none;
+    color: #474747;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.submit-arrow:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+button {
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    background-color: #4CAF50;
+    color: rgb(255, 255, 255);
+    font-family: 'Instagram Sans', sans-serif;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    transform: translateY(1px);
+}
+
+.circle-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background-color: #4CAF50;
+    opacity: 0.1;
+    filter: blur(50px);
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    animation: floatAnimation 20s infinite linear;
+    transition: background-color 0.5s ease;
+}
+
+/* Add animation keyframes */
+@keyframes floatAnimation {
+    0% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(100px, 100px) rotate(90deg);
+    }
+    50% {
+        transform: translate(0, 200px) rotate(180deg);
+    }
+    75% {
+        transform: translate(-100px, 100px) rotate(270deg);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg);
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2;
+}
+
+.modal-content {
+    background-color: rgba(0, 0, 0, 0.9);
+    padding: 3rem;
+    border-radius: 20px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    min-width: 300px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+}
+
+.modal-content h2 {
+    font-size: 28px;
+    margin-bottom: 2rem;
+}
+
+.modal-buttons {
+    margin-top: 1rem;
+}
+
+.modal-buttons button {
+    margin: 0 1rem;
+    min-width: 100px;
+}
+
+#yesBtn {
+    background-color: #4CAF50;
+}
+
+#noBtn {
+    background-color: #f44336;
+}
+
+/* Add styles for the control buttons container */
+.control-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 44px;
+    min-height: 44px;
+}
+
+.control-button i { /* Icon styles */
+    font-size: 18px;
+    margin: 0;
+}
+
+.control-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Add question counter styles */
+.question-counter {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin-bottom: 1rem;
+    margin-top: -1rem;
+}
+
+/* Add these new styles */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+    position: relative;
+    left: 100px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    position: relative;
+    left: 100px;
+}
+
+.stat-label2 {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-value2 {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+}
+
+.primary-button {
+    background: linear-gradient(45deg, #247226, #1b661f);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.primary-button:hover {
+    transform: translateY(2px);
+    box-shadow: 0 5px 15px rgba(76, 175, 79, 0.137);
+}
+
+/* Update modal animation */
+.modal {
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.modal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-content {
+    transform: scale(0.7);
+    transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: scale(1);
+}
+
+.game-complete {
+    display: none; /* Initially hidden */
+}
+
+.game-complete.show {
+    display: block;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.game-complete h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+} 
+
+.button-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+.pause-screen,
+.surrender-screen {
+    display: none;
+    text-align: center;
+}
+
+.pause-screen.show,
+.surrender-screen.show {
+    display: block;
+    animation: fadeIn 0.5s ease forwards;
+}
+
+.pause-screen h2,
+.surrender-screen h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.answer-reveal {
+    font-size: 24px;
+    margin: 30px 0;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.answer-reveal span {
+    color: white;
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    font-size: 32px;
+}
+
+.control-button {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px 24px;
+    border-radius: 15px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-button:hover {
+    background: rgba(167, 167, 167, 0.226);
+    transform: translateY(1px);
+    box-shadow: 0 2px 15px rgba(255, 240, 240, 0.137);
+}
+
+/* Add these notification styles */
+.game-notification {
+    position: absolute;
+    left: 50%;
+    bottom: -60px;
+    transform: translateX(-50%);
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 16px;
+    opacity: 0;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.game-notification.show {
+    opacity: 1;
+    bottom: -40px;
+}
+
+.game-notification.success {
+    background: rgba(76, 175, 80, 0.2);
+    color: #4CAF50;
+    border: 1px solid #4CAF50;
+}
+
+.game-notification.error {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    border: 1px solid #f44336;
+} 
+
+.hint-text {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.377);
+    margin: 15px 0;
+    min-height: 24px;
+    font-style: normal;
+}
+
+.hint-button {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.hint-button.used {
+    opacity: 0.5;
+    cursor: not-allowed;
+} 
+
+.stats-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 1rem;
+    margin-top: -1rem;
+    position: relative;
+}
+
+.question-counter,
+.score-display {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+}
+
+.detailed-stats {
+    margin: 20px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+}
+
+.detailed-stats p {
+    margin: 8px 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 16px;
+} 
+
+.control-button i {
+    font-size: 18px;
+    margin-right: 18px;
+    text-align: center;
+    position: relative;
+    left: 10px;
+    opacity: 0.8;
+}
+
+.submit-arrow i {
+    font-size: 20px;
+}
+
+/* Update existing button styles */
+.control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+}
+
+.submit-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: none;
+    border: none;
+    color: #474747;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+}
+
+.submit-arrow:hover {
+    color: white;
+    transform: translateX(5px);
+}
+
+.submit-arrow i {
+    font-size: 20px;
+} 
+
+.submit-arrow:disabled {
+    pointer-events: none;
+}
+
+.submit-arrow i {
+    transition: opacity 0.3s ease;
+} 

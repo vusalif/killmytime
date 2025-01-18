@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor Maze</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <a href="/index.html" class="corner-link">killmytime</a>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            font-family: 'Inter', sans-serif;
+            justify-content: center;
+            font-weight: 100;
+            align-items: center;
+            min-height: 100vh;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+        #gameCanvas {
+            border: 2px solid #333;
+            background: #000;
+        }
+        #gameUI {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 20px;
+        }
+        h1{
+            font-weight: 100;
+        }
+        #gameOver, #startScreen, #nameInput {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 48px;
+            text-align: center;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #333;
+        }
+        #gameOver, #nameInput {
+            display: none;
+        }
+        .corner-link {
+            position: fixed;
+            top: 920px;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: 100;
+            font-family: 'Inter', sans-serif;
+            text-decoration: none;
+            color: #c7c4c4;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .corner-link:hover {
+            transform: scale(1.1);
+            color: #9c9c9c;
+        }
+        .button {
+            padding: 15px 30px;
+            font-size: 24px;
+            background: #4CAF50;
+            color: white;
+            font-weight: 100;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.3s;
+        }
+        .button:hover {
+            background: #45a049;
+        }
+        #playerName {
+            padding: 10px;
+            font-size: 20px;
+            margin: 10px 0;
+            width: 200px;
+            text-align: center;
+            border-radius: 5px;
+            border: none;
+        }
+        #leaderboard {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            max-height: 80vh;
+            overflow-y: auto;
+            min-width: 300px;
+        }
+        .leaderboard-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .tab {
+            padding: 5px 15px;
+            background: #333;
+            border: none;
+            font-weight: 100;
+            color: white;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .tab.active {
+            background: #4CAF50;
+        }
+        .leaderboard-entry {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid #333;
+        }
+        .leaderboard-entry span {
+            margin: 0 10px;
+        }
+        #welcomeBack {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4CAF50;
+            font-size: 18px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="welcomeBack">Welcome back, <span id="savedPlayerName"></span>!</div>
+    <div id="gameUI">
+        <div>Score: <span id="score">0</span></div>
+        <div>Time: <span id="time">0</span>s</div>
+    </div>
+    <div id="nameInput">
+        <h2>Enter Your Name</h2>
+        <input type="text" id="playerName" placeholder="Your Name" maxlength="20">
+        <button id="submitName" class="button">Start Game</button>
+    </div>
+    <div id="startScreen">
+        <h1>Cursor Maze</h1>
+        <button id="startGameButton" class="button">Start Game</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div id="gameOver">
+        Game Over!<br>
+        Final Score: <span id="finalScore">0</span><br>
+        <button id="startButton" class="button">Play Again</button>
+    </div>
+    <div id="leaderboard">
+        <h2>Leaderboard</h2>
+        <div class="leaderboard-tabs">
+            <button class="tab active" data-tab="global">Global</button>
+            <button class="tab" data-tab="country">Your Country</button>
+        </div>
+        <div id="leaderboardContent"></div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>

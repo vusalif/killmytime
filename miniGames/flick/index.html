@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flick Frenzy</title>
+    <a href="/index.html" class="corner-link">killmytime</a>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: Inter, sans-serif;
+            min-height: 100vh;
+            background: #1a1a1a;
+        }
+        #gameCanvas {
+            border: 2px solid #333;
+            background: #222;
+        }
+        #gameInfo {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+        }
+        #powerUps {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            text-align: right;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+        }
+        .power-up {
+            position: relative;
+            margin: 10px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .power-up:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .power-up:hover .tooltip {
+            visibility: visible;
+            opacity: 1;
+        }
+        .corner-link {
+            position: fixed;
+            top: 800px;
+            left: 915px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #d6d6d6;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        .corner-link:hover {
+            transform: scale(1.3);
+            color: #2cb327;
+            text-shadow: 0 0 10px #32b916;
+        }
+        .tooltip {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.9);
+            border-radius: 4px;
+            width: 200px;
+            font-size: 12px;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            text-align: left;
+            margin-bottom: 5px;
+            white-space: pre-line;
+        }
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: rgba(0, 0, 0, 0.9) transparent transparent transparent;
+        }
+        .power-up.active {
+            background: #4CAF50;
+        }
+        h3 {
+            text-align: center;
+        }
+        .power-up.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .power-up-price {
+            margin-left: 10px;
+            color: #FFD700;
+        }
+        #combo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #FF4081;
+            font-size: 48px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        #gameOver {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px 40px;
+            border-radius: 10px;
+        }
+        #restartButton {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        #restartButton:hover {
+            background: #45a049;
+        }
+        #gameTimer {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 72px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .power-up-info {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        .power-up-level {
+            font-size: 12px;
+            color: #8BC34A;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameInfo">
+        <h2>Score: <span id="score">0</span></h2>
+        <h3>Flicks Left: <span id="flicks">5</span></h3>
+        <h3>Multiplier: x<span id="multiplier">1</span></h3>
+    </div>
+    <div id="powerUps">
+        <h3>Shop</h3>
+        <div class="power-up" id="guidedFlick">
+            <span>Guided Flick</span>
+            <div class="power-up-info">
+                <span class="power-up-price">300</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Effects per level:
+- Trajectory line gets longer (+5 points)
+- Number of uses increases (+1 use every 5 levels)
+- Duration increases (+2s per level)</div>
+        </div>
+        <div class="power-up" id="explosiveFlick">
+            <span>Explosive Flick</span>
+            <div class="power-up-info">
+                <span class="power-up-price">500</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Effects per level:
+- Explosion radius increases (+20 radius)
+- After level 10: +1 explosive flick per purchase
+- More powerful explosion force</div>
+        </div>
+        <div class="power-up" id="slowTime">
+            <span>Slow Time</span>
+            <div class="power-up-info">
+                <span class="power-up-price">400</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Effects per level:
+- Duration increases (+1 second)
+- Time slows down more
+- Easier to aim and hit targets</div>
+        </div>
+        <div class="power-up" id="multiFlick">
+            <span>Multi Flick</span>
+            <div class="power-up-info">
+                <span class="power-up-price">600</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Effects per level:
+- More projectiles (+1 every 2 levels)
+- Wider spread (+0.5 spread)
+- Better coverage area</div>
+        </div>
+        <div class="power-up" id="gun">
+            <span>Gun</span>
+            <div class="power-up-info">
+                <span class="power-up-price">5000</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Effects per level:
+- More flicks (+20 per level)
+- Price increases by 2000 per level
+- Follows cursor movement</div>
+        </div>
+        <div class="power-up" id="flickZone">
+            <span>Flick Zone</span>
+            <div class="power-up-info">
+                <span class="power-up-price">800</span>
+                <span class="power-up-level">Level 0</span>
+            </div>
+            <div class="tooltip">Place zones that flick balls
+- Click to place a zone after purchase
+- Lasts for 15 seconds
+- Level increases duration (+5s per level)
+- Stronger flick force per level</div>
+        </div>
+        <div class="power-up" id="buyFlicks">
+            <span>Buy 10 Flicks</span>
+            <div class="power-up-info">
+                <span class="power-up-price">1000</span>
+            </div>
+            <div class="tooltip">Get 10 more flicks to continue playing
+Price stays constant</div>
+        </div>
+    </div>
+    <div id="combo">COMBO x2!</div>
+    <div id="gameTimer">5</div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div id="gameOver">
+        <h1>Game Over!</h1>
+        <h2>Final Score: <span id="finalScore">0</span></h2>
+        <h3>Highest Combo: x<span id="highestCombo">1</span></h3>
+        <button id="restartButton">Play Again</button>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html> 
+</html> 

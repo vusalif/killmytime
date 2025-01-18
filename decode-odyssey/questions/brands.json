@@ -1,0 +1,23 @@
+{
+    "apple": {
+        "emojis": "🍎💻📱",
+        "hint": "_ _ _ _ _",
+        "time": 30,
+        "color": "#424242",
+        "additionalHint": "Think Different"
+    },
+    "nike": {
+        "emojis": "✔️👟🏃",
+        "hint": "_ _ _ _",
+        "time": 30,
+        "color": "#000000",
+        "additionalHint": "Just Do It"
+    },
+    "mcdonalds": {
+        "emojis": "🍔🍟M",
+        "hint": "_ _ _ _ _ _ _ _ _",
+        "time": 30,
+        "color": "#FFD600",
+        "additionalHint": "I'm lovin' it"
+    }
+} 

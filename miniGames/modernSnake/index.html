@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Snake</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Geo&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <a href="/index.html" class="corner-link">killmytime</a>
+    <script>
+        const supabaseUrl = 'https://dvijohdoaatticeimjxu.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2aWpvaGRvYWF0dGljZWltanh1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NjU3NzYsImV4cCI6MjA1MDU0MTc3Nn0.x45HY9ONbAtWFR2UuobkoKDcABgG834Nd-ay9tBInic';
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Geo', sans-serif;
+        }
+        canvas {
+            display: block;
+            width: 100vw;
+            height: 100vh;
+        }
+        #score {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 36px;
+            z-index: 100;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            letter-spacing: 2px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        #leaderboard {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 24px;
+            z-index: 100;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            text-align: right;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 350px;
+        }
+        #leaderboard h2 {
+            margin-bottom: 5px;
+            font-size: 28px;
+            color: #ffff00;
+        }
+        .leaderboard-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 5px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+        }
+        .sort-button {
+            background: none;
+            border: none;
+            color: white;
+            font-family: 'Geo', sans-serif;
+            font-size: 16px;
+            margin: 0;
+            padding: 5px 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .sort-button.active {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            color: #ffff00;
+        }
+        .sort-button:hover {
+            color: #ffff00;
+            transform: scale(1.05);
+        }
+        .leaderboard-entry {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        .leaderboard-entry:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 18px;
+        }
+        .country-flag {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px;
+        }
+        .player-score {
+            color: #ffff00;
+            font-weight: bold;
+            font-size: 20px;
+        }
+        #gameOver {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            z-index: 200;
+            color: white;
+            min-width: 350px;
+        }
+        #gameOver h2 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #ff0000;
+        }
+        #playerInfo {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            z-index: 200;
+            color: white;
+            min-width: 350px;
+        }
+        #playerInfo h2 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ffff00;
+        }
+        input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            margin: 10px 0;
+            color: white;
+            font-family: 'Geo', sans-serif;
+            font-size: 20px;
+            width: 100%;
+            border-radius: 5px;
+        }
+        button {
+            background: #ffff00;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            margin-top: 15px;
+            font-family: 'Geo', sans-serif;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            background: #ffffff;
+            transform: scale(1.05);
+        }
+        .country-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 2px;
+        }
+        .player-count {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .corner-link {
+            position: fixed;
+            top: 60px;
+            left: 22px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            font-family: 'Geo', sans-serif;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .corner-link:hover {
+            transform: scale(1.1);
+            color: #ffc400;
+        }
+    </style>
+</head>
+<body>
+    <div id="score">SCORE: 0</div>
+    <div id="leaderboard">
+        <h2>TOP SCORES</h2>
+        <div class="leaderboard-controls">
+            <button class="sort-button active" onclick="setSortType('score')">Global</button>
+            <button class="sort-button" onclick="setSortType('country')">By Country</button>
+        </div>
+        <div id="leaderboard-entries"></div>
+    </div>
+    <div id="playerInfo">
+        <h2>WELCOME TO SNAKE</h2>
+        <p>Enter your name to start:</p>
+        <input type="text" id="initialPlayerName" placeholder="Enter your name" maxlength="20">
+        <p style="margin-top: 15px; margin-bottom: 5px;">Select your country for leaderboard:</p>
+        <p style="font-size: 14px; color: rgba(255, 255, 255, 0.6); margin-bottom: 10px;">
+            (This helps organize the country rankings)
+        </p>
+        <select id="countrySelect" style="
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            margin: 10px 0;
+            color: white;
+            font-family: 'Geo', sans-serif;
+            font-size: 20px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            outline: none;
+        ">
+            <option value="" disabled selected style="background: black; color: rgba(255, 255, 255, 0.5);">
+                -- Select Your Country --
+            </option>
+            <option value="AF" style="background: black; color: white;">Afghanistan</option>
+            <option value="AL" style="background: black; color: white;">Albania</option>
+            <option value="DZ" style="background: black; color: white;">Algeria</option>
+            <option value="AD" style="background: black; color: white;">Andorra</option>
+            <option value="AO" style="background: black; color: white;">Angola</option>
+            <option value="AG" style="background: black; color: white;">Antigua and Barbuda</option>
+            <option value="AR" style="background: black; color: white;">Argentina</option>
+            <option value="AM" style="background: black; color: white;">Armenia</option>
+            <option value="AU" style="background: black; color: white;">Australia</option>
+            <option value="AT" style="background: black; color: white;">Austria</option>
+            <option value="AZ" style="background: black; color: white;">Azerbaijan</option>
+            <option value="BS" style="background: black; color: white;">Bahamas</option>
+            <option value="BH" style="background: black; color: white;">Bahrain</option>
+            <option value="BD" style="background: black; color: white;">Bangladesh</option>
+            <option value="BB" style="background: black; color: white;">Barbados</option>
+            <option value="BY" style="background: black; color: white;">Belarus</option>
+            <option value="BE" style="background: black; color: white;">Belgium</option>
+            <option value="BZ" style="background: black; color: white;">Belize</option>
+            <option value="BJ" style="background: black; color: white;">Benin</option>
+            <option value="BT" style="background: black; color: white;">Bhutan</option>
+            <option value="BO" style="background: black; color: white;">Bolivia</option>
+            <option value="BA" style="background: black; color: white;">Bosnia and Herzegovina</option>
+            <option value="BW" style="background: black; color: white;">Botswana</option>
+            <option value="BR" style="background: black; color: white;">Brazil</option>
+            <option value="BN" style="background: black; color: white;">Brunei</option>
+            <option value="BG" style="background: black; color: white;">Bulgaria</option>
+            <option value="BF" style="background: black; color: white;">Burkina Faso</option>
+            <option value="BI" style="background: black; color: white;">Burundi</option>
+            <option value="CV" style="background: black; color: white;">Cabo Verde</option>
+            <option value="KH" style="background: black; color: white;">Cambodia</option>
+            <option value="CM" style="background: black; color: white;">Cameroon</option>
+            <option value="CA" style="background: black; color: white;">Canada</option>
+            <option value="CF" style="background: black; color: white;">Central African Republic</option>
+            <option value="TD" style="background: black; color: white;">Chad</option>
+            <option value="CL" style="background: black; color: white;">Chile</option>
+            <option value="CN" style="background: black; color: white;">China</option>
+            <option value="CO" style="background: black; color: white;">Colombia</option>
+            <option value="KM" style="background: black; color: white;">Comoros</option>
+            <option value="CG" style="background: black; color: white;">Congo (Brazzaville)</option>
+            <option value="CD" style="background: black; color: white;">Congo (Kinshasa)</option>
+            <option value="CR" style="background: black; color: white;">Costa Rica</option>
+            <option value="CI" style="background: black; color: white;">Côte d’Ivoire</option>
+            <option value="HR" style="background: black; color: white;">Croatia</option>
+            <option value="CU" style="background: black; color: white;">Cuba</option>
+            <option value="CY" style="background: black; color: white;">Cyprus</option>
+            <option value="CZ" style="background: black; color: white;">Czech Republic</option>
+            <option value="DK" style="background: black; color: white;">Denmark</option>
+            <option value="DJ" style="background: black; color: white;">Djibouti</option>
+            <option value="DM" style="background: black; color: white;">Dominica</option>
+            <option value="DO" style="background: black; color: white;">Dominican Republic</option>
+            <option value="EC" style="background: black; color: white;">Ecuador</option>
+            <option value="EG" style="background: black; color: white;">Egypt</option>
+            <option value="SV" style="background: black; color: white;">El Salvador</option>
+            <option value="GQ" style="background: black; color: white;">Equatorial Guinea</option>
+            <option value="ER" style="background: black; color: white;">Eritrea</option>
+            <option value="EE" style="background: black; color: white;">Estonia</option>
+            <option value="SZ" style="background: black; color: white;">Eswatini</option>
+            <option value="ET" style="background: black; color: white;">Ethiopia</option>
+            <option value="FJ" style="background: black; color: white;">Fiji</option>
+            <option value="FI" style="background: black; color: white;">Finland</option>
+            <option value="FR" style="background: black; color: white;">France</option>
+            <option value="GA" style="background: black; color: white;">Gabon</option>
+            <option value="GM" style="background: black; color: white;">Gambia</option>
+            <option value="GE" style="background: black; color: white;">Georgia</option>
+            <option value="DE" style="background: black; color: white;">Germany</option>
+            <option value="GH" style="background: black; color: white;">Ghana</option>
+            <option value="GR" style="background: black; color: white;">Greece</option>
+            <option value="GD" style="background: black; color: white;">Grenada</option>
+            <option value="GT" style="background: black; color: white;">Guatemala</option>
+            <option value="GN" style="background: black; color: white;">Guinea</option>
+            <option value="GW" style="background: black; color: white;">Guinea-Bissau</option>
+            <option value="GY" style="background: black; color: white;">Guyana</option>
+            <option value="HT" style="background: black; color: white;">Haiti</option>
+            <option value="HN" style="background: black; color: white;">Honduras</option>
+            <option value="HU" style="background: black; color: white;">Hungary</option>
+            <option value="IS" style="background: black; color: white;">Iceland</option>
+            <option value="IN" style="background: black; color: white;">India</option>
+            <option value="ID" style="background: black; color: white;">Indonesia</option>
+            <option value="IR" style="background: black; color: white;">Iran</option>
+            <option value="IQ" style="background: black; color: white;">Iraq</option>
+            <option value="IE" style="background: black; color: white;">Ireland</option>
+            <option value="IL" style="background: black; color: white;">Israel</option>
+            <option value="IT" style="background: black; color: white;">Italy</option>
+            <option value="JM" style="background: black; color: white;">Jamaica</option>
+<option value="JP" style="background: black; color: white;">Japan</option>
+<option value="JO" style="background: black; color: white;">Jordan</option>
+<option value="KZ" style="background: black; color: white;">Kazakhstan</option>
+<option value="KE" style="background: black; color: white;">Kenya</option>
+<option value="KI" style="background: black; color: white;">Kiribati</option>
+<option value="KP" style="background: black; color: white;">Korea (North)</option>
+<option value="KR" style="background: black; color: white;">Korea (South)</option>
+<option value="KW" style="background: black; color: white;">Kuwait</option>
+<option value="KG" style="background: black; color: white;">Kyrgyzstan</option>
+<option value="LA" style="background: black; color: white;">Laos</option>
+<option value="LV" style="background: black; color: white;">Latvia</option>
+<option value="LB" style="background: black; color: white;">Lebanon</option>
+<option value="LS" style="background: black; color: white;">Lesotho</option>
+<option value="LR" style="background: black; color: white;">Liberia</option>
+<option value="LY" style="background: black; color: white;">Libya</option>
+<option value="LI" style="background: black; color: white;">Liechtenstein</option>
+<option value="LT" style="background: black; color: white;">Lithuania</option>
+<option value="LU" style="background: black; color: white;">Luxembourg</option>
+<option value="MG" style="background: black; color: white;">Madagascar</option>
+<option value="MW" style="background: black; color: white;">Malawi</option>
+<option value="MY" style="background: black; color: white;">Malaysia</option>
+<option value="MV" style="background: black; color: white;">Maldives</option>
+<option value="ML" style="background: black; color: white;">Mali</option>
+<option value="MT" style="background: black; color: white;">Malta</option>
+<option value="MH" style="background: black; color: white;">Marshall Islands</option>
+<option value="MR" style="background: black; color: white;">Mauritania</option>
+<option value="MU" style="background: black; color: white;">Mauritius</option>
+<option value="MX" style="background: black; color: white;">Mexico</option>
+<option value="FM" style="background: black; color: white;">Micronesia</option>
+<option value="MD" style="background: black; color: white;">Moldova</option>
+<option value="MC" style="background: black; color: white;">Monaco</option>
+<option value="MN" style="background: black; color: white;">Mongolia</option>
+<option value="ME" style="background: black; color: white;">Montenegro</option>
+<option value="MA" style="background: black; color: white;">Morocco</option>
+<option value="MZ" style="background: black; color: white;">Mozambique</option>
+<option value="MM" style="background: black; color: white;">Myanmar</option>
+<option value="NA" style="background: black; color: white;">Namibia</option>
+<option value="NR" style="background: black; color: white;">Nauru</option>
+<option value="NP" style="background: black; color: white;">Nepal</option>
+<option value="NL" style="background: black; color: white;">Netherlands</option>
+<option value="NZ" style="background: black; color: white;">New Zealand</option>
+<option value="NI" style="background: black; color: white;">Nicaragua</option>
+<option value="NE" style="background: black; color: white;">Niger</option>
+<option value="NG" style="background: black; color: white;">Nigeria</option>
+<option value="NO" style="background: black; color: white;">Norway</option>
+<option value="OM" style="background: black; color: white;">Oman</option>
+<option value="PK" style="background: black; color: white;">Pakistan</option>
+<option value="PW" style="background: black; color: white;">Palau</option>
+<option value="PS" style="background: black; color: white;">Palestine</option>
+<option value="PA" style="background: black; color: white;">Panama</option>
+<option value="PG" style="background: black; color: white;">Papua New Guinea</option>
+<option value="PY" style="background: black; color: white;">Paraguay</option>
+<option value="PE" style="background: black; color: white;">Peru</option>
+<option value="PH" style="background: black; color: white;">Philippines</option>
+<option value="PL" style="background: black; color: white;">Poland</option>
+<option value="PT" style="background: black; color: white;">Portugal</option>
+<option value="QA" style="background: black; color: white;">Qatar</option>
+<option value="RO" style="background: black; color: white;">Romania</option>
+<option value="RU" style="background: black; color: white;">Russia</option>
+<option value="RW" style="background: black; color: white;">Rwanda</option>
+<option value="KN" style="background: black; color: white;">Saint Kitts and Nevis</option>
+<option value="LC" style="background: black; color: white;">Saint Lucia</option>
+<option value="VC" style="background: black; color: white;">Saint Vincent and the Grenadines</option>
+<option value="WS" style="background: black; color: white;">Samoa</option>
+<option value="SM" style="background: black; color: white;">San Marino</option>
+<option value="ST" style="background: black; color: white;">São Tomé and Príncipe</option>
+<option value="SA" style="background: black; color: white;">Saudi Arabia</option>
+<option value="SN" style="background: black; color: white;">Senegal</option>
+<option value="RS" style="background: black; color: white;">Serbia</option>
+<option value="SC" style="background: black; color: white;">Seychelles</option>
+<option value="SL" style="background: black; color: white;">Sierra Leone</option>
+<option value="SG" style="background: black; color: white;">Singapore</option>
+<option value="SK" style="background: black; color: white;">Slovakia</option>
+<option value="SI" style="background: black; color: white;">Slovenia</option>
+<option value="SB" style="background: black; color: white;">Solomon Islands</option>
+<option value="SO" style="background: black; color: white;">Somalia</option>
+<option value="ZA" style="background: black; color: white;">South Africa</option>
+<option value="SS" style="background: black; color: white;">South Sudan</option>
+<option value="ES" style="background: black; color: white;">Spain</option>
+<option value="LK" style="background: black; color: white;">Sri Lanka</option>
+<option value="SD" style="background: black; color: white;">Sudan</option>
+<option value="SR" style="background: black; color: white;">Suriname</option>
+<option value="SE" style="background: black; color: white;">Sweden</option>
+<option value="CH" style="background: black; color: white;">Switzerland</option>
+<option value="SY" style="background: black; color: white;">Syria</option>
+<option value="TJ" style="background: black; color: white;">Tajikistan</option>
+<option value="TZ" style="background: black; color: white;">Tanzania</option>
+<option value="TH" style="background: black; color: white;">Thailand</option>
+<option value="TL" style="background: black; color: white;">Timor-Leste</option>
+<option value="TG" style="background: black; color: white;">Togo</option>
+<option value="TO" style="background: black; color: white;">Tonga</option>
+<option value="TT" style="background: black; color: white;">Trinidad and Tobago</option>
+<option value="TN" style="background: black; color: white;">Tunisia</option>
+<option value="TR" style="background: black; color: white;">Turkey</option>
+<option value="TM" style="background: black; color: white;">Turkmenistan</option>
+<option value="TV" style="background: black; color: white;">Tuvalu</option>
+<option value="UG" style="background: black; color: white;">Uganda</option>
+<option value="UA" style="background: black; color: white;">Ukraine</option>
+<option value="AE" style="background: black; color: white;">United Arab Emirates</option>
+<option value="AE" style="background: black; color: white;">United Arab Emirates</option>
+<option value="GB" style="background: black; color: white;">United Kingdom</option>
+<option value="US" style="background: black; color: white;">United States</option>
+<option value="UY" style="background: black; color: white;">Uruguay</option>
+<option value="UZ" style="background: black; color: white;">Uzbekistan</option>
+<option value="VU" style="background: black; color: white;">Vanuatu</option>
+<option value="VA" style="background: black; color: white;">Vatican City</option>
+<option value="VE" style="background: black; color: white;">Venezuela</option>
+<option value="VN" style="background: black; color: white;">Vietnam</option>
+<option value="YE" style="background: black; color: white;">Yemen</option>
+<option value="ZM" style="background: black; color: white;">Zambia</option>
+<option value="ZW" style="background: black; color: white;">Zimbabwe</option>
+        </select>
+        <button onclick="startGame()">Start Game</button>
+    </div>
+    <div id="gameOver">
+        <h2>GAME OVER</h2>
+        <p>Your Score: <span id="finalScore">0</span></p>
+        <button onclick="submitScore()">Submit Score</button>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <script src="game.js"></script>
+</body>
+</html> 

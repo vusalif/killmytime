@@ -1,0 +1,142 @@
+{
+    "gameofthrones": {
+      "emojis": "🐉⚔️",
+      "hint": "_ _ _ _  _ _  _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#37474F",
+      "additionalHint": "Winter is coming..."
+    },
+    "breakingbad": {
+      "emojis": "🧪👨‍🔬💊",
+      "hint": "_ _ _ _ _ _ _ _  _ _ _",
+      "time": 30,
+      "color": "#2E7D32",
+      "additionalHint": "Say my name!"
+    },
+    "strangerthings": {
+      "emojis": "🚲👻💡",
+      "hint": "_ _ _ _ _ _ _ _  _ _ _ _ _ _",
+      "time": 30,
+      "color": "#B71C1C",
+      "additionalHint": "Welcome to the Upside Down"
+    },
+    "friends": {
+      "emojis": "☕️🛋️👥",
+      "hint": "_ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#F9A825",
+      "additionalHint": "I'll be there for you..."
+    },
+    "thesopranos": {
+      "emojis": "🖤🎩🍝",
+      "hint": "_ _ _  _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#6D4C41",
+      "additionalHint": "Mafia drama at its finest."
+    },
+    "thewalkingdead": {
+      "emojis": "🧟‍♂️🔫🌿",
+      "hint": "_ _ _  _ _ _ _ _ _ _  _ _ _ _",
+      "time": 30,
+      "color": "#455A64",
+      "additionalHint": "Survive the apocalypse."
+    },
+    "sherlock": {
+      "emojis": "🕵️‍♂️🔍📖",
+      "hint": "_ _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#1E88E5",
+      "additionalHint": "The master detective in London."
+    },
+    "thewitcher": {
+      "emojis": "⚔️🧙‍♂️🐺",
+      "hint": "_ _ _  _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#4E342E",
+      "additionalHint": "Toss a coin to your Witcher."
+    },
+    "dark": {
+      "emojis": "🕰️🌀🌌",
+      "hint": "_ _ _ _",
+      "time": 30,
+      "color": "#000000",
+      "additionalHint": "What is past is prologue."
+    },
+    "peakyblinders": {
+      "emojis": "🧢💼🔪",
+      "hint": "_ _ _ _ _ _  _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#263238",
+      "additionalHint": "By order of the Peaky Blinders."
+    },
+    "westworld": {
+      "emojis": "🤖🏜️🎠",
+      "hint": "_ _ _ _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#6A1B9A",
+      "additionalHint": "These violent delights have violent ends."
+    },
+    "theoffice": {
+      "emojis": "📂💼😂",
+      "hint": "_ _ _  _ _ _ _ _",
+      "time": 30,
+      "color": "#FF8F00",
+      "additionalHint": "Life in the Scranton branch."
+    },
+    "howimetyourmother": {
+      "emojis": "🍸🗽💔",
+      "hint": "_ _ _ _  _  _ _ _  _ _ _ _  _ _ _ _ _ _",
+      "time": 30,
+      "color": "#9C27B0",
+      "additionalHint": "A story about love and friendship."
+    },
+    "houseofcards": {
+      "emojis": "🏛️🎩♠️",
+      "hint": "_ _ _ _ _  _ _  _ _ _ _ _",
+      "time": 30,
+      "color": "#424242",
+      "additionalHint": "Power is the ultimate currency."
+    },
+    "moneyheist": {
+      "emojis": "💰🎭🔫",
+      "hint": "_ _ _ _ _ _  _ _ _ _ _",
+      "time": 30,
+      "color": "#C62828",
+      "additionalHint": "The Professor's master plan."
+    },
+    "westwing": {
+      "emojis": "🏛️🗳️🕊️",
+      "hint": "_ _ _ _  _ _ _ _ _",
+      "time": 30,
+      "color": "#283593",
+      "additionalHint": "Inside the White House."
+    },
+    "succession": {
+      "emojis": "👔💼📉",
+      "hint": "_ _ _ _ _ _ _ _ _ _",
+      "time": 30,
+      "color": "#5D4037",
+      "additionalHint": "Family, power, betrayal."
+    },
+    "theboys": {
+      "emojis": "🦸‍♂️💥🩸",
+      "hint": "_ _ _  _ _ _ _",
+      "time": 30,
+      "color": "#D32F2F",
+      "additionalHint": "Not all heroes are good."
+    },
+    "madmen": {
+      "emojis": "💼🚬🎩",
+      "hint": "_ _ _  _ _ _",
+      "time": 30,
+      "color": "#616161",
+      "additionalHint": "Life in the ad industry."
+    },
+    "lost": {
+      "emojis": "✈️🌴❓",
+      "hint": "_ _ _ _",
+      "time": 30,
+      "color": "#004D40",
+      "additionalHint": "Survivors of Oceanic Flight 815."
+    }
+  }

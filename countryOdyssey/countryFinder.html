@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/x-icon" href="icon2.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Viga&display=swap" rel="stylesheet">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Country - Odyssey</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="https://cloud.umami.is/script.js" data-website-id="9cc6c551-6e17-4bec-8465-47a629f52743"></script>
+    <style>
+        .log-section {
+            position: fixed;
+            bottom: 12  0px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 8px;
+            padding: 10px;
+            width: 500px;
+            max-width: 95%;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .log-header {
+            cursor: pointer;
+            font-weight: bold;
+            user-select: none;
+        }
+
+        .log-stats {
+            font-size: 14px;
+            font-weight: normal;
+        }
+
+        .log-content {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .log-entry {
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .log-entry.correct {
+            background: rgba(46, 204, 113, 0.2);
+            color: #27ae60;
+        }
+
+        .log-entry.incorrect {
+            background: rgba(231, 76, 60, 0.2);
+            color: #c0392b;
+        }
+
+        .log-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .log-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+
+        .log-content::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .reset-map-btn {
+            padding: 8px 12px;
+            background: white;
+            border: 2px solid rgba(0,0,0,0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+            transition: all 0.2s ease;
+        }
+
+        .reset-map-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .reset-map-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Add rainbow circle styles */
+        .decode-odyssey {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .decode-odyssey:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .rainbow-circles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 1;
+        }
+
+        @keyframes floatCircle {
+            0% { transform: translate(0, 0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translate(var(--moveX), var(--moveY)); opacity: 0; }
+        }
+
+        @font-face {
+            font-family: 'Instagram Sans Bold';
+            src: url('InstagramSans-Bold.ttf') format('truetype');
+        }
+
+        .version-info {
+            position: fixed;
+            bottom: 35px;
+            right: 40px;
+            cursor: pointer;
+            z-index: 1000;
+            background-color: rgba(255, 255, 255, 0);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .hover-text {
+            position: absolute;
+            bottom: 100%;
+            right: 0;
+            transform: translateY(-5px);
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            white-space: nowrap;
+            pointer-events: none;
+            margin-bottom: 5px;
+        }
+
+        .hover-text.show {
+            opacity: 1;
+        }
+        .corner-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #000;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .corner-link:hover {
+            transform: scale(1.1);
+            color: #666;
+        }
+
+        .warning-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(241, 196, 15, 0.9);
+            color: #000;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 1000;
+            transition: opacity 0.3s ease;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <a href="/index.html" class="corner-link">killmytime</a>
+    <script type="module">
+        import { Analytics } from 'https://cdn.vercel.com/analytics/v1';
+        Analytics();
+    </script>
+    <h1 id="site-title" style="    font-family: 'Inter', sans-serif;
+    font-size: 2rem;
+    font-weight: 900;">Country - Odyssey</h1>
+    <div id="game-controls"></div>
+    <div id="map-container"></div>
+    <div id="population-mode-notice" style="text-align: center; color: #666; font-size: 14px; position: relative; top: 5px; display: none;">
+        Not all countries are clickable in this mode.
+    </div>
+    <div id="target-country"><span id="country-to-find"></span></div>
+    <div class="hint-controls">
+        <button id="hint-btn" class="hint-btn" onclick="showHint()">Get Hint (2)</button>
+        <button id="surrender-btn" class="surrender-btn" onclick="surrenderHint()">Surrender</button>
+    </div>
+    <div style="text-align: center; margin: 10px 0;">
+        <div id="score" style="font-size: 18px; margin-bottom: 10px;">
+            Score: <span id="current-score">0</span>
+        </div>
+        <button id="skip-btn" class="game-btn hidden" style="display: none; background-color: #e74c3c; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-family: 'Inter', sans-serif; margin-top: 5px; font-size: 14px;" onclick="skipCountry()">
+            <i class="fas fa-forward"></i> Skip Country
+        </button>
+    </div>
+    <button id="finish-btn" class="game-btn hidden" onclick="finishGame()">
+        <i class="fas fa-flag"></i> End Game
+    </button>
+    <button id="menu-btn" class="game-btn hidden menu-btn" onclick="showMainMenu()">
+        <i class="fas fa-home"></i> Menu
+    </button>
+    <div id="log-section" class="log-section">
+        <div class="log-header" onclick="toggleLog()">
+            <hr style="border-top: 2px solid #333; margin: 10px 0;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Log History ▼</span>
+                <div class="log-stats">
+                    <span class="correct-count" style="color: #27ae60; margin-right: 10px;">Correct: 0</span>
+                    <span class="incorrect-count" style="color: #c0392b; margin-right: 10px;">Incorrect: 0</span>
+                    <span class="accuracy-count" style="color: #2980b9;">Accuracy: 0%</span>
+                </div>
+            </div>
+        </div>
+        <div id="log-content" class="log-content" style="display: none;">
+            <!-- Logs will be added here dynamically -->
+        </div>
+    </div>
+    <div id="message-container"></div>
+    <div id="game-overlay">
+        <div id="start-menu" data-menu-type="first-time"> <!-- FIRST TIME PLAYERS ONLY -->
+            <!-- Title texts that should only show in game mode selection -->
+            <div id="mode-select-texts">
+                <h2 style="font-size: 36px; font-weight: 800;">Select Game Mode</h2>
+                <h2 style="font-size: 16px; font-weight: 200; padding-bottom: 10px; margin-top: -20px;">You need to choose a game mode in order to start the game.</h2>
+            </div>
+
+            <div id="game-modes">
+                <div class="mode-card" onclick="showDifficultySelect('time')">
+                    <div class="mode-title">Against Time ⏱️</div>
+                    <div class="mode-description">Find as many countries as you can in 3 minutes!</div>
+                </div>
+                <div class="mode-card" onclick="showDifficultySelect('all')">
+                    <div class="mode-title">Find All Countries 🌎</div>
+                    <div class="mode-description">Take your time to find all countries in the selected region.</div>
+                </div>
+                <div class="mode-card" onclick="showDifficultySelect('alphabetic')">
+                    <div class="mode-title">Alphabetic Challenge 🔤</div>
+                    <div class="mode-description">Find countries in alphabetical order!</div>
+                </div>
+                <div class="mode-card" onclick="showDifficultySelect('streak')">
+                    <div class="mode-title">Streak Mode 🔥</div>
+                    <div class="mode-description">How many countries can you find in a row without mistakes?</div>
+                </div>
+                <div class="mode-card" onclick="showDifficultySelect('hints')">
+                    <div class="mode-title" style="position: relative;">
+                        <span class="new-tag" style="background: #2ecc71;">POPULAR</span>
+                        Hints Mode 💡
+                    </div>
+                    <div class="mode-description">Use hints wisely to find countries! Limited hints per game.</div>
+                </div>
+                <div class="mode-card" onclick="window.open('https://countryodyssey.onrender.com/')">
+                    <div class="mode-title" style="position: relative;">
+                        <span class="new-tag">ONLINE</span>
+                        Multiplayer Mode 🎮
+                    </div>
+                    <div class="mode-description">Challenge your friends in real-time geography battles!</div>
+                </div>
+                <div class="mode-card" onclick="showDifficultySelect('population')">
+                    <div class="mode-title" style="position: relative;">
+                        <span class="new-tag" style="background: #006eff; color: #ffffff;">NEW</span>
+                        Population Guesser 🎯
+                    </div>
+                    <div class="mode-description">Find countries with higher or lower populations!</div>
+                </div>
+                <div class="mode-card decode-odyssey" onclick="window.open('https://emoji-odyssey.vercel.app/')" 
+                     style="background: #000000; position: relative; overflow: hidden; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                    <div class="rainbow-circles" style="z-index: 1;"></div>
+                    <div class="card-content" style="position: relative; z-index: 3;">
+                        <div class="mode-title" style="position: relative; color: white; font-family: 'Instagram Sans Bold', sans-serif;">
+                            <span class="new-tag" style="background: #FFD700; color: #000000;">BEST</span>
+                            Decode Odyssey 🤠
+                        </div>
+                        <div class="mode-description" style="color: rgba(255,255,255,0.9); font-family: 'Inter', sans-serif; font-weight: 200;">
+                            Test your emoji decoding skills in this fun puzzle game!
+                        </div>
+                    </div>
+                    <div class="card-blur" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; backdrop-filter: blur(4px); z-index: 2;"></div>
+                </div>
+            </div>
+
+            <!-- Documentation link that should only show in game mode selection -->
+            <a id="documentation-link" class="documentation-link" style="text-decoration:none; font-size: 16px; font-weight: 230; position: relative; top: 10px; cursor: pointer; color: #333;" href="documention.html" target="_blank">Click me to learn more about the game 📄</a>
+
+            <!-- Difficulty select section -->
+            <div id="difficulty-select" class="difficulty-select" style="display: none;">
+                <h2 style="font-size: 36px; font-weight: 800;">Select Difficulty</h2>
+                <button class="back-btn" onclick="showGameModes()">←</button>
+                <div class="difficulty-buttons">
+                    <button class="game-btn" onclick="startGameWithoutRefresh('easy')">Easy</button>
+                    <button class="game-btn" onclick="startGameWithoutRefresh('normal')">Normal</button>
+                    <button class="game-btn" onclick="startGameWithoutRefresh('hard')">Hard</button>
+                    <button class="game-btn" style="background: #e74c3c" onclick="confirmUltraMode()">Ultra</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="version-info" id="version-info">made by <strong>vusal</strong> |</div>
+    <a href="https://forms.gle/a4KJVSvsfVeBH7pMA" 
+       target="_blank" 
+       id="feedback-btn"
+       class="game-btn1 hidden feedback-btn">
+        Feedback & Suggestions & Report Bugs
+    </a>
+
+    <div id="timer" class="hidden">Time: 3:00</div>
+    <div id="attempts-display" class="attempts-display hidden"></div>
+
+    <div id="streak-counter" class="streak-counter hidden">Current Streak: <span id="current-streak">0</span></div>
+    <div id="best-streak" class="best-streak hidden">Best Streak: <span id="max-streak">0</span></div>
+
+    <div id="hint-container" class="hint-container">
+        <p id="hint-text" class="hint-text"></p>
+    </div>
+
+    <script src="game.js"></script>
+    <div style="display: none;" id="audio-container">
+        <audio id="preloaded-music1" preload="auto">
+            <source src="music1.mp3" type="audio/mp3">
+        </audio>
+        <audio id="preloaded-music2" preload="auto">
+            <source src="music2.mp3" type="audio/mp3">
+        </audio>
+        <audio id="preloaded-music3" preload="auto">
+            <source src="music3.mp3" type="audio/mp3">
+        </audio>
+        <audio id="preloaded-music4" preload="auto">
+            <source src="music4.mp3" type="audio/mp3">
+        </audio>
+        <audio id="preloaded-music5" preload="auto">
+            <source src="music5.mp3" type="audio/mp3">
+        </audio>
+    </div>
+
+    <script>
+        function reloadAndStartGame(difficulty) {
+            // Only store and reload if we're switching from an active game
+            if (document.querySelector('#start-menu').getAttribute('data-menu-type') === 'in-game') {
+                // Get the selected game mode from localStorage
+                const selectedGameMode = localStorage.getItem('selectedGameMode');
+                
+                // Store both mode and difficulty for after reload
+                localStorage.setItem('pendingGameMode', selectedGameMode);
+                localStorage.setItem('pendingDifficulty', difficulty);
+                window.location.reload();
+            } else {
+                // For first-time players, just start the game normally
+                startGameWithoutRefresh(difficulty);
+            }
+        }
+
+        function startGame(difficulty) {
+            reloadAndStartGame(difficulty);
+        }
+
+        // Add this code to check for pending game on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            const pendingGameMode = localStorage.getItem('pendingGameMode');
+            const pendingDifficulty = localStorage.getItem('pendingDifficulty');
+            
+            if (pendingGameMode && pendingDifficulty) {
+                localStorage.removeItem('pendingGameMode');
+                localStorage.removeItem('pendingDifficulty');
+                
+                // Set the game mode before starting
+                gameMode = pendingGameMode;
+                startGameWithoutRefresh(pendingDifficulty);
+            }
+        });
+
+        function createRainbowCircles() {
+            const cards = document.querySelectorAll('.decode-odyssey');
+            cards.forEach(card => {
+                const circles = card.querySelector('.rainbow-circles');
+                if (circles) {
+                    const intervalId = setInterval(() => {
+                        const circle = document.createElement('div');
+                        const size = Math.random() * 50 + 30;
+                        const colors = [
+                            'rgba(255, 0, 0, 0.4)',    // Red with opacity
+                            'rgba(255, 127, 0, 0.4)',  // Orange with opacity
+                            'rgba(255, 255, 0, 0.4)',  // Yellow with opacity
+                            'rgba(0, 255, 0, 0.4)',    // Green with opacity
+                            'rgba(0, 0, 255, 0.4)',    // Blue with opacity
+                            'rgba(75, 0, 130, 0.4)',   // Indigo with opacity
+                            'rgba(139, 0, 255, 0.4)'   // Violet with opacity
+                        ];
+                        const color = colors[Math.floor(Math.random() * colors.length)];
+                        
+                        circle.style.cssText = `
+                            position: absolute;
+                            width: ${size}px;
+                            height: ${size}px;
+                            background: ${color};
+                            border-radius: 50%;
+                            opacity: 0;
+                            pointer-events: none;
+                            --moveX: ${(Math.random() - 0.5) * 200}px;
+                            --moveY: ${(Math.random() - 0.5) * 200}px;
+                            animation: floatCircle 3s ease-out forwards;
+                            left: ${Math.random() * 100}%;
+                            top: ${Math.random() * 100}%;
+                            filter: blur(8px);
+                            mix-blend-mode: screen;
+                        `;
+                        
+                        circles.appendChild(circle);
+                        setTimeout(() => circle.remove(), 3000);
+                    }, 300);
+
+                    // Store the interval ID on the card element
+                    card.dataset.circleInterval = intervalId;
+                }
+            });
+        }
+
+        // Clean up function to stop circle generation
+        function cleanupRainbowCircles() {
+            const cards = document.querySelectorAll('.decode-odyssey');
+            cards.forEach(card => {
+                if (card.dataset.circleInterval) {
+                    clearInterval(parseInt(card.dataset.circleInterval));
+                    delete card.dataset.circleInterval;
+                }
+            });
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            createRainbowCircles();
+        });
+
+        // Clean up when page is unloaded
+        window.addEventListener('unload', cleanupRainbowCircles);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const versionInfo = document.getElementById('version-info');
+            let hoverText = document.createElement('div');
+            hoverText.className = 'hover-text';
+            versionInfo.appendChild(hoverText);
+
+            const messages = [
+                "Wdym you can't focus? Just type 'focus' in your keyboard 🤠",
+                "Type 'focus' in your keyboard 🤠, trust me.",
+                "Try writing 'Christmas' in your keyboard 🤭",
+                "You want some music while guess countries?, type 'Geosongs' in your keyboard 🎷",
+                "To activate CountryOdyssey Radio, type 'Geosongs' in your keyboard 🎶",
+                "Feeling stuck? Just type 'focus' in your keyboard 🤠.",
+                "Lost in thought? Try typing 'focus' in your keyboard, it works wonders 🤓.",
+                "Need some holiday vibes? Type 'Christmas' in your keyboard 🎄.",
+                "Want some tunes while exploring the map? Type 'Geosong' in your keyboard 🎵.",
+                "Activate guessing soundtrack radio by typing 'Geosong' in your keyboard 🎧.",
+            ];
+
+            versionInfo.addEventListener('mouseenter', function() {
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                hoverText.textContent = randomMessage;
+                hoverText.classList.add('show');
+            });
+
+            versionInfo.addEventListener('mouseleave', function() {
+                hoverText.classList.remove('show');
+            });
+        });
+
+        function startGameWithoutRefresh(difficulty) {
+            // Get the selected game mode from localStorage
+            const selectedGameMode = localStorage.getItem('selectedGameMode');
+            if (selectedGameMode) {
+                gameMode = selectedGameMode;
+            }
+
+            // Show/hide population mode notice based on game mode
+            if (gameMode === 'population') {
+                document.getElementById('population-mode-notice').style.display = 'block';
+            } else {
+                document.getElementById('population-mode-notice').style.display = 'none';
+            }
+
+            // Adjust log section position based on game mode
+            const logSection = document.querySelector('.log-section');
+            if (logSection) {
+                logSection.style.bottom = gameMode === 'hints' ? '30px' : '100px';
+            }
+
+            // Set the difficulty properly
+            difficulty = difficulty;  // This line was wrong
+            localStorage.setItem('selectedDifficulty', difficulty);  // Store the selected difficulty
+            
+            isGameActive = true;
+            currentScore = 0;
+            correctAttempts = 0;
+            incorrectAttempts = 0;
+            
+            // Hide hint controls and timer by default
+            document.querySelector('.hint-controls').style.display = 'none';
+            document.getElementById('timer').classList.add('hidden');
+            
+            document.getElementById('game-overlay').classList.add('hidden');
+            document.getElementById('menu-btn').classList.remove('hidden');
+            document.getElementById('finish-btn').classList.remove('hidden');
+            document.getElementById('feedback-btn').classList.remove('hidden');
+            
+            // Reset country pools with the correct difficulty
+            usedCountries.clear();
+            foundCountries.clear();
+            availableCountries = [...countries[difficulty]];  // Use the parameter directly
+            
+            // Initialize map if not already done
+            if (!map) {
+                initMap();
+            }
+            
+            // Mode-specific initializations
+            if (gameMode === 'hints') {
+                document.getElementById('current-score').textContent = '0';
+                document.querySelector('.hint-controls').style.display = 'flex';
+                
+                // Select initial country and hint
+                const randomCountry = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+                targetCountry = randomCountry;
+                usedCountries.add(randomCountry);
+                
+                // Get hints for the country and make sure we have valid hints
+                const hints = countryHints[targetCountry];
+                if (!hints || hints.length === 0) {
+                    console.error('No hints found for country:', targetCountry);
+                    return;
+                }
+                
+                // Display the first hint
+                const firstHint = hints[0];
+                document.getElementById('country-to-find').innerHTML = `
+                    <div style="font-size: 13px; color: #666; font-style: bold; margin-top: 10px;">${firstHint}</div>
+                `;
+                
+                hintsRemaining = 2;
+                updateHintButton();
+            } else if (gameMode === 'streak') {
+                currentStreak = 0;
+                document.getElementById('streak-counter').classList.remove('hidden');
+                document.getElementById('best-streak').classList.remove('hidden');
+                document.getElementById('current-streak').textContent = currentStreak;
+                document.getElementById('current-score').textContent = currentStreak;
+            } else if (gameMode === 'alphabetic') {
+                alphabeticIndex = 0;
+                sortedCountries = [...countries[difficulty]].sort();
+                targetCountry = sortedCountries[0];
+                document.getElementById('current-score').textContent = `0/${sortedCountries.length}`;
+                document.getElementById('country-to-find').innerHTML = `
+                    ${targetCountry}
+                    <div id="next-country">Next: ${sortedCountries[1] || 'Last country!'}</div>
+                `;
+            } else if (gameMode === 'time') {
+                const timerSettings = {
+                    'easy': 180,    // 3 minutes
+                    'normal': 420,  // 7 minutes
+                    'hard': 900,    // 15 minutes
+                    'ultra': 1800   // 30 minutes
+                };
+                
+                timeLeft = timerSettings[difficulty];  // Use the parameter directly
+                document.getElementById('timer').classList.remove('hidden');
+                
+                // Format initial timer display
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = 
+                    `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+                    
+                document.getElementById('current-score').textContent = '0';
+                startTimer();
+                startNewRound();
+            } else if (gameMode === 'population') {
+                document.getElementById('current-score').textContent = '0';
+                document.getElementById('attempts-display').classList.remove('hidden');
+                currentScore = 0;
+                foundCountries.clear();
+                attemptsRemaining = 3;
+                updateAttemptsDisplay();
+                startNewRound();
+            }
+
+            map.setZoom(difficultyZoom[difficulty]);  // Use the parameter directly
+        }
+    </script>
+</body>
+</html>

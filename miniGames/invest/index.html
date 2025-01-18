@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Simulator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #111111;
+            color: #ffffff;
+            min-height: 100vh;
+            padding: 1.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .balance {
+            background: #1d1d1d;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .asset-selector {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .asset-btn {
+            background: #1d1d1d;
+            color: #888;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .asset-btn:hover {
+            border-color: #2d2d2d;
+        }
+
+        .asset-btn.active {
+            background: #2d2d2d;
+            color: #fff;
+            border-color: #00b894;
+        }
+
+        .chart-container {
+            background: #1d1d1d;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            position: relative;
+            height: 60vh;
+        }
+
+        .chart-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px),
+                        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 20px 20px;
+            border-radius: 8px;
+            pointer-events: none;
+        }
+
+        .trading-panel {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .current-pl {
+            position: absolute;
+            top: -2rem;
+            right: 0;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            background: #1d1d1d;
+        }
+
+        .trade-box {
+            background: #1d1d1d;
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .trade-box h2 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: #888;
+        }
+
+        .trade-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        input {
+            flex: 1;
+            background: #2d2d2d;
+            border: none;
+            padding: 0.5rem;
+            border-radius: 4px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        input:focus {
+            outline: 1px solid #00b894;
+        }
+
+        button {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-weight: 500;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .buy-btn {
+            background: #00b894;
+            color: white;
+        }
+
+        .sell-btn {
+            background: #ff7675;
+            color: white;
+        }
+
+        .history {
+            background: #1d1d1d;
+            padding: 1rem;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history h2 {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: #888;
+            padding: 0 0.5rem;
+        }
+
+        .history-item {
+            padding: 0.75rem 0.5rem;
+            border-bottom: 1px solid #2d2d2d;
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 1rem;
+            align-items: start;
+            font-size: 0.85rem;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .time {
+            color: #888;
+            white-space: nowrap;
+        }
+
+        .trade-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .action {
+            color: #fff;
+        }
+
+        .profit {
+            color: #00b894;
+        }
+
+        .loss {
+            color: #ff7675;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1d1d1d;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #2d2d2d;
+            border-radius: 3px;
+        }
+
+        /* Remove number input arrows */
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        .positions-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+            width: 100%;
+        }
+
+        .position-item {
+            background: #1d1d1d;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+        }
+
+        .position-item.profit {
+            border-left: 3px solid #00b894;
+        }
+
+        .position-item.loss {
+            border-left: 3px solid #ff7675;
+        }
+
+        .position-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .position-asset {
+            font-weight: 500;
+            color: #fff;
+        }
+
+        .position-amount {
+            color: #888;
+            font-size: 0.85rem;
+        }
+
+        .position-pl {
+            font-weight: 500;
+        }
+
+        .position-pl.profit {
+            color: #00b894;
+        }
+
+        .position-pl.loss {
+            color: #ff7675;
+        }
+
+        /* Update trading panel to accommodate positions */
+        .trading-panel {
+            margin-top: 1rem;
+        }
+
+        .positions-window {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: #1d1d1d;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .positions-header {
+            padding: 0.75rem 1rem;
+            background: #2d2d2d;
+            border-radius: 8px 8px 0 0;
+            cursor: move;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .positions-header h2 {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #fff;
+            margin: 0;
+        }
+
+        .positions-content {
+            padding: 1rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .position-item {
+            background: #2d2d2d;
+            margin-bottom: 0.75rem;
+            padding: 1rem;
+            border-radius: 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .position-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .position-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .position-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            width: 100%;
+        }
+
+        .slider-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #888;
+        }
+
+        .position-slider {
+            width: 100%;
+            height: 4px;
+            background: #404040;
+            -webkit-appearance: none;
+            border-radius: 2px;
+            outline: none;
+        }
+
+        .position-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #00b894;
+            cursor: pointer;
+            border: 2px solid #2d2d2d;
+            transition: all 0.2s;
+        }
+
+        .position-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .sell-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .sell-amount {
+            font-size: 0.85rem;
+            color: #fff;
+            padding: 0.25rem 0.5rem;
+            background: #404040;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        .quick-sell-btn {
+            padding: 0.25rem 0.75rem;
+            font-size: 0.85rem;
+            background: #ff7675;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .quick-sell-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Trading Simulator</h1>
+            <div class="balance" id="balance">Balance: $10,000.00</div>
+        </div>
+        
+        <div class="asset-selector">
+            <button class="asset-btn active" onclick="switchAsset('BTC')">Bitcoin</button>
+            <button class="asset-btn" onclick="switchAsset('AAPL')">Apple</button>
+            <button class="asset-btn" onclick="switchAsset('NVDA')">NVIDIA</button>
+            <button class="asset-btn" onclick="switchAsset('MSFT')">Microsoft</button>
+            <button class="asset-btn" onclick="switchAsset('DOGE')">Dogecoin</button>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="tradingChart"></canvas>
+        </div>
+
+        <div class="trading-panel">
+            <div class="trade-box">
+                <h2>Buy</h2>
+                <div class="trade-controls">
+                    <input type="number" id="buyAmount" placeholder="Amount in USD" min="0" step="100">
+                    <button class="buy-btn" id="buyBtn">Buy</button>
+                </div>
+            </div>
+            <div class="trade-box">
+                <h2>Sell</h2>
+                <div class="trade-controls">
+                    <input type="number" id="sellAmount" placeholder="Amount in USD" min="0" step="100">
+                    <button class="sell-btn" id="sellBtn">Sell</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="history">
+            <h2>Trading History</h2>
+            <div id="historyList"></div>
+        </div>
+    </div>
+    <script>
+        // Add click handler for asset buttons
+        document.querySelectorAll('.asset-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.asset-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+    </script>
+    <script src="script.js"></script>
+</body>
+</html> 

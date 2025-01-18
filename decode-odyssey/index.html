@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji Game</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <link rel="stylesheet" href="styles.css">
+    <script src="emoji.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="circle-container"></div>
+        <div class="game-box">
+            <h1 id="categoryTitle"></h1>
+            <div class="timer">00:30</div>
+            <div class="stats-row">
+                <div class="question-counter">1/4</div>
+                <div class="score-display">Score: 100</div>
+            </div>
+            <div id="emojis" id="content" class="emojis"></div>
+            <div class="hint-text"></div>
+            <div class="input-container">
+                <input type="text" id="guess-input" placeholder="_ _ _ _ _" maxlength="20">
+                <button class="submit-arrow">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="control-buttons">
+                <button class="control-button hint-button" title="Get Hint">
+                    <i class="fas fa-lightbulb"></i>
+                </button>
+                <button class="control-button pause-button" title="Pause">
+                    <i class="fas fa-pause"></i>
+                </button>
+                <button class="control-button surrender-button" title="Surrender">
+                    <i class="fas fa-flag"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+        replaceEmojisWithImages("#content", 1.6, 0.5);
+        </script>
+</body>
+</html> 

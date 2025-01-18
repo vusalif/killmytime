@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#000000">
+    <title>Emoji Odyssey - Home</title>
+    <link rel="icon" type="image/png" href="icon.png">
+    <script src="emoji.js"></script>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-box home-box">
+            <div class="gradient-glow"></div>
+            <h1 class="game-title">Emoji Odyssey</h1>
+            <h2 class="game-description">Crack the code, win the game!</h2>
+            <div class="menu-buttons">
+                <button class="menu-button play-button">
+                    <i class="fas fa-play"></i>
+                    Play Game
+                </button>
+            </div>
+            <div class="stats-summary">
+                <div class="stat-box">
+                    <i class="fas fa-trophy"></i>
+                    <span class="stat-label">Best Score</span>
+                    <span class="stat-value" id="bestScore">0</span>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-gamepad"></i>
+                    <span class="stat-label">Games Played</span>
+                    <span class="stat-value" id="gamesPlayed">0</span>
+                </div>
+            </div>
+        </div>
+        <div class="game-selection-container">
+            <div class="game-selection-header">
+                <h2 class="section-title">Select Game Mode</h2>
+            </div>
+            <div class="games-grid" id="gamesGrid">
+                <!-- Games will be dynamically inserted here -->
+            </div>
+        </div>
+        <div class="circle-container"></div>
+    </div>
+
+    <!-- Tutorial Modal -->
+    <div class="modal" id="tutorialModal">
+        <div class="modal-content tutorial-content">
+            <h2>How to Play</h2>
+            <div class="tutorial-steps">
+                <div class="tutorial-step">
+                    <i class="fas fa-eye"></i>
+                    <p>Look at the emojis shown on screen</p>
+                </div>
+                <div class="tutorial-step">
+                    <i class="fas fa-lightbulb"></i>
+                    <p>Guess the movie title they represent</p>
+                </div>
+                <div class="tutorial-step">
+                    <i class="fas fa-clock"></i>
+                    <p>Complete before time runs out</p>
+                </div>
+                <div class="tutorial-step">
+                    <i class="fas fa-star"></i>
+                    <p>Score points for correct answers</p>
+                </div>
+            </div>
+            <button class="close-modal">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content settings-content">
+            <h2>Settings</h2>
+            <div class="settings-options">
+                <div class="setting-item">
+                    <label>Sound Effects</label>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>Background Animation</label>
+                    <label class="switch">
+                        <input type="checkbox" id="animationToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+            </div>
+            <button class="close-modal">Save</button>
+        </div>
+    </div>
+
+    <script src="home.js"></script>
+    <script>
+        replaceEmojisWithImages("#content", 1.6, 0.5);
+        </script>
+</body>
+</html> 

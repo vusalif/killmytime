@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <a href="/index.html" class="corner-link">killmytime</a>  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brick Breaker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-LHBVWHRTC6"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-LHBVWHRTC6');
+</script>
+
+<body>
+    <div class="top-controls">
+        <button id="themeToggleBtn" class="theme-button">
+            <span class="light-icon">🌞</span>
+            <span class="dark-icon">🌙</span>
+        </button>
+        <div class="game-mode-controls">
+            <button id="multiplayerBtn" class="mode-button">Multiplayer</button>
+            <button id="backToSingleBtn" class="mode-button hidden">Back to Single Player</button>
+        </div>
+        <button id="togglePowerupsBtn" class="mode-button">Power-ups</button>
+        <button id="toggleHistoryBtn" class="mode-button">History</button>
+    </div>
+
+    <div class="powerups-info hidden">
+        <div class="powerups-header">
+            <h3>Power-ups Guide</h3>
+            <button id="closePowerupsBtn" class="mode-button">✕</button>
+        </div>
+        <div class="powerups-list">
+            <div class="powerup-item good">
+                <div class="powerup-icon">↔️</div>
+                <div class="powerup-details">
+                    <h4>Wide Paddle</h4>
+                    <p>Increases paddle width for 20 seconds</p>
+                </div>
+            </div>
+            <div class="powerup-item good">
+                <div class="powerup-icon">×3</div>
+                <div class="powerup-details">
+                    <h4>Triple Points</h4>
+                    <p>Triple score for each brick for 10 seconds</p>
+                </div>
+            </div>
+            <div class="powerup-item good">
+                <div class="powerup-icon">⚪</div>
+                <div class="powerup-details">
+                    <h4>Multi Ball</h4>
+                    <p>Spawns 5 extra balls</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="name-popup hidden" id="nameUpdatePopup">
+        <div class="name-popup-content">
+            <h3>Update Player Name</h3>
+            <input type="text" id="nameUpdateInput" placeholder="Enter new name" maxlength="15">
+            <div class="popup-buttons">
+                <button id="saveNameBtn" class="mode-button">Save</button>
+                <button id="cancelNameBtn" class="mode-button">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="multiplayerModal">
+        <div class="modal-content">
+            <h2>Multiplayer Mode</h2>
+            <div class="player-names">
+                <div class="name-input">
+                    <label for="player1Name">Player 1 Name:</label>
+                    <input type="text" id="player1Name" placeholder="Player 1" maxlength="15">
+                </div>
+                <div class="name-input">
+                    <label for="player2Name">Player 2 Name:</label>
+                    <input type="text" id="player2Name" placeholder="Player 2" maxlength="15">
+                </div>
+            </div>
+            <div class="controls-guide">
+                <div class="player-guide">
+                    <h3>Player 1 (Left)</h3>
+                    <div class="key-guide">
+                        <span class="key">W</span> Launch Ball
+                        <br>
+                        <span class="key">A</span> Move Left
+                        <span class="key">D</span> Move Right
+                    </div>
+                </div>
+                <div class="player-guide">
+                    <h3>Player 2 (Right)</h3>
+                    <div class="key-guide">
+                        <span class="key">↑</span> Launch Ball
+                        <br>
+                        <span class="key">←</span> Move Left
+                        <span class="key">→</span> Move Right
+                    </div>
+                </div>
+            </div>
+            <button class="mode-button" id="startGameBtn">Start Game</button>
+        </div>
+    </div>
+
+    <div class="games-container">
+        <div class="game-container" id="game1">
+            <div class="game-header">
+                <div class="player-scores">
+                    <div class="score player1">Player 1: <span id="score1">0</span></div>
+                </div>
+                <div class="best">Best: <span id="best-score">0</span></div>
+            </div>
+            <canvas id="gameCanvas"></canvas>
+            <div class="controls">
+                <div class="control-text">Click to launch the ball!</div>
+            </div>
+        </div>
+
+        <div class="game-container hidden" id="game2">
+            <div class="game-header">
+                <div class="player-scores">
+                    <div class="score player2">Player 2: <span id="score2_2">0</span></div>
+                </div>
+                <div class="best">Best: <span id="best-score2">0</span></div>
+            </div>
+            <canvas id="gameCanvas2"></canvas>
+            <div class="controls">
+                <div class="control-text">Use arrow keys to move and launch!</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-log hidden">
+        <div class="game-log-header">
+            <h3>Game History</h3>
+            <div class="log-controls">
+                <select id="logFilter" class="log-filter">
+                    <option value="all">All Games</option>
+                    <option value="single">Single Player</option>
+                    <option value="multi">Multiplayer</option>
+                </select>
+                <button id="clearLogBtn" class="mode-button">Clear</button>
+                <button id="closeLogBtn" class="mode-button">✕</button>
+            </div>
+        </div>
+        <div class="log-entries" id="logEntries">
+            <!-- Log entries will be added here dynamically -->
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <style>
+                .corner-link {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #acacac;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .corner-link:hover {
+            transform: scale(1.1);
+            color: #666;
+        }
+    </style>
+</body>
+</html> 
