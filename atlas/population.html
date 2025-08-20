@@ -1,0 +1,1892 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Population Guesser Game</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#0b1020;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#ffffff;--modal-border:#e5e7eb;--modal-text:#333333;--modal-text-secondary:#6b7280;
+      --modal-card-bg:#f9fafb;--modal-divider:#f3f4f6;
+      --page-bg:#0b1020;
+    }
+    
+    :root[data-theme="light"]{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#f8fafc;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#1f2937;--modal-border:#374151;--modal-text:#f9fafb;--modal-text-secondary:#d1d5db;
+      --modal-card-bg:#111827;--modal-divider:#1f2937;
+      --page-bg:#f8fafc;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: var(--page-bg);
+      color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+    
+    #app {
+      height: 100%;
+      position: relative;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+      background: var(--page-bg);
+      transition: all 0.4s ease, background-color 0.3s ease;
+    }
+    
+    #map.minimized {
+      height: 500px;
+      width: 850px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(45, 45, 45, 0.181);
+      border: 1px solid #343434;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+    
+    .hud {
+      position: absolute;
+      z-index: 1000;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(1px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px 20px;
+      min-width: 200px;
+      text-align: center;
+    }
+    
+    .game-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .control-btn:hover {
+      background: #374151;
+      border-color: #4b5563;
+      transform: translateY(-1px);
+    }
+    
+    .start-btn {
+      background: #059669;
+      border-color: #10b981;
+      color: #d1fae5;
+    }
+    
+    .start-btn:hover {
+      background: #047857;
+      border-color: #059669;
+    }
+    
+    .icon-btn {
+      background: #1f2937;
+      border-color: #374151;
+      color: #9ca3af;
+      min-width: 44px;
+      justify-content: center;
+    }
+    
+    .game-info {
+      display: none;
+    }
+    
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .k {
+      color: #94a3b8;
+    }
+    
+    .v {
+      font-weight: 700;
+    }
+    
+    .population-display {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 10px 0;
+      transition: color 0.3s ease;
+    }
+    
+    .population-display.higher {
+      color: #22c55e;
+    }
+    
+    .population-display.lower {
+      color: #ef4444;
+    }
+    
+
+    
+    .toast {
+      position: absolute;
+      right: 12px;
+      top: 64px;
+      z-index: 700;
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: none;
+    }
+    
+    .toast.ok {
+      border-color: #14532d;
+    }
+    
+    .toast.err {
+      border-color: #4c0519;
+    }
+    
+    /* Statistics Modal */
+    .stats-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .stats-content {
+      background: var(--modal-bg);
+      border: none;
+      border-radius: 16px;
+      max-width: 480px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 20px 24px;
+      border-bottom: 1px solid var(--modal-border);
+    }
+    
+    .stats-header h3 {
+      margin: 0;
+      color: var(--modal-text);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .close-btn {
+      background: var(--modal-divider);
+      border: none;
+      color: var(--modal-text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .close-btn:hover {
+      background: var(--modal-border);
+      color: var(--modal-text);
+    }
+    
+    .stats-body {
+      padding: 24px;
+    }
+    
+    .stats-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      background: var(--modal-card-bg);
+      border-radius: 12px;
+      border: 1px solid var(--modal-border);
+    }
+    
+    .stat-label {
+      color: var(--modal-text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .stat-value {
+      color: var(--modal-text);
+      font-weight: 700;
+      font-size: 18px;
+    }
+    
+    .countries-list h4 {
+      margin: 0 0 16px 0;
+      color: var(--modal-text);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .countries-container {
+      max-height: 240px;
+      overflow-y: auto;
+      border: 1px solid var(--modal-border);
+      border-radius: 12px;
+      padding: 16px;
+      background: var(--modal-card-bg);
+    }
+    
+    .country-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: var(--modal-bg);
+      border-radius: 8px;
+      border-left: 4px solid transparent;
+      transition: all 0.2s ease;
+    }
+    
+    .country-item:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .country-item.correct {
+      border-left-color: #10b981;
+    }
+    
+    .country-item.wrong {
+      border-left-color: #ef4444;
+    }
+    
+    .country-item.skipped {
+      border-left-color: #f59e0b;
+    }
+    
+    .country-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .country-name {
+      color: var(--modal-text);
+      font-weight: 500;
+      font-size: 14px;
+    }
+    
+    .country-population {
+      color: var(--modal-text-secondary);
+      font-size: 12px;
+      font-weight: 400;
+    }
+    
+    .country-result {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .country-result.correct {
+      background: #10b981;
+      color: white;
+    }
+    
+    .country-result.wrong {
+      background: #ef4444;
+      color: white;
+    }
+    
+    .country-result.skipped {
+      background: #f59e0b;
+      color: white;
+    }
+    
+    .no-countries {
+      text-align: center;
+      color: var(--modal-text-secondary);
+      font-style: italic;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+    
+    /* Settings Modal */
+    .settings-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .settings-content {
+      background: var(--modal-bg);
+      border: none;
+      border-radius: 16px;
+      max-width: 420px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 20px 24px;
+      border-bottom: 1px solid var(--modal-border);
+    }
+    
+    .settings-header h3 {
+      margin: 0;
+      color: var(--modal-text);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .settings-body {
+      padding: 24px;
+    }
+    
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--modal-divider);
+    }
+    
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-info {
+      flex: 1;
+      margin-right: 20px;
+    }
+    
+    .setting-label {
+      display: block;
+      color: var(--modal-text);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .setting-desc {
+      display: block;
+      color: var(--modal-text-secondary);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    /* Toggle Button Styles */
+    .toggle-btn {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      background: var(--modal-divider);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+    
+    .toggle-btn.active {
+      background: #10b981;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      background: var(--modal-bg);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toggle-btn.active .toggle-slider {
+      left: 24px;
+    }
+    
+    @media (max-width: 600px) {
+      .card {
+        max-width: 90svw;
+      }
+      
+      .stats-content {
+        width: 95%;
+        margin: 20px;
+        max-height: 90vh;
+      }
+      
+      .stats-summary {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      
+      .stats-header {
+        padding: 20px 20px 16px 20px;
+      }
+      
+      .stats-body {
+        padding: 20px;
+      }
+      
+      .stat-item {
+        padding: 14px 16px;
+      }
+      
+      .countries-container {
+        max-height: 200px;
+      }
+      
+      .settings-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .setting-item {
+        padding: 16px 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="map"></div>
+    
+    <div class="hud">
+      <div class="card">
+        <div class="game-controls">
+          <button id="startBtn" class="control-btn start-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Start
+          </button>
+          <button id="pauseBtn" class="control-btn icon-btn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+                        <button id="skipBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+                  <path d="M28.448,17.261L15.552,27.739C14.698,28.432,14,28.1,14,27v-6.938l-9.448,7.676
+	C3.698,28.432,3,28.1,3,27V5c0-1.1,0.698-1.432,1.552-0.739L14,11.937V5c0-1.1,0.698-1.432,1.552-0.739l12.896,10.478
+	C29.302,15.432,29.302,16.568,28.448,17.261z"/>
+                </svg>
+              </button>
+          <button id="resetBtn" class="control-btn icon-btn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+          </button>
+          <button id="settingsBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41,0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+                </svg>
+              </button>
+              <button id="statsBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+              </button>
+            </div>
+        <div id="gameInfo" class="game-info">
+          <div class="population-display" id="targetPopulation">…</div>
+          <div class="row"><span class="k">Countries:</span> <span id="countriesCount" class="v">0 / 0</span></div>
+          <div class="row"><span class="k">Time:</span> <span id="timer" class="v">00:00</span></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="toast" class="toast">…</div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal" style="display: none;">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h3>Settings</h3>
+          <button id="closeSettings" class="close-btn">×</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Theme</span>
+              <span class="setting-desc">Toggle between dark and light mode</span>
+            </div>
+            <button id="themeToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Map Size</span>
+              <span class="setting-desc">Toggle between full screen and mini card</span>
+            </div>
+            <button id="mapToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Small Countries</span>
+              <span class="setting-desc">Always show HIGHER for countries under 1M population</span>
+            </div>
+            <button id="smallCountriesToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="stats-modal" style="display: none;">
+      <div class="stats-content">
+        <div class="stats-header">
+          <h3>Game Statistics</h3>
+          <button id="closeStats" class="close-btn">×</button>
+        </div>
+        <div class="stats-body">
+          <div class="stats-summary">
+            <div class="stat-item">
+              <span class="stat-label">Correct:</span>
+              <span id="statsCorrect" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Wrong:</span>
+              <span id="statsWrong" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Skipped:</span>
+              <span id="statsSkipped" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Accuracy:</span>
+              <span id="statsAccuracy" class="stat-value">0%</span>
+            </div>
+          </div>
+          <div class="countries-list">
+            <h4>Countries Clicked</h4>
+            <div id="countriesList" class="countries-container">
+              <p class="no-countries">No countries clicked yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    // --- Map setup ---
+    console.log('Initializing map...');
+    const map = L.map('map', {
+      worldCopyJump: true,
+      preferCanvas: false,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5,
+    }).setView([20, 0], 2);
+    console.log('Map initialized:', map);
+
+    console.log('Adding tile layer...');
+    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      maxZoom: 6,
+      minZoom: 2,
+      attribution: '&copy; OpenStreetMap & Carto',
+      subdomains: 'abcd'
+    }).addTo(map);
+    console.log('Tile layer added:', tileLayer);
+
+    // --- Game state ---
+    const state = {
+      features: [],
+      target: null,
+      
+      layer: null,
+      gameStartTime: null,
+      timerInterval: null,
+      isPaused: false,
+      pauseStartTime: null,
+      allFeatures: [],
+      completedCountries: new Set(),
+      populationData: {},
+      currentFactor: 'HIGHER',
+      isMapMinimized: false,
+      smallCountriesAlwaysHigher: localStorage.getItem('smallCountriesAlwaysHigher') !== 'false', // Default to enabled, load from localStorage
+      lastClickedCountry: null, // Track last clicked country to prevent consecutive duplicates
+      lastClickTime: 0, // Track last click time
+      stats: {
+        correct: 0,
+        wrong: 0,
+        skipped: 0,
+        countriesClicked: []
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg, kind = 'ok') => {
+      const el = $('toast');
+      el.className = 'toast ' + (kind === 'ok' ? 'ok' : 'err');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.style.display = 'none'; }, 1200);
+    };
+
+    // Normalize country names for comparison
+    const norm = (s) => (s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+
+    // Find the best matching country name from aliases
+    function findBestCountryMatch(geoJsonName) {
+      console.log(`findBestCountryMatch called with: "${geoJsonName}"`);
+      
+      // First try exact match
+      if (state.populationData[geoJsonName]) {
+        console.log(`  Exact match found: "${geoJsonName}"`);
+        return geoJsonName;
+      }
+      
+      // Try normalized comparison
+      const normalizedGeoJsonName = norm(geoJsonName);
+      console.log(`  Normalized name: "${normalizedGeoJsonName}"`);
+      
+      // Check all population data keys for normalized matches
+      for (const populationName in state.populationData) {
+        if (norm(populationName) === normalizedGeoJsonName) {
+          console.log(`  Normalized match found: "${populationName}"`);
+          return populationName;
+        }
+      }
+      
+      // Check aliases
+      for (const [mainName, aliases] of Object.entries(countryNameAliases)) {
+        if (aliases.includes(geoJsonName)) {
+          console.log(`  Alias match found: "${mainName}"`);
+          return mainName;
+        }
+        // Also check normalized aliases
+        for (const alias of aliases) {
+          if (norm(alias) === normalizedGeoJsonName) {
+            console.log(`  Normalized alias match found: "${mainName}"`);
+            return mainName;
+          }
+        }
+      }
+      
+      console.log(`  No match found for: "${geoJsonName}"`);
+      return null;
+    }
+
+    // Choose display name from NE props
+    const pickName = (p) => p.name || p.ADMIN || p.NAME_LONG || p.NAME || p.SOVEREIGNT || p.BRK_NAME;
+
+    // Avoid Antarctica and disputed water polygons
+    const keep = (f) => {
+      if (!f || !f.properties) {
+        console.warn('Feature missing properties:', f);
+        return false;
+      }
+      const n = pickName(f.properties);
+      if (!n) {
+        console.warn('Feature has no valid name:', f.properties);
+        return false;
+      }
+      const bad = ['Antarctica'];
+      return !bad.includes(n);
+    };
+
+    // Styling
+    const baseStyle = { color: '#2c3e50', weight: 1, fillColor: '#60a5fa', fillOpacity: 0.08 };
+    const hoverStyle = { weight: 2, fillOpacity: 0.25 };
+    const okStyle = { fillColor: '#16a34a', fillOpacity: 0.35 };
+    const badStyle = { fillColor: '#ef4444', fillOpacity: 0.35 };
+    
+    // Country name aliases to handle variations between population.txt and countries.geojson
+    const countryNameAliases = {
+      'Northern Cyprus': ['Northern Cyprus', 'Northern Cyprus, Republic of'],
+      'Macedonia': ['North Macedonia', 'Macedonia', 'Macedonia, the former Yugoslav Republic of', 'Macedonia (FYROM)'],
+      'Taiwan': ['Taiwan', 'Taiwan (Province of China)', 'Taiwan, Province of China', 'Taiwan, China'],
+      'West Bank': ['West Bank', 'Palestine', 'Palestinian Territory', 'Palestine, State of'],
+      'Somaliland': ['Somaliland', 'Somalia'],
+      'Kosovo': ['Kosovo', 'Kosovo (Serbia)', 'Kosovo, Republic of'],
+      'Haiti': ['Haiti', 'Haiti, Republic of'],
+      'Swaziland': ['Eswatini', 'Swaziland', 'Kingdom of Eswatini'],
+      'Ivory Coast': ['Côte d\'Ivoire', 'Ivory Coast', 'Cote d\'Ivoire', 'Côte d\'Ivoire, Republic of'],
+      'Western Sahara': ['Western Sahara', 'Sahrawi Arab Democratic Republic'],
+      'United Republic of Tanzania': ['Tanzania', 'United Republic of Tanzania', 'Tanzania, United Republic of'],
+      'Uganda': ['Uganda', 'Uganda, Republic of'],
+      'The Bahamas': ['Bahamas', 'The Bahamas', 'Bahamas, The'],
+      'French Guiana': ['French Guiana', 'Guyane', 'Guyane française']
+    };
+
+    // Load population data from population.txt
+    async function loadPopulationData() {
+      try {
+        const response = await fetch('population.txt');
+        const text = await response.text();
+        const lines = text.split('\n').filter(line => line.trim());
+        
+        lines.forEach(line => {
+          // Handle both regular dash (-) and en dash (–)
+          const parts = line.split(/[–-]/);
+          if (parts.length === 2) {
+            const countryName = parts[0].trim();
+            const populationStr = parts[1].trim().replace(/,/g, '');
+            const population = parseInt(populationStr);
+            if (!isNaN(population)) {
+              // Store population data for the main name ONLY
+              state.populationData[countryName] = population;
+              console.log(`Loaded: "${countryName}" = ${population}`);
+              
+              // Special debug for Northern Cyprus
+              if (countryName === 'Northern Cyprus') {
+                console.log('🔍 Northern Cyprus loaded successfully!');
+                console.log('  - Name:', countryName);
+                console.log('  - Population:', population);
+                console.log('  - Stored in state.populationData:', state.populationData[countryName]);
+              }
+              
+              // DO NOT store aliases in populationData - they're only for lookup
+              // The aliases will still work for finding countries, but won't inflate the count
+              if (countryNameAliases[countryName]) {
+                console.log(`  Aliases available for "${countryName}":`, countryNameAliases[countryName]);
+              }
+            }
+          }
+        });
+        
+        console.log(`Loaded population data for ${Object.keys(state.populationData).length} countries`);
+        console.log('Available countries:', Object.keys(state.populationData));
+        
+        // Debug: Show the exact count and some examples
+        const countryCount = Object.keys(state.populationData).length;
+        console.log(`🔍 Population data summary:`);
+        console.log(`  - Total countries loaded: ${countryCount}`);
+        console.log(`  - First 5 countries:`, Object.keys(state.populationData).slice(0, 5));
+        console.log(`  - Last 5 countries:`, Object.keys(state.populationData).slice(-5));
+        
+        // Verify no duplicates by checking for exact matches
+        const allNames = Object.keys(state.populationData);
+        const uniqueNames = new Set(allNames);
+        if (allNames.length !== uniqueNames.size) {
+          console.warn(`⚠️ DUPLICATE NAMES DETECTED!`);
+          console.warn(`  - Total names: ${allNames.length}`);
+          console.warn(`  - Unique names: ${uniqueNames.size}`);
+          console.warn(`  - Duplicates: ${allNames.length - uniqueNames.size}`);
+      } else {
+          console.log(`✅ No duplicate names detected`);
+        }
+      } catch (error) {
+        console.error('Failed to load population data:', error);
+        toast('Failed to load population data', 'err');
+      }
+    }
+
+    function startGame() {
+      // Ensure clean start - clear any leftover data
+      if (state.stats.countriesClicked.length > 0) {
+        console.log('🧹 StartGame: Clearing leftover statistics before starting');
+        state.stats.countriesClicked = [];
+      }
+      
+      // Reset click tracking for new game
+      state.lastClickedCountry = null;
+      state.lastClickTime = 0;
+      
+      // Log initial state
+      console.log('🎮 StartGame: Initial state:');
+      console.log('  - Stats correct:', state.stats.correct);
+      console.log('  - Stats wrong:', state.stats.wrong);
+      console.log('  - Stats skipped:', state.stats.skipped);
+      console.log('  - Countries clicked array length:', state.stats.countriesClicked.length);
+      console.log('  - Completed countries:', state.completedCountries.size);
+      console.log('  - Click tracking reset');
+      
+      // Show game info and hide start button
+      document.getElementById('gameInfo').style.display = 'block';
+      document.getElementById('startBtn').style.display = 'none';
+      
+      // Show game buttons
+      document.getElementById('pauseBtn').style.display = 'flex';
+      document.getElementById('skipBtn').style.display = 'flex';
+      document.getElementById('settingsBtn').style.display = 'flex';
+      document.getElementById('statsBtn').style.display = 'flex';
+      document.getElementById('resetBtn').style.display = 'flex';
+      
+      // Reset pause state
+      state.isPaused = false;
+      state.pauseStartTime = null;
+      
+      // Start the timer
+      startTimer();
+      
+      // Set initial target
+      setTargetRandom();
+      
+      // Update initial countries count display
+      updateCountriesCount();
+      
+      // Also force update after a short delay
+      setTimeout(() => {
+        console.log('🔄 StartGame delayed updateCountriesCount call...');
+        updateCountriesCount();
+      }, 200);
+    }
+
+    function startTimer() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.gameStartTime = Date.now();
+      state.timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (!state.gameStartTime) return;
+      const elapsed = Math.floor((Date.now() - state.gameStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      $('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    function pauseGame() {
+      state.isPaused = true;
+      state.pauseStartTime = Date.now();
+      
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+      
+      if (state.layer) {
+        state.layer.remove();
+      }
+      
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      `;
+      
+      toast('⏸️ Game Paused');
+    }
+
+    function resumeGame() {
+      state.isPaused = false;
+      
+      if (state.pauseStartTime) {
+        const pauseDuration = Date.now() - state.pauseStartTime;
+        state.gameStartTime += pauseDuration;
+        state.pauseStartTime = null;
+      }
+      
+      startTimer();
+      
+      if (state.layer) {
+        state.layer.addTo(map);
+      }
+      
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      `;
+      
+      toast('▶️ Game Resumed');
+    }
+
+    function setTargetRandom() {
+      if (!state.features || state.features.length === 0) {
+        console.warn('No features available for target selection');
+        return;
+      }
+      
+      // Filter out completed countries AND countries without population data
+      const availableCountries = state.features.filter(feature => {
+        const countryName = pickName(feature.properties);
+        const hasPopulationData = state.populationData[countryName] || 
+                                 state.populationData[findBestCountryMatch(countryName)];
+        return !state.completedCountries.has(countryName) && hasPopulationData !== undefined;
+      });
+      
+      if (availableCountries.length === 0) {
+        $('targetPopulation').textContent = '🎉 ALL COUNTRIES COMPLETED!';
+        toast('🎉 Congratulations! You\'ve completed all countries!', 'ok');
+        stopTimer();
+        return;
+      }
+      
+      // Select random target from available countries (all have population data)
+      state.target = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+      if (state.target && state.target.properties) {
+        const countryName = pickName(state.target.properties);
+        const population = state.populationData[countryName] || 
+                          state.populationData[findBestCountryMatch(countryName)];
+        
+        if (population !== undefined) {
+          // Cap population at 300 million and show random between 200M-300M if over 300M
+          let displayPopulation = population;
+          if (population > 300000000) {
+            displayPopulation = Math.floor(Math.random() * (300000000 - 200000000 + 1)) + 200000000;
+            console.log(`Country ${countryName} has ${population.toLocaleString()} population, showing random: ${displayPopulation.toLocaleString()}`);
+          }
+          
+          // Smart factor selection based on population ranking and settings
+          let factor;
+          const allPopulations = Object.values(state.populationData).filter(p => p !== undefined).sort((a, b) => a - b);
+          const minPopulation = Math.min(...allPopulations);
+          const maxPopulation = Math.max(...allPopulations);
+          
+          // Check small countries setting first (under 1 million)
+          if (state.smallCountriesAlwaysHigher && population < 1000000) {
+            factor = 'HIGHER';
+            console.log(`🔍 Small country (${countryName}: ${population.toLocaleString()}) - setting always HIGHER due to Small Countries setting`);
+          } else if (population === minPopulation) {
+            // Lowest population country - always show HIGHER
+            factor = 'HIGHER';
+            console.log(`Lowest population country (${countryName}: ${population.toLocaleString()}) - showing HIGHER`);
+          } else if (population === maxPopulation) {
+            // Highest population country - always show LOWER
+            factor = 'LOWER';
+            console.log(`Highest population country (${countryName}: ${population.toLocaleString()}) - showing LOWER`);
+      } else {
+            // Middle population countries - random factor
+            factor = Math.random() < 0.5 ? 'HIGHER' : 'LOWER';
+            console.log(`Middle population country (${countryName}: ${population.toLocaleString()}) - random factor: ${factor}`);
+          }
+          
+          state.currentFactor = factor;
+          
+          // Update population display with color based on factor
+          const populationElement = $('targetPopulation');
+          populationElement.textContent = displayPopulation.toLocaleString();
+          populationElement.className = 'population-display ' + (factor === 'HIGHER' ? 'higher' : 'lower');
+        } else {
+          console.log('Population data not found for:', countryName);
+          setTargetRandom(); // Try another country
+        }
+      }
+    }
+
+    function updateCountriesCount() {
+      const completedCount = state.completedCountries.size;
+      // Use GeoJSON count (total countries on map) instead of population data count
+      const totalCountries = state.features ? state.features.length : 0;
+      
+      // Safety check: only update if features are loaded
+      if (totalCountries === 0) {
+        console.log('⚠️ updateCountriesCount called before features loaded, skipping...');
+        return;
+      }
+      
+      // Use GeoJSON count (total countries on map)
+      const correctTotal = totalCountries;
+      
+      $('countriesCount').textContent = `${completedCount} / ${correctTotal}`;
+      console.log(`Updated countries count: ${completedCount} / ${correctTotal}`);
+      console.log(`  - Total countries in GeoJSON: ${correctTotal}`);
+      console.log(`  - Countries with population data: ${Object.keys(state.populationData).length}`);
+      console.log(`  - Population data keys:`, Object.keys(state.populationData).slice(0, 5), '...');
+      
+      // Force update the display to ensure it's correct
+      if ($('countriesCount').textContent !== `${completedCount} / ${correctTotal}`) {
+        console.log('🔄 Force updating countries count display...');
+        $('countriesCount').textContent = `${completedCount} / ${correctTotal}`;
+      }
+      
+      // Double-check: if somehow the wrong count got set, fix it immediately
+      setTimeout(() => {
+        if ($('countriesCount').textContent !== `${completedCount} / ${correctTotal}`) {
+          console.log('🚨 Wrong count detected after update, fixing immediately...');
+          $('countriesCount').textContent = `${completedCount} / ${correctTotal}`;
+        }
+      }, 50);
+    }
+    
+    // Update countries count only when completed countries change
+    function updateCountriesCountIfNeeded() {
+      const currentCompletedCount = state.completedCountries.size;
+      const totalCountries = Object.keys(state.populationData).length;
+      
+      // Only update if the count actually changed
+      const currentDisplay = $('countriesCount').textContent;
+      const expectedDisplay = `${currentCompletedCount} / ${totalCountries}`;
+      
+      if (currentDisplay !== expectedDisplay) {
+        $('countriesCount').textContent = expectedDisplay;
+        console.log(`Updated countries count: ${currentCompletedCount} / ${totalCountries}`);
+      }
+    }
+    
+    // Check if country should be added to statistics (prevents consecutive duplicates)
+    function shouldAddToStatistics(countryName, result) {
+      const currentTime = Date.now();
+      const timeSinceLastClick = currentTime - state.lastClickTime;
+      
+      // If same country was clicked recently (within 2 seconds), don't add
+      if (state.lastClickedCountry === countryName && timeSinceLastClick < 2000) {
+        console.log(`🚫 Skipped adding ${countryName} to statistics - clicked too recently (${timeSinceLastClick}ms ago)`);
+        return false;
+      }
+      
+      // Update tracking
+      state.lastClickedCountry = countryName;
+      state.lastClickTime = currentTime;
+      
+      console.log(`✅ Adding ${countryName} to statistics - new country or enough time passed`);
+      return true;
+    }
+    
+    // Function to show all countries missing population data
+    function showMissingCountries() {
+      if (!state.features) {
+        console.log('No features loaded yet');
+        return;
+      }
+      
+      const missingCountries = [];
+      state.features.forEach(feature => {
+        const countryName = pickName(feature.properties);
+        const hasData = state.populationData[countryName] || 
+                       state.populationData[findBestCountryMatch(countryName)];
+        if (hasData === undefined) {
+          missingCountries.push(countryName);
+        }
+      });
+      
+      console.log(`📋 Countries missing population data (${missingCountries.length} total):`);
+      missingCountries.forEach((country, index) => {
+        console.log(`  ${index + 1}. ${country}`);
+      });
+      
+      return missingCountries;
+    }
+
+    function buildLayer(geojson) {
+      if (state.layer) state.layer.remove();
+
+      state.layer = L.geoJSON(geojson, {
+        filter: keep,
+        style: baseStyle,
+        onEachFeature: (feature, layer) => {
+          const countryName = pickName(feature.properties);
+          const hasPopulationData = state.populationData[countryName] || 
+                                   state.populationData[findBestCountryMatch(countryName)];
+          
+          // Only make countries clickable if they have population data
+          if (hasPopulationData !== undefined) {
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(feature, e.target)
+          });
+          } else {
+            // Countries without population data get a different style and no interactions
+            layer.setStyle({ ...baseStyle, fillOpacity: 0.02, color: '#6b7280' });
+          }
+        }
+      }).addTo(map);
+
+      state.allFeatures = state.layer.toGeoJSON().features;
+      state.features = [...state.allFeatures];
+      
+      if (state.features && state.features.length > 0) {
+        console.log(`Loaded ${state.features.length} features`);
+        
+        // Count how many countries have population data
+        let countriesWithData = 0;
+        let countriesWithoutData = 0;
+        state.features.forEach(feature => {
+          const countryName = pickName(feature.properties);
+          const hasData = state.populationData[countryName] || 
+                         state.populationData[findBestCountryMatch(countryName)];
+          if (hasData !== undefined) {
+            countriesWithData++;
+          } else {
+            countriesWithoutData++;
+            console.log(`No population data for: "${countryName}"`);
+          }
+        });
+        console.log(`Countries with population data: ${countriesWithData}`);
+        console.log(`Countries without population data: ${countriesWithoutData}`);
+        
+        // Show some examples of countries without population data
+        if (countriesWithoutData > 0) {
+          console.log('Examples of countries without population data:');
+          let count = 0;
+          state.features.forEach(feature => {
+            if (count < 10) { // Show first 10 examples
+              const countryName = pickName(feature.properties);
+              const hasData = state.populationData[countryName] || 
+                             state.populationData[findBestCountryMatch(countryName)];
+              if (hasData === undefined) {
+                console.log(`  - ${countryName}`);
+                count++;
+              }
+            }
+          });
+          if (countriesWithoutData > 10) {
+            console.log(`  ... and ${countriesWithoutData - 10} more`);
+          }
+        }
+      } else {
+        console.error('No features loaded from GeoJSON');
+        throw new Error('No features loaded from GeoJSON');
+      }
+    }
+
+    function onCountryClick(feature, layer) {
+      const clickedCountryName = pickName(feature.properties);
+      const targetCountryName = pickName(state.target.properties);
+
+      if (clickedCountryName === targetCountryName) {
+        // Make country permanently green and unclickable
+        layer.setStyle(okStyle);
+        layer.off('click');
+        layer.off('mouseover');
+        layer.off('mouseout');
+        
+        state.completedCountries.add(clickedCountryName);
+        
+        // Update countries count only when a country is completed
+        updateCountriesCountIfNeeded();
+        
+        toast('✅ Correct: ' + clickedCountryName, 'ok');
+        
+        // Add to statistics only if should be added (prevents consecutive duplicates)
+        if (shouldAddToStatistics(clickedCountryName, 'correct')) {
+        state.stats.correct++;
+        state.stats.countriesClicked.push({
+            name: clickedCountryName,
+          result: 'correct',
+          timestamp: new Date().toLocaleTimeString()
+        });
+          console.log(`Added ${clickedCountryName} to statistics as correct`);
+        } else {
+          console.log(`🚫 Correct guess on ${clickedCountryName} not counted - clicked too recently`);
+        }
+        
+        try { map.fitBounds(layer.getBounds(), { maxZoom: 4, animate: true }); } catch {}
+        setTimeout(() => setTargetRandom(), 650);
+      } else {
+        // Check if the clicked country meets the population criteria
+        console.log(`Clicked country: "${clickedCountryName}"`);
+        console.log(`Target country: "${targetCountryName}"`);
+        console.log(`Direct population lookup:`, state.populationData[clickedCountryName]);
+        
+        // Special debug for Northern Cyprus
+        if (clickedCountryName === 'Northern Cyprus') {
+          console.log('🔍 Debugging Northern Cyprus:');
+          console.log('  - Direct lookup:', state.populationData['Northern Cyprus']);
+          console.log('  - All population data keys:', Object.keys(state.populationData));
+          console.log('  - Looking for exact match...');
+        }
+        
+        const clickedPopulation = state.populationData[clickedCountryName] || 
+                                 state.populationData[findBestCountryMatch(clickedCountryName)];
+        const targetPopulation = state.populationData[targetCountryName] || 
+                                state.populationData[findBestCountryMatch(targetCountryName)];
+        
+        console.log(`Final clicked population:`, clickedPopulation);
+        console.log(`Final target population:`, targetPopulation);
+        
+        if (clickedPopulation !== undefined && targetPopulation !== undefined) {
+          let isCorrect = false;
+          
+          if (state.currentFactor === 'HIGHER') {
+            isCorrect = clickedPopulation > targetPopulation;
+          } else {
+            isCorrect = clickedPopulation < targetPopulation;
+          }
+          
+          if (isCorrect) {
+            // Make country permanently green and unclickable
+            layer.setStyle(okStyle);
+            layer.off('click');
+            layer.off('mouseover');
+            layer.off('mouseout');
+            
+            state.completedCountries.add(clickedCountryName);
+            
+            // Update countries count only when a country is completed
+            updateCountriesCountIfNeeded();
+            
+            toast(`✅ Correct! ${clickedCountryName} has ${state.currentFactor.toLowerCase()} population`, 'ok');
+            
+            // Add to statistics only if should be added (prevents consecutive duplicates)
+            if (shouldAddToStatistics(clickedCountryName, 'correct')) {
+              state.stats.correct++;
+              state.stats.countriesClicked.push({
+                name: clickedCountryName,
+                result: 'correct',
+                timestamp: new Date().toLocaleTimeString()
+              });
+              console.log(`Added ${clickedCountryName} to statistics as correct`);
+            } else {
+              console.log(`🚫 Correct guess on ${clickedCountryName} not counted - clicked too recently`);
+            }
+            
+        try { map.fitBounds(layer.getBounds(), { maxZoom: 4, animate: true }); } catch {}
+        setTimeout(() => setTargetRandom(), 650);
+      } else {
+        layer.setStyle(badStyle);
+            toast(`❌ Wrong. ${clickedCountryName} doesn't have ${state.currentFactor.toLowerCase()} population`, 'err');
+            
+            // Add to statistics only if should be added (prevents consecutive duplicates)
+            if (shouldAddToStatistics(clickedCountryName, 'wrong')) {
+        state.stats.wrong++;
+        state.stats.countriesClicked.push({
+                name: clickedCountryName,
+          result: 'wrong',
+          timestamp: new Date().toLocaleTimeString()
+        });
+              console.log(`Added ${clickedCountryName} to statistics as wrong`);
+              console.log(`Current wrong count: ${state.stats.wrong}, array length: ${state.stats.countriesClicked.filter(c => c.result === 'wrong').length}`);
+            } else {
+              console.log(`🚫 Wrong guess on ${clickedCountryName} not counted - clicked too recently`);
+            }
+          }
+        } else {
+          layer.setStyle(badStyle);
+          toast('❌ Population data not available for this country', 'err');
+          
+          // Add to statistics only if should be added (prevents consecutive duplicates)
+          if (shouldAddToStatistics(clickedCountryName, 'wrong')) {
+            state.stats.wrong++;
+            state.stats.countriesClicked.push({
+              name: clickedCountryName,
+              result: 'wrong',
+              timestamp: new Date().toLocaleTimeString()
+            });
+            console.log(`Added ${clickedCountryName} to statistics as wrong (no population data)`);
+          } else {
+            console.log(`🚫 Wrong guess on ${clickedCountryName} (no population data) not counted - clicked too recently`);
+          }
+        }
+      }
+    }
+
+    // Event listeners
+    $('startBtn').addEventListener('click', startGame);
+    
+    $('pauseBtn').addEventListener('click', () => {
+      if (!state.isPaused) {
+        pauseGame();
+      } else {
+        resumeGame();
+      }
+    });
+    
+    $('settingsBtn').addEventListener('click', () => {
+      showSettings();
+    });
+    
+    $('skipBtn').addEventListener('click', () => {
+      const skippedCountryName = pickName(state.target.properties);
+      toast('⏭️ Skipped: ' + skippedCountryName);
+      
+      // Add to statistics only if should be added (prevents consecutive duplicates)
+      if (shouldAddToStatistics(skippedCountryName, 'skipped')) {
+        state.stats.skipped++;
+      state.stats.countriesClicked.push({
+        name: skippedCountryName,
+        result: 'skipped',
+        timestamp: new Date().toLocaleTimeString()
+      });
+        console.log(`Added ${skippedCountryName} to statistics as skipped`);
+      } else {
+        console.log(`🚫 Skipped ${skippedCountryName} not counted - clicked too recently`);
+      }
+      
+      setTargetRandom();
+    });
+    
+    $('statsBtn').addEventListener('click', showStats);
+    
+    $('resetBtn').addEventListener('click', () => {
+      // Close any open modals first
+      hideStats();
+      hideSettings();
+      
+      // Reset countries count display to 0
+      updateCountriesCount();
+      if (state.layer) state.layer.setStyle(baseStyle);
+      
+      document.getElementById('gameInfo').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'flex';
+      
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('skipBtn').style.display = 'none';
+      document.getElementById('settingsBtn').style.display = 'none';
+      document.getElementById('statsBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      
+      stopTimer();
+      $('timer').textContent = '00:00';
+      $('targetPopulation').textContent = '…';
+      $('targetPopulation').className = 'population-display';
+      
+      // Clear all statistics
+      state.stats.correct = 0;
+      state.stats.wrong = 0;
+      state.stats.skipped = 0;
+      state.stats.countriesClicked = [];
+      
+      console.log('🧹 Reset: All statistics cleared');
+      console.log('  - Correct:', state.stats.correct);
+      console.log('  - Wrong:', state.stats.wrong);
+      console.log('  - Skipped:', state.stats.skipped);
+      console.log('  - Countries clicked:', state.stats.countriesClicked.length);
+      
+      state.isPaused = false;
+      state.pauseStartTime = null;
+      state.completedCountries.clear();
+      
+      // Reset click tracking
+      state.lastClickedCountry = null;
+      state.lastClickTime = 0;
+      
+      console.log('  - Completed countries cleared:', state.completedCountries.size);
+      console.log('  - Click tracking reset');
+      
+      // Reset map to full size
+      const mapElement = document.getElementById('map');
+      mapElement.classList.remove('minimized');
+      state.isMapMinimized = false;
+      
+      if (state.layer) {
+        state.layer.eachLayer(layer => {
+          layer.setStyle(baseStyle);
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(layer.feature, e.target)
+          });
+        });
+      }
+      
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      `;
+    });
+
+    // Statistics functions
+    function showStats() {
+      // Ensure we're showing current statistics
+      console.log('📊 ShowStats: Current statistics state:');
+      console.log('  - Correct:', state.stats.correct);
+      console.log('  - Wrong:', state.stats.wrong);
+      console.log('  - Skipped:', state.stats.skipped);
+      console.log('  - Countries clicked:', state.stats.countriesClicked.length);
+      
+      // Update statistics display
+      $('statsCorrect').textContent = state.stats.correct;
+      $('statsWrong').textContent = state.stats.wrong;
+      $('statsSkipped').textContent = state.stats.skipped;
+      
+      const total = state.stats.correct + state.stats.wrong;
+      const accuracy = total > 0 ? Math.round((state.stats.correct / total) * 100) : 0;
+      $('statsAccuracy').textContent = accuracy + '%';
+      
+      // Update countries list
+      const countriesList = $('countriesList');
+      console.log(`Displaying statistics: ${state.stats.countriesClicked.length} countries clicked`);
+      console.log('Countries in statistics:', state.stats.countriesClicked);
+      
+      if (state.stats.countriesClicked.length === 0) {
+        countriesList.innerHTML = '<p class="no-countries">No countries clicked yet</p>';
+      } else {
+        countriesList.innerHTML = state.stats.countriesClicked.map(country => {
+          let resultClass = country.result;
+          let resultText = country.result;
+          
+          if (country.result === 'correct') {
+            resultText = '✅ Correct';
+          } else if (country.result === 'wrong') {
+            resultText = '❌ Wrong';
+          } else if (country.result === 'skipped') {
+            resultText = '⏭️ Skipped';
+          }
+          
+          // Get population data for the country
+          const population = state.populationData[country.name] || 
+                            state.populationData[findBestCountryMatch(country.name)];
+          const populationText = population ? population.toLocaleString() : 'N/A';
+          
+          return `
+            <div class="country-item ${resultClass}">
+              <div class="country-info">
+              <span class="country-name">${country.name}</span>
+                <span class="country-population">Population: ${populationText}</span>
+              </div>
+              <span class="country-result ${resultClass}">${resultText}</span>
+            </div>
+          `;
+        }).join('');
+      }
+      
+      // Show modal
+      $('statsModal').style.display = 'flex';
+    }
+
+    function hideStats() {
+      $('statsModal').style.display = 'none';
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      if (newTheme === 'light') {
+        // Light theme: light map tiles, light background
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Update map background and page background
+        document.documentElement.style.setProperty('--page-bg', '#f8fafc');
+        document.documentElement.style.setProperty('--map-bg', '#f8fafc');
+        
+        toast('☀️ Light mode enabled');
+      } else {
+        // Dark theme: dark map tiles, dark background
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Update map background and page background
+        document.documentElement.style.setProperty('--page-bg', '#0b1020');
+        document.documentElement.style.setProperty('--map-bg', '#0b1020');
+        
+        toast('🌙 Dark mode enabled');
+      }
+    }
+
+    function toggleMapMinimize() {
+      const mapElement = document.getElementById('map');
+      const mapToggle = document.getElementById('mapToggle');
+      
+      if (state.isMapMinimized) {
+        // Maximize map
+        mapElement.classList.remove('minimized');
+        mapToggle.classList.remove('active');
+        state.isMapMinimized = false;
+        toast('🗺️ Map maximized');
+        
+        // Refresh map view
+        setTimeout(() => {
+          map.invalidateSize();
+          map.setView([20, 0], 1);
+        }, 100);
+      } else {
+        // Minimize map
+        mapElement.classList.add('minimized');
+        mapToggle.classList.add('active');
+        state.isMapMinimized = true;
+        toast('🗺️ Map minimized');
+        
+        // Center the minimized map
+        setTimeout(() => {
+          map.invalidateSize();
+          map.setView([20, 0], 2);
+        }, 400);
+      }
+    }
+
+    function toggleSmallCountries() {
+      state.smallCountriesAlwaysHigher = !state.smallCountriesAlwaysHigher;
+      const smallCountriesToggle = document.getElementById('smallCountriesToggle');
+      smallCountriesToggle.classList.toggle('active', state.smallCountriesAlwaysHigher);
+      
+      // Save setting to localStorage
+      localStorage.setItem('smallCountriesAlwaysHigher', state.smallCountriesAlwaysHigher);
+      
+      if (state.smallCountriesAlwaysHigher) {
+        toast('🔍 Small countries mode: Always HIGHER for countries under 1M population');
+      } else {
+        toast('🎯 Normal mode: Random factors for all countries');
+      }
+    }
+
+    function showSettings() {
+      // Update toggle states
+      const themeToggle = document.getElementById('themeToggle');
+      const mapToggle = document.getElementById('mapToggle');
+      
+      // Set theme toggle state
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      themeToggle.classList.toggle('active', currentTheme === 'light');
+      
+      // Set map toggle state
+      mapToggle.classList.toggle('active', state.isMapMinimized);
+      
+      // Set small countries toggle state
+      const smallCountriesToggle = document.getElementById('smallCountriesToggle');
+      smallCountriesToggle.classList.toggle('active', state.smallCountriesAlwaysHigher);
+      
+      // Show modal
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function hideSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    // Load lightweight world countries (Natural Earth 110m)
+    const SOURCES = [
+      './countries.geojson',
+      'countries.geojson',
+      '/countries.geojson',
+      'countries.geojson',
+      'https://datahub.io/core/geo-countries/r/0.geojson',
+      'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
+    ];
+    
+    async function fetchJSONFlexible(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      console.log(`[${url}] Raw response length:`, text.length);
+      console.log(`[${url}] First 200 chars:`, text.substring(0, 200));
+      const data = JSON.parse(text.replace(/^\uFEFF/, ''));
+      console.log(`[${url}] Parsed data:`, data);
+      if (data && data.features) {
+        console.log(`[${url}] Features count:`, data.features.length);
+        if (data.features.length > 0) {
+          console.log(`[${url}] First feature:`, data.features[0]);
+        }
+      }
+      return data;
+    }
+
+    (async function loadBoundaries() {
+      // Initialize theme first
+      initTheme();
+      
+      // Load population data first
+      await loadPopulationData();
+      
+      for (const url of SOURCES) {
+        try {
+          console.log('[countries] trying', url);
+          const data = await fetchJSONFlexible(url);
+          if (!data || !Array.isArray(data.features)) throw new Error('Not a GeoJSON FeatureCollection');
+          buildLayer(data); 
+          
+          // Update countries count after both population data and GeoJSON are loaded
+          console.log('🔄 After buildLayer, calling updateCountriesCount...');
+          updateCountriesCount();
+          
+          // Also update after a short delay to ensure DOM is updated
+          setTimeout(() => {
+            console.log('🔄 Delayed updateCountriesCount call...');
+            updateCountriesCount();
+          }, 100);
+          
+                        // Force set the correct count directly
+              const totalCountries = state.features ? state.features.length : 0;
+              $('countriesCount').textContent = `0 / ${totalCountries}`;
+              console.log(`🔧 Force set countries count: 0 / ${totalCountries}`);
+          
+          toast('Loaded country boundaries'); 
+          return;
+        } catch (err) { 
+          console.warn('Boundary source failed:', url, err); 
+        }
+      }
+      alert('Failed to load country boundaries from all sources. Make sure "countries.geojson" is in the SAME folder as index.html, and that your server root is that folder. Try visiting your /countries.geojson directly to confirm it serves raw JSON.');
+    })();
+
+    // Statistics button event listener
+    $('statsBtn').addEventListener('click', showStats);
+    
+    // Close statistics modal
+    $('closeStats').addEventListener('click', hideStats);
+    
+    // Close modal when clicking outside
+    $('statsModal').addEventListener('click', (e) => {
+      if (e.target === $('statsModal')) {
+        hideStats();
+      }
+    });
+
+    // Settings modal event listeners
+    $('closeSettings').addEventListener('click', hideSettings);
+    
+    // Close settings modal when clicking outside
+    $('settingsModal').addEventListener('click', (e) => {
+      if (e.target === $('settingsModal')) {
+        hideSettings();
+      }
+    });
+
+    // Toggle button event listeners
+    $('themeToggle').addEventListener('click', () => {
+      toggleTheme();
+      // Update toggle state after theme change
+      setTimeout(() => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        $('themeToggle').classList.toggle('active', currentTheme === 'light');
+      }, 100);
+    });
+
+    $('mapToggle').addEventListener('click', () => {
+      toggleMapMinimize();
+    });
+
+    $('smallCountriesToggle').addEventListener('click', () => {
+      toggleSmallCountries();
+    });
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      
+      // Set initial map tiles and background based on theme
+      if (savedTheme === 'light') {
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Set light theme background
+        document.documentElement.style.setProperty('--page-bg', '#f8fafc');
+        document.documentElement.style.setProperty('--map-bg', '#f8fafc');
+      } else {
+        // Dark theme: set dark background
+        document.documentElement.style.setProperty('--page-bg', '#0b1020');
+        document.documentElement.style.setProperty('--map-bg', '#0b1020');
+      }
+    }
+
+    // Improve mobile playability: two-finger pan
+    map.touchZoom.enable();
+    map.dragging.enable();
+    map.on('touchstart', (e) => { if (e.touches && e.touches.length === 1) { map.dragging.disable(); } });
+    map.on('touchend', () => map.dragging.enable());
+    
+    // Console commands for debugging
+    console.log('🔧 Console commands available:');
+    console.log('  - showMissingCountries() - Shows all countries without population data');
+    console.log('  - state.populationData - Shows all countries with population data');
+    console.log('  - state.features.length - Shows total countries in GeoJSON');
+    console.log('  - fixCountriesCount() - Force fix the countries count display');
+    console.log('  - debugCountriesCount() - Debug and immediately fix the count');
+    console.log('  - startCountMonitor() - Start automatic count fixing');
+    console.log('  - stopCountMonitor(intervalId) - Stop the count monitor');
+    console.log('  - showPopulationDataState() - Show detailed population data state');
+    
+    // Function to manually fix the countries count
+    window.fixCountriesCount = function() {
+      const totalCountries = state.features ? state.features.length : 0;
+      const completedCount = state.completedCountries.size;
+      $('countriesCount').textContent = `${completedCount} / ${totalCountries}`;
+      console.log(`🔧 Manually fixed countries count: ${completedCount} / ${totalCountries}`);
+    };
+    
+    // Function to immediately fix the count and show debug info
+    window.debugCountriesCount = function() {
+      console.log('🔍 Debugging countries count...');
+      console.log('  - state.populationData keys:', Object.keys(state.populationData));
+      console.log('  - state.populationData length:', Object.keys(state.populationData).length);
+      console.log('  - state.features length:', state.features ? state.features.length : 'unknown');
+      console.log('  - Current display:', $('countriesCount').textContent);
+      
+      const totalCountries = state.features ? state.features.length : 0;
+      const completedCount = state.completedCountries.size;
+      
+      // Force update the display
+      $('countriesCount').textContent = `${completedCount} / ${totalCountries}`;
+      console.log(`🔧 Fixed display to: ${completedCount} / ${totalCountries}`);
+      
+      return {
+        populationDataCount: Object.keys(state.populationData).length,
+        featuresCount: totalCountries,
+        currentDisplay: $('countriesCount').textContent
+      };
+    };
+    
+    // Function to continuously monitor and fix the count
+    window.startCountMonitor = function() {
+      console.log('🔍 Starting count monitor...');
+      
+      // Check every 500ms and fix if wrong
+      const monitorInterval = setInterval(() => {
+        const currentDisplay = $('countriesCount').textContent;
+        const totalCountries = state.features ? state.features.length : 0;
+        const completedCount = state.completedCountries.size;
+        const expectedDisplay = `${completedCount} / ${totalCountries}`;
+        
+        if (currentDisplay !== expectedDisplay) {
+          console.log(`🚨 Count mismatch detected!`);
+          console.log(`  - Current: ${currentDisplay}`);
+          console.log(`  - Expected: ${expectedDisplay}`);
+          console.log(`  - Fixing...`);
+          
+          $('countriesCount').textContent = expectedDisplay;
+        }
+      }, 500);
+      
+      console.log('✅ Count monitor started. Will fix any wrong counts automatically.');
+      return monitorInterval;
+    };
+    
+    // Function to stop the count monitor
+    window.stopCountMonitor = function(intervalId) {
+      if (intervalId) {
+        clearInterval(intervalId);
+        console.log('🛑 Count monitor stopped.');
+      }
+    };
+    
+    // Function to show detailed population data state
+    window.showPopulationDataState = function() {
+      console.log('🔍 Population Data State:');
+      console.log('  - Total keys in state.populationData:', Object.keys(state.populationData).length);
+      console.log('  - All keys:', Object.keys(state.populationData));
+      console.log('  - Sample entries:');
+      Object.entries(state.populationData).slice(0, 10).forEach(([name, pop]) => {
+        console.log(`    "${name}": ${pop}`);
+      });
+      
+      // Check for any entries that might be aliases
+      const aliasNames = [];
+      Object.keys(state.populationData).forEach(name => {
+        for (const [mainName, aliases] of Object.entries(countryNameAliases)) {
+          if (aliases.includes(name)) {
+            aliasNames.push({ alias: name, main: mainName });
+          }
+        }
+      });
+      
+      if (aliasNames.length > 0) {
+        console.warn('⚠️ Found alias names in populationData:');
+        aliasNames.forEach(({ alias, main }) => {
+          console.warn(`    "${alias}" should not be here (alias of "${main}")`);
+        });
+      } else {
+        console.log('✅ No alias names found in populationData');
+      }
+      
+      return {
+        totalKeys: Object.keys(state.populationData).length,
+        allKeys: Object.keys(state.populationData),
+        aliasNames: aliasNames
+      };
+    };
+  </script>
+</body>
+</html>

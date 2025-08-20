@@ -1,0 +1,2086 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Country Guesser - Hint Mode</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#0b1020;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#ffffff;--modal-border:#e5e7eb;--modal-text:#333333;--modal-text-secondary:#6b7280;
+      --modal-card-bg:#f9fafb;--modal-divider:#f3f4f6;
+      --page-bg:#0b1020;
+    }
+    
+    :root[data-theme="light"]{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#f8fafc;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#1f2937;--modal-border:#374151;--modal-text:#f9fafb;--modal-text-secondary:#d1d5db;
+      --modal-card-bg:#111827;--modal-divider:#1f2937;
+      --page-bg:#f8fafc;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: var(--page-bg);
+      color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+    
+    #app {
+      height: 100%;
+      position: relative;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+      background: var(--page-bg);
+      transition: all 0.4s ease, background-color 0.3s ease;
+    }
+    
+    .leaflet-container {
+      background: var(--page-bg);
+    }
+    
+    #map.minimized {
+      height: 500px;
+      width: 850px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(45, 45, 45, 0.181);
+      border: 1px solid #343434;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100;
+    }
+    
+    .hud {
+      position: absolute;
+      z-index: 1000;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(1px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px 20px;
+      min-width: 200px;
+      text-align: center;
+    }
+    
+    .game-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .control-btn:hover {
+      background: #374151;
+      border-color: #4b5563;
+      transform: translateY(-1px);
+    }
+    
+    .control-btn:active {
+      transform: translateY(0);
+    }
+    
+    .start-btn {
+      background: #059669;
+      border-color: #10b981;
+      color: #d1fae5;
+    }
+    
+    .start-btn:hover {
+      background: #047857;
+      border-color: #059669;
+    }
+    
+    .icon-btn {
+      background: #1f2937;
+      border-color: #374151;
+      color: #9ca3af;
+      min-width: 44px;
+      justify-content: center;
+    }
+    
+    .icon-btn:hover {
+      background: #374151;
+      border-color: #4b5563;
+    }
+    
+    .game-info {
+      display: none;
+    }
+    
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .k {
+      color: #94a3b8;
+    }
+    
+    .v {
+      font-weight: 700;
+    }
+    
+    .hint-row {
+      margin-bottom: 8px;
+    }
+    
+    .hint-text {
+      font-style: normal;
+      color:white;
+      text-align: center;
+      line-height: 1.4;
+      max-width: 300px;
+    }
+    
+    .toast {
+      position: absolute;
+      right: 12px;
+      top: 64px;
+      z-index: 700;
+      background: #111827;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: none;
+    }
+    
+    .toast.ok {
+      border-color: #14532d;
+    }
+    
+    .toast.err {
+      border-color: #4c0519;
+    }
+    
+    /* Settings Modal */
+    .settings-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .settings-content {
+      background: var(--modal-bg);
+      border: none;
+      border-radius: 16px;
+      max-width: 420px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+    
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px 24px 20px 24px;
+      border-bottom: 1px solid var(--modal-border);
+    }
+    
+    .settings-header h3 {
+      margin: 0;
+      color: var(--modal-text);
+      font-size: 20px;
+      font-weight: 600;
+    }
+    
+    .settings-body {
+      padding: 24px;
+    }
+    
+    .setting-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--modal-divider);
+    }
+    
+    .setting-item:last-child {
+      border-bottom: none;
+    }
+    
+    .setting-info {
+      flex: 1;
+      margin-right: 20px;
+    }
+    
+    .setting-label {
+      display: block;
+      color: var(--modal-text);
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    
+    .setting-desc {
+      display: block;
+      color: var(--modal-text-secondary);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+    
+    /* Toggle Button Styles */
+    .toggle-btn {
+      position: relative;
+      width: 50px;
+      height: 28px;
+      background: var(--modal-divider);
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      padding: 0;
+    }
+    
+    .toggle-btn.active {
+      background: #10b981;
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 24px;
+      height: 24px;
+      background: var(--modal-bg);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .toggle-btn.active .toggle-slider {
+      left: 24px;
+    }
+    
+    /* Statistics Modal */
+    .stats-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .stats-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .stats-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 20px 15px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .stats-header h3 {
+      margin: 0;
+      color: var(--fg);
+      font-size: 18px;
+    }
+    
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 24px;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .close-btn:hover {
+      background: var(--border-color);
+      color: var(--fg);
+    }
+    
+    .stats-body {
+      padding: 20px;
+    }
+    
+    .stats-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    
+    .stat-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 15px;
+      background: var(--bg);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    
+    .stat-label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    .stat-value {
+      color: var(--fg);
+      font-weight: 700;
+      font-size: 16px;
+    }
+    
+    .countries-list h4 {
+      margin: 0 0 15px 0;
+      color: var(--fg);
+      font-size: 16px;
+    }
+    
+    .countries-container {
+      max-height: 200px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      background: var(--bg);
+    }
+    
+    .country-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      margin-bottom: 5px;
+      background: var(--card-bg);
+      border-radius: 6px;
+      border-left: 4px solid transparent;
+    }
+    
+    .country-item.correct {
+      border-left-color: var(--accent);
+    }
+    
+    .country-item.wrong {
+      border-left-color: var(--danger);
+    }
+    
+    .country-name {
+      color: var(--fg);
+      font-weight: 500;
+    }
+    
+    .country-result {
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 500;
+    }
+    
+    .country-result.correct {
+      background: var(--accent);
+      color: white;
+    }
+    
+    .country-result.wrong {
+      background: var(--danger);
+      color: white;
+    }
+    
+    .no-countries {
+      text-align: center;
+      color: var(--muted);
+      font-style: italic;
+      margin: 20px 0;
+    }
+    
+    /* Difficulty Selection Modal */
+    .difficulty-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .difficulty-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    
+    .difficulty-header {
+      text-align: center;
+      padding: 20px 20px 15px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .difficulty-header h3 {
+      margin: 0;
+      color: var(--fg);
+      font-size: 18px;
+    }
+    
+    .difficulty-body {
+      padding: 20px;
+    }
+    
+    .difficulty-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .difficulty-btn {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: var(--bg);
+      border: 2px solid var(--border-color);
+      border-radius: 10px;
+      padding: 15px 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+      width: 100%;
+    }
+    
+    .difficulty-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+    
+    .difficulty-btn.easy:hover {
+      border-color: #22c55e;
+      box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+    }
+    
+    .difficulty-btn.normal:hover {
+      border-color: #f59e0b;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+    
+    .difficulty-btn.hard:hover {
+      border-color: #f97316;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.2);
+    }
+    
+    .difficulty-btn.extreme:hover {
+      border-color: #ef4444;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+    }
+    
+    .difficulty-icon {
+      font-size: 24px;
+      min-width: 30px;
+    }
+    
+    .difficulty-info {
+      flex: 1;
+    }
+    
+    .difficulty-name {
+      color: var(--fg);
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    
+    .difficulty-desc {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    
+    @media (max-width: 600px) {
+      .card {
+        max-width: 90svw;
+      }
+      
+      .stats-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .stats-summary {
+        grid-template-columns: 1fr;
+      }
+      
+      .difficulty-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .settings-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .setting-item {
+        padding: 16px 0;
+      }
+    }
+
+    /* Country tooltip styling */
+    .country-tooltip {
+      background: rgba(17, 24, 39, 0.95);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--fg);
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: 300px;
+      padding: 12px 16px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .country-tooltip::before {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid rgba(17, 24, 39, 0.95);
+    }
+
+    /* Interactive hint text styling */
+    .hint-text {
+      cursor: help;
+      border-bottom: 1px dotted var(--muted);
+      transition: all 0.2s ease;
+      position: relative;
+    }
+
+    .hint-text:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Custom tooltip for hint text */
+    .hint-tooltip {
+      position: absolute;
+      background: rgba(17, 24, 39, 0.98);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--fg);
+      font-size: 13px;
+      line-height: 1.4;
+      max-width: 350px;
+      padding: 16px 20px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(12px);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      z-index: 10000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      transform: translateY(-10px);
+    }
+
+    .hint-tooltip.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .hint-tooltip::before {
+      content: '';
+      position: absolute;
+      top: -6px;
+      left: 20px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 6px solid rgba(17, 24, 39, 0.98);
+    }
+
+    .hint-tooltip.below::before {
+      top: auto;
+      bottom: -6px;
+      border-bottom: none;
+      border-top: 6px solid rgba(17, 24, 39, 0.98);
+    }
+
+    /* Confetti animation */
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+
+    .country-item.wrong .country-result {
+      color: var(--danger);
+      font-weight: 600;
+    }
+
+    .country-item.skipped .country-result {
+      color: #f59e0b;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="map"></div>
+    
+    <div class="hud">
+      <div class="card">
+        <div class="game-controls">
+          <button id="startBtn" class="control-btn start-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Start
+          </button>
+          <button id="pauseBtn" class="control-btn icon-btn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+          </button>
+                        <button id="skipBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 32 32" fill="currentColor">
+                  <path d="M28.448,17.261L15.552,27.739C14.698,28.432,14,28.1,14,27v-6.938l-9.448,7.676
+	C3.698,28.432,3,28.1,3,27V5c0-1.1,0.698-1.432,1.552-0.739L14,11.937V5c0-1.1,0.698-1.432,1.552-0.739l12.896,10.478
+	C29.302,15.432,29.302,16.568,28.448,17.261z"/>
+                </svg>
+              </button>
+          <button id="settingsBtn" class="control-btn icon-btn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.07-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.74,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.07,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41,0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.47-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/>
+            </svg>
+          </button>
+                                      <button id="resetBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                </svg>
+              </button>
+              <button id="statsBtn" class="control-btn icon-btn" style="display: none;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                </svg>
+              </button>
+            </div>
+        <div id="gameInfo" class="game-info">
+          <div class="row hint-row">
+            <span class="k"></span> 
+            <span id="target" class="v hint-text">…</span>
+          </div>
+          <div class="row"><span class="k">Streak:</span> <span id="streak" class="v">0</span></div>
+          <div class="row"><span class="k">Time:</span> <span id="timer" class="v">00:00</span></div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="toast" class="toast">…</div>
+    
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="settings-modal" style="display: none;">
+      <div class="settings-content">
+        <div class="settings-header">
+          <h3>Settings</h3>
+          <button id="closeSettings" class="close-btn">×</button>
+        </div>
+        <div class="settings-body">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Theme</span>
+              <span class="setting-desc">Toggle between dark and light mode</span>
+            </div>
+            <button id="themeToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Map Size</span>
+              <span class="setting-desc">Toggle between full screen and mini card</span>
+            </div>
+            <button id="mapToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">Show All Countries</span>
+              <span class="setting-desc">Display all countries regardless of difficulty</span>
+            </div>
+            <button id="allCountriesToggle" class="toggle-btn">
+              <span class="toggle-slider"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Statistics Modal -->
+    <div id="statsModal" class="stats-modal" style="display: none;">
+      <div class="stats-content">
+        <div class="stats-header">
+          <h3>Game Statistics</h3>
+          <button id="closeStats" class="close-btn">×</button>
+        </div>
+        <div class="stats-body">
+          <div class="stats-summary">
+            <div class="stat-item">
+              <span class="stat-label">Correct:</span>
+              <span id="statsCorrect" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Wrong:</span>
+              <span id="statsWrong" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Skipped:</span>
+              <span id="statsSkipped" class="stat-value">0</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-label">Accuracy:</span>
+              <span id="statsAccuracy" class="stat-value">0%</span>
+            </div>
+          </div>
+          <div class="countries-list">
+            <h4>Countries Clicked</h4>
+            <div id="countriesList" class="countries-container">
+              <p class="no-countries">No countries clicked yet</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Difficulty Selection Modal -->
+    <div id="difficultyModal" class="difficulty-modal" style="display: none;">
+      <div class="difficulty-content">
+        <div class="difficulty-header">
+          <h3>Select Difficulty - Hint Mode</h3>
+        </div>
+        <div class="difficulty-body">
+          <div class="difficulty-options">
+            <button class="difficulty-btn easy" data-difficulty="easy">
+              <div class="difficulty-icon">🟢</div>
+              <div class="difficulty-info">
+                <div class="difficulty-name">Easy</div>
+                <div class="difficulty-desc">Well-known countries with hints</div>
+              </div>
+            </button>
+            <button class="difficulty-btn normal" data-difficulty="normal">
+              <div class="difficulty-icon">🟡</div>
+              <div class="difficulty-info">
+                <div class="difficulty-name">Normal</div>
+                <div class="difficulty-desc">Somewhat familiar countries with hints</div>
+              </div>
+            </button>
+            <button class="difficulty-btn hard" data-difficulty="hard">
+              <div class="difficulty-icon">🟠</div>
+              <div class="difficulty-info">
+                <div class="difficulty-name">Hard</div>
+                <div class="difficulty-desc">Lesser known countries with hints</div>
+              </div>
+            </button>
+            <button class="difficulty-btn extreme" data-difficulty="extreme">
+              <div class="difficulty-icon">🔴</div>
+              <div class="difficulty-info">
+                <div class="difficulty-name">Extreme</div>
+                <div class="difficulty-desc">All countries with hints</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    // --- Map setup ---
+    console.log('Initializing map...');
+    const map = L.map('map', {
+      worldCopyJump: true,
+      preferCanvas: false,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5,
+    }).setView([20, 0], 2);
+    console.log('Map initialized:', map);
+
+    console.log('Adding tile layer...');
+    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      maxZoom: 6,
+      minZoom: 2,
+      attribution: '&copy; OpenStreetMap & Carto',
+      subdomains: 'abcd'
+    }).addTo(map);
+    console.log('Tile layer added:', tileLayer);
+
+    // --- Game state ---
+    const state = {
+      features: [],
+      target: null,
+      streak: 0,
+      layer: null,
+      gameStartTime: null,
+      timerInterval: null,
+      isPaused: false,
+      pauseStartTime: null,
+      difficulty: null,
+      allFeatures: [], // Store all countries for filtering
+      completedCountries: new Set(), // Track completed countries
+      isMapMinimized: false,
+      showAllCountries: false,
+      stats: {
+        correct: 0,
+        wrong: 0,
+        skipped: 0,
+        countriesClicked: []
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg, kind = 'ok') => {
+      const el = $('toast');
+      el.className = 'toast ' + (kind === 'ok' ? 'ok' : 'err');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.style.display = 'none'; }, 1200);
+    };
+
+    // Normalize country names for comparison
+    const norm = (s) => (s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+
+    // Choose display name from NE props
+    const pickName = (p) => p.name || p.ADMIN || p.NAME_LONG || p.NAME || p.SOVEREIGNT || p.BRK_NAME;
+
+    // Avoid Antarctica and disputed water polygons
+    const keep = (f) => {
+      if (!f || !f.properties) {
+        console.warn('Feature missing properties:', f);
+        return false;
+      }
+      const n = pickName(f.properties);
+      if (!n) {
+        console.warn('Feature has no valid name:', f.properties);
+        return false;
+      }
+      const bad = ['Antarctica'];
+      return !bad.includes(n);
+    };
+
+    // Styling
+    const baseStyle = { color: '#2c3e50', weight: 1, fillColor: '#60a5fa', fillOpacity: 0.08 };
+    const hoverStyle = { weight: 2, fillOpacity: 0.25 };
+    const okStyle = { fillColor: '#16a34a', fillOpacity: 0.35 };
+    const badStyle = { fillColor: '#ef4444', fillOpacity: 0.35 };
+    
+    // Hint-based country system - NO OVERLAP between levels
+    const countryHints = {
+      easy: [
+        { country: 'United States of America', hint: 'Guns > healthcare. World police, but can\'t fix Detroit.', tooltip: 'A country that thinks freedom means healthcare bankruptcy. Mass shootings are weekly, but at least you can buy 3-liter sodas at Walmart. Hollywood sells dreams, while Detroit is a post-apocalyptic side quest.' },
+        { country: 'Canada', hint: 'Maple syrup & "sorry" factory. America\'s upstairs roommate.', tooltip: 'Basically America with manners. Their biggest threats are moose, poutine-induced heart failure, and freezing to death. Still better than being American though.' },
+        { country: 'Mexico', hint: 'Tacos, tequila, cartel tourism.', tooltip: 'Land of tacos and tequila, but also the final boss level of cartel violence. Tourists love Cancún; locals just try not to get kidnapped.' },
+        { country: 'Brazil', hint: 'Football gods, favela reality show.', tooltip: 'A nation where football is god, but politicians steal more than referees. Beaches are stunning, favelas less so. Carnival = half the country drunk in feathers.' },
+        { country: 'Argentina', hint: 'Messi + inflation speedrun.', tooltip: 'Messi carried this country harder than their economy ever could. Inflation is their true national sport, tango their therapy, and steak their antidepressant.' },
+        { country: 'United Kingdom', hint: 'Rain, tea, bad teeth, lost empire.', tooltip: 'Rain, bad food, crooked teeth, and colonial nostalgia. London looks rich until you step into the Tube. They lost the empire, but still think they\'re special.' },
+        { country: 'France', hint: 'Wine, baguettes, protests on loop.', tooltip: 'Strikes more than they work. Wine, cheese, baguettes, and a superiority complex so strong they think Paris traffic counts as culture. National motto: \'Non\'.' },
+        { country: 'Germany', hint: 'Autobahn fast, history dark.', tooltip: 'Cars and efficiency worshippers. Beer festival every year to forget their slightly problematic history. Their humor is as dead as their nightlife after 10 p.m.' },
+        { country: 'Italy', hint: 'Pizza, pasta, mafia DLC.', tooltip: 'Mafia DLC installed at birth. Roads are chaos, politicians are clowns, but hey — at least they make pizza, pasta, and espresso to distract you from corruption.' },
+        { country: 'Spain', hint: 'Siesta nation, bull abuse.', tooltip: 'Known for bull torture, endless fiestas, and taking naps instead of fixing unemployment. Barcelona just wants a divorce, Madrid keeps saying \'later\'.' },
+        { country: 'Portugal', hint: 'Used to own half the world, now just Ronaldo.', tooltip: 'Once ruled half the planet, now just Ronaldo and cheap beach holidays. Still bragging about the Age of Exploration while being Europe\'s discount Spain.' },
+        { country: 'Netherlands', hint: 'Bikes, weed, water level boss fight.', tooltip: 'Bikes everywhere, half the country underwater, and the other half stoned in Amsterdam. They\'re basically professional flood dodgers with tulips.' },
+        { country: 'Belgium', hint: 'Waffles, beer, EU paperwork.', tooltip: 'Chocolate, waffles, beer — everything except an actual identity. Country is basically French vs Dutch roommates forced to share a fridge.' },
+        { country: 'Switzerland', hint: 'Banks rich, souls neutral.', tooltip: 'Neutral in every war, but never neutral when hoarding dictators\' bank accounts. Rich chocolate, richer banks, soul-crushing prices. Cuckoo clocks > personality.' },
+        { country: 'Sweden', hint: 'IKEA, flatpack humans.', tooltip: 'Flatpack furniture and flat personalities. Their big exports are IKEA, Spotify, and melancholic pop music. Socialism made them rich, IKEA made them gods.' },
+        { country: 'Norway', hint: 'Oil money, Viking cosplay.', tooltip: 'Vikings once, now just eco-friendly oil hoarders. They flex fjords and universal healthcare while the rest of us drown in debt.' },
+        { country: 'Denmark', hint: 'Lego land, taxed happiness.', tooltip: 'Invented LEGO and taxes. Their royal family does nothing, their food is bland, but at least they rank high in happiness surveys.' },
+        { country: 'Finland', hint: 'Saunas, silence, suicide rates.', tooltip: 'Famous for silence, depression, and Nokia ringtones from the 2000s. They drink coffee like water and take saunas so hot you\'d think they hate themselves.' },
+        { country: 'Russia', hint: 'Vodka, nukes, frozen dictatorship.', tooltip: 'Vodka-soaked empire with nukes. Moscow glitters, Siberia freezes, and the government always has new excuses for why nothing works. Bears and corruption are national symbols.' },
+        { country: 'China', hint: 'Made everything, owns you. Can\'t drive or pee for 2000 years.', tooltip: 'They built the Great Wall, but can\'t build breathable air. Population = infinite, surveillance = everywhere. They make your iPhone, then censor your memes.' }
+      ],
+      normal: [
+        { country: 'Japan', hint: 'Anime, work until death.', tooltip: 'Invented anime waifus, vending machines for everything, and the art of working until you drop dead. Bullet trains move faster than their birth rate.' },
+        { country: 'South Korea', hint: 'K-pop slaves, Samsung nation.', tooltip: 'K-pop slave factory with Samsung glued to their hands. Plastic surgery is basically a national sport, and North Korea still photobombs their whole existence.' },
+        { country: 'India', hint: 'Curry, call centers, chaos.', tooltip: 'Curry-powered chaos where honking = language. Bollywood produces 10 movies a day, and cows get better legal protection than women.' },
+        { country: 'Pakistan', hint: 'Nukes + cricket addiction.', tooltip: 'Cricket obsession and nukes they can\'t really afford. Always fighting India like divorced exes who share a fence.' },
+        { country: 'Bangladesh', hint: 'Sweatshops & floods DLC.', tooltip: 'Sweatshops for your $5 H&M shirt. Floods every year, traffic never moves, but cricket still keeps them alive.' },
+        { country: 'Indonesia', hint: 'Islands, volcanoes, corruption.', tooltip: '17,000 islands and still can\'t run a country properly. Corruption, volcanoes, and Bali carrying the tourism industry on its back.' },
+        { country: 'Turkey', hint: 'Kebabs, coups, baklava, cats, bad politics.', tooltip: 'Kebabs, cats, coups, baklava, and Erdogan DLC installed. Half Europe, half Asia, fully confused.' },
+        { country: 'Saudi Arabia', hint: 'Oil kings, freedom slaves.', tooltip: 'Oil fountains for the princes, desert heat for everyone else. Freedom is illegal unless you\'re rich. Football = new PR campaign.' },
+        { country: 'Iran', hint: 'Ancient empire, modern WiFi ban, vs Israel.', tooltip: 'Once an empire, now just VPN speedrunners. Internet banned, politics cursed, but poets and kebabs still slap.' },
+        { country: 'Iraq', hint: 'Oil lottery, bomb tax in Middle East.', tooltip: 'Won the oil lottery but got taxed in bombs. Every decade is a new war season pass.' },
+        { country: 'Israel', hint: 'Startup nation, war subscription.', tooltip: 'Startup nation surrounded by people who want them gone. Makes killer tech, also lives on a permanent war subscription.' },
+        { country: 'Egypt', hint: 'Pyramids > present.', tooltip: 'Built pyramids 4,000 years ago and then took the rest of history off. Today it\'s scams at the Sphinx and traffic jams in Cairo.' },
+        { country: 'South Africa', hint: 'Safari vibes, crime DLC.', tooltip: 'Safari paradise with crime DLC unlocked. Nelson Mandela gave hope, politicians gave corruption.' },
+        { country: 'Nigeria', hint: 'Scammers, oil, chaos.', tooltip: 'Prince of scams, king of oil corruption. Jollof rice is amazing, but the power grid is basically optional.' },
+        { country: 'Kenya', hint: 'Runners > economy.', tooltip: 'Olympic runners who sprint past their collapsing economy. Safari tourism saves them from complete disaster.' },
+        { country: 'Australia', hint: 'Kangaroos, spiders, prison DLC.', tooltip: 'Kangaroos, giant spiders, and an accent that sounds like drunk English. Started as a prison colony, still acts like one.' },
+        { country: 'New Zealand', hint: 'Sheep > people, Hobbit homeland.', tooltip: 'Middle-earth cosplay with sheep outnumbering humans. They gave the world rugby, hobbits, and not much else.' },
+        { country: 'Poland', hint: 'Vodka tank, WW2 punching bag.', tooltip: 'Vodka tank disguised as a country. Always invaded, always rebuilding, never shutting up about WWII.' },
+        { country: 'Czech Republic', hint: 'Beer > water, castles everywhere.', tooltip: 'Beer cheaper than water, castles everywhere, and Prague stag parties keeping the economy alive.' },
+        { country: 'Slovakia', hint: 'Discount Czech, more mountains.', tooltip: 'Discount Czech Republic with extra mountains. Known for being the other one.' },
+        { country: 'Hungary', hint: 'Paprika + ____ dictatorship in EU.', tooltip: 'Paprika, thermal baths, and democracy on life support. Their leader plays dictator cosplay inside the EU.' },
+        { country: 'Austria', hint: 'Mozart, mountains, accidental Hitler.', tooltip: 'Mozart, skiing, and accidentally producing Hitler. Forever mistaken as Australia.' },
+        { country: 'Greece', hint: 'Ancient glory, broke today.', tooltip: 'Invented democracy, philosophy, and then debt. Still living off ancient ruins while the EU pays their bills.' },
+        { country: 'Croatia', hint: 'Coast rich, inland meh, in EU.', tooltip: 'Tourist coast is gorgeous, the inland is broke. National sport: charging tourists €10 for water.' },
+        { country: 'Serbia', hint: 'War crimes + turbo folk.', tooltip: 'Turbo folk, war crimes, and nationalism DLC that never got patched. Obsessed with Kosovo arguments.' },
+        { country: 'Romania', hint: 'Dracula, poverty, scams.', tooltip: 'Dracula\'s castle brings tourists, potholes make them regret it. Corruption is free, WiFi is cheap.' },
+        { country: 'Bulgaria', hint: 'Sunny Beach, broke inside, in EU.', tooltip: 'Sunny beaches for Brits, mafia bosses for locals. EU passport, Balkan problems.' },
+        { country: 'Albania', hint: 'Bunkers, mafia, Mercedes, located in EU.', tooltip: 'Bunkers everywhere, mafia everywhere, Mercedes everywhere. Basically GTA: Europe Edition.' },
+        { country: 'Bosnia and Herzegovina', hint: 'Bridges + ethnic beef.', tooltip: 'Scenic bridges and endless ethnic grudges. Still healing from the \'90s DLC.' },
+        { country: 'North Macedonia', hint: 'Name drama > economy.', tooltip: 'Had a decade-long name fight with Greece. Economy? Nah, just vibes.' },
+        { country: 'Slovenia', hint: 'Tiny, rich cousin of Balkans.', tooltip: 'Rich cousin of the Balkans. Too clean and too small to roast properly.' },
+        { country: 'Iceland', hint: 'Volcano DLC, tiny population.', tooltip: 'Volcanoes, geysers, and a population smaller than some malls. Everyone is probably related.' },
+        { country: 'Ireland', hint: 'Guinness, pubs, potato PTSD.', tooltip: 'Guinness on tap, pubs on every street, and potato PTSD forever. National hobby: complaining about the English.' },
+        { country: 'Scotland', hint: 'Bagpipes, whiskey, independence cosplay.', tooltip: 'Bagpipes torture, whiskey addiction, and screaming about independence every decade.' },
+        { country: 'Wales', hint: 'Sheep + unpronounceable names.', tooltip: 'Sheep country with towns named like keyboard smashes. Known for existing next to England.' },
+        { country: 'Morocco', hint: 'Couscous, Sahara, hashish.', tooltip: 'Couscous, Sahara camels, and hashish tourism. Forever in Spain\'s shadow.' },
+        { country: 'Algeria', hint: 'Oil + angry football fans, located in Africa.', tooltip: 'Oil money wasted, football rage perfected. Basically North Africa\'s background character.' },
+        { country: 'Tunisia', hint: 'Beach resorts, revolution DLC, flag looks like Turkey.', tooltip: 'Beach resorts for Europeans, revolutions for locals. Flag looks like Turkey\'s knockoff.' },
+        { country: 'Libya', hint: 'Gaddafi gone, chaos forever.', tooltip: 'Had Gaddafi, now just chaos on repeat. Oil-rich but future-broke.' },
+        { country: 'Ethiopia', hint: 'Coffee roots, famine memes.', tooltip: 'Coffee\'s birthplace, famine\'s poster child. Their calendar isn\'t even in the same year as the rest of us.' },
+        { country: 'Ghana', hint: 'Jollof wars, gold, vibes.', tooltip: 'Gold, cocoa, and football pride. Jollof wars keep them busy online.' },
+        { country: 'Ivory Coast', hint: 'Cocoa slaves, football flex.', tooltip: 'Chocolate empire built on misery. Football legends > economy.' },
+        { country: 'Senegal', hint: 'Music, fishing, no money.', tooltip: 'Amazing music, terrible money. Lives off fishing, vibes, and World Cup hype.' },
+        { country: 'Mali', hint: 'Desert jihadis, Timbuktu lore.', tooltip: 'Timbuktu used to mean legendary, now it means dusty jihadi desert.' },
+        { country: 'Chile', hint: 'Long boi country, earthquakes.', tooltip: 'World\'s skinniest country. Has everything: deserts, glaciers, earthquakes, and political chaos.' },
+        { country: 'Peru', hint: 'Machu Picchu > economy.', tooltip: 'Built Machu Picchu, still living off tourist selfies. Llamas and potatoes keep the economy alive.' },
+        { country: 'Bolivia', hint: 'Llamas + coca leaves.', tooltip: 'Coca leaves, llamas, and no coastline. Altitude sickness included.' },
+        { country: 'Colombia', hint: 'Coffee + cocaine bundle, near America.', tooltip: 'Coffee that keeps you awake, cocaine that keeps you too awake. Narcos still defines them for outsiders.' },
+        { country: 'Venezuela', hint: 'Oil rich, toilet paper poor, lcoated in America.', tooltip: 'Oil-rich, toilet-paper-poor. Inflation speedruns like it\'s a sport.' },
+        { country: 'Ecuador', hint: 'Equator line > economy.', tooltip: 'Equator line = their whole brand. Otherwise ignored.' },
+        { country: 'Paraguay', hint: 'Hidden, forgotten, irrelevant.', tooltip: 'South America\'s forgotten middle child. No coast, no fame, no reason to visit.' },
+        { country: 'Uruguay', hint: 'Weed legal, football legacy.', tooltip: 'Football legends, legal weed, and cows outnumbering humans. Otherwise invisible.' },
+        { country: 'Panama', hint: 'Canal > everything.', tooltip: 'One canal, entire country\'s personality. Everything else = irrelevant.' },
+        { country: 'Costa Rica', hint: '"Pura vida" vibes, no army.', tooltip: 'No army, pura vida vibes, and eco-tourism scams for rich Americans.' },
+        { country: 'Cuba', hint: 'Cigars, communism, classic cars.', tooltip: 'Classic cars stuck in the \'50s, communism stuck forever. Cigars keep them relevant.' },
+        { country: 'Jamaica', hint: 'Reggae, weed, sprinting gods.', tooltip: 'Weed, reggae, and sprinting gods. Island paradise until you check crime stats.' },
+        { country: 'Haiti', hint: 'Earthquakes, poverty, voodoo.', tooltip: 'First free Black republic, cursed ever since. Earthquakes, poverty, and no luck in sight.' },
+        { country: 'Dominican Republic', hint: 'Baseball + beaches.', tooltip: 'Beaches, baseball, and pretending not to share an island with Haiti.' },
+        { country: 'Puerto Rico', hint: 'USA\'s broke cousin.', tooltip: 'America\'s broke cousin: US passport but no statehood. Hurricanes hit harder than the economy.' },
+        { country: 'Thailand', hint: 'Beaches, temples, ladyboys.', tooltip: 'Temples, beaches, and spicy food. Tourists only know the ladyboys and backpacker hostels.' },
+        { country: 'Vietnam', hint: 'Pho > PTSD.', tooltip: 'Pho, scooters, and history defined by beating empires. PTSD for Americans, cheap paradise for tourists.' },
+        { country: 'Philippines', hint: 'Karaoke + typhoons.', tooltip: '7,000 islands, karaoke addiction, and typhoons every year. Everyone has an auntie working abroad.' },
+        { country: 'Malaysia', hint: 'Towers tall, politics short.', tooltip: 'Twin towers up high, politics down low. Forever overshadowed by Singapore.' },
+        { country: 'Singapore', hint: 'Rich ant farm with fines.', tooltip: 'Strict laws, spotless streets, and fines for chewing gum. Richest ant farm on Earth.' },
+        { country: 'Estonia', hint: 'Digital nation, e-government pioneer.', tooltip: 'Baltic country that went full digital. They vote online, have e-residency, and basically live in the future while their neighbors still use paper.' },
+        { country: 'Latvia', hint: 'Baltic beauty, Soviet scars.', tooltip: 'Baltic country with beautiful forests and beaches. Still recovering from Soviet occupation, but their capital Riga is a hidden gem.' },
+        { country: 'Lithuania', hint: 'Baltic giant, basketball nation.', tooltip: 'Largest of the Baltic states, basketball crazy. They punch above their weight in sports and have a beautiful medieval capital.' },
+        { country: 'Togo', hint: 'West African strip, phosphate rich.', tooltip: 'Long, thin West African country with phosphate deposits. They\'re basically a strip of land that France drew on a map.' },
+        { country: 'Benin', hint: 'Voodoo birthplace, slave coast.', tooltip: 'Birthplace of voodoo religion and major slave trading port. Now they\'re trying to rebrand as a tourist destination, which is... ambitious.' },
+        { country: 'Liberia', hint: 'Founded by freed slaves, civil war scars.', tooltip: 'Founded by freed American slaves, which explains the flag. Decades of civil war left them broken, but they\'re trying to rebuild.' },
+        { country: 'Sierra Leone', hint: 'Blood diamonds, civil war.', tooltip: 'Famous for blood diamonds and brutal civil war. They have beautiful beaches but a history that would make you cry.' },
+        { country: 'Mauritania', hint: 'Slavery still exists, desert nation.', tooltip: 'Desert country where slavery is still technically illegal but widely practiced. They have more sand than human rights.' },
+        { country: 'Sudan', hint: 'Civil war, Darfur genocide.', tooltip: 'Largest country in Africa until South Sudan split off. Now they\'re just known for civil wars and human rights violations.' },
+        { country: 'Kenya', hint: 'Safari capital, marathon runners.', tooltip: 'Safari capital of Africa with amazing wildlife. They also produce world-class marathon runners and have a growing tech scene.' },
+        { country: 'Tanzania', hint: 'Kilimanjaro, Zanzibar spice island.', tooltip: 'Home to Mount Kilimanjaro and the spice island of Zanzibar. They have amazing wildlife and beaches, but also lots of poverty.' },
+        { country: 'Serbia', hint: 'War crimes, turbo folk music.', tooltip: 'Balkan country with a complicated history. They have war crimes, turbo folk music, and are obsessed with Kosovo arguments.' },
+        { country: 'North Macedonia', hint: 'Name drama with Greece.', tooltip: 'Had a decade-long name fight with Greece. Economy? Nah, just vibes and identity politics.' },
+        { country: 'Guatemala', hint: 'Mayan ruins, civil war scars.', tooltip: 'Land of ancient Mayan ruins and recent civil war. They have beautiful volcanoes and a history of US-backed coups.' },
+        { country: 'Honduras', hint: 'Banana republic, gang violence.', tooltip: 'Classic banana republic with gang violence and corruption. They grow bananas and export people to the US.' },
+        { country: 'El Salvador', hint: 'Gang violence, Bitcoin adoption.', tooltip: 'Tiny country with huge gang problems. They made Bitcoin legal tender, probably to launder gang money.' },
+        { country: 'Guyana', hint: 'Oil discovery, Caribbean vibes.', tooltip: 'South American country with Caribbean vibes. Recently discovered oil, so they\'re about to get rich or get screwed.' },
+        { country: 'Suriname', hint: 'Dutch colony, jungle nation.', tooltip: 'Former Dutch colony in South America. They speak Dutch, have a jungle, and are basically the Netherlands\' tropical cousin.' },
+        { country: 'French Guiana', hint: 'French colony, space center.', tooltip: 'French colony that\'s technically part of France. They have the European Space Center and are basically France\'s spaceport.' },
+        { country: 'Uruguay', hint: 'Weed legal, football legacy.', tooltip: 'Progressive South American country that legalized weed. They\'re basically South America\'s Netherlands.' },
+        { country: 'Paraguay', hint: 'Hidden, forgotten, irrelevant.', tooltip: 'Landlocked South American country that everyone forgets exists. They have no coast, no fame, and no reason to visit.' },
+        { country: 'Bolivia', hint: 'Llamas + coca leaves.', tooltip: 'Landlocked country with llamas, coca leaves, and no coastline. Altitude sickness included with every visit.' },
+        { country: 'Panama', hint: 'Canal > everything.', tooltip: 'One canal, entire country\'s personality. Everything else = irrelevant. They\'re basically a canal with a country attached.' },
+        { country: 'Costa Rica', hint: '"Pura vida" vibes, no army.', tooltip: 'No army, pura vida vibes, and eco-tourism scams for rich Americans. They abolished their military in 1948.' },
+        { country: 'Nicaragua', hint: 'Sandinistas, Ortega dictatorship.', tooltip: 'Land of lakes and volcanoes, also home to the longest-running dictatorship in the Americas. Ortega has been president since forever.' },
+        { country: 'Belize', hint: 'English speaking, Mayan ruins.', tooltip: 'English-speaking country in Central America with Mayan ruins and beautiful coral reefs. They\'re basically Central America\'s Caribbean island.' },
+        { country: 'Cuba', hint: 'Cigars, communism, classic cars.', tooltip: 'Classic cars stuck in the \'50s, communism stuck forever. Cigars keep them relevant while the economy stays frozen in time.' },
+        { country: 'Jamaica', hint: 'Reggae, weed, sprinting gods.', tooltip: 'Weed, reggae, and sprinting gods. Island paradise until you check crime stats. Usain Bolt put them on the map.' },
+        { country: 'Haiti', hint: 'Earthquakes, poverty, voodoo.', tooltip: 'First free Black republic, cursed ever since. Earthquakes, poverty, and no luck in sight. They\'re basically cursed.' },
+        { country: 'Dominican Republic', hint: 'Baseball + beaches.', tooltip: 'Beaches, baseball, and pretending not to share an island with Haiti. They have better beaches and worse politics than their neighbor.' },
+        { country: 'Puerto Rico', hint: 'USA\'s broke cousin.', tooltip: 'America\'s broke cousin: US passport but no statehood. Hurricanes hit harder than the economy.' },
+        { country: 'Trinidad and Tobago', hint: 'Oil + steelpan music.', tooltip: 'Twin island nation with oil wealth and steelpan music. They have the best Carnival in the Caribbean and lots of oil money.' },
+        { country: 'Barbados', hint: 'Rihanna\'s homeland, British vibes.', tooltip: 'Rihanna\'s homeland with strong British colonial vibes. They have beautiful beaches and recently became a republic.' },
+        { country: 'Grenada', hint: 'Spice island, US invasion.', tooltip: 'Spice island that the US invaded in 1983. They grow nutmeg and have beautiful beaches, but also a history of foreign intervention.' },
+        { country: 'Saint Vincent and the Grenadines', hint: 'Tiny islands, volcanic.', tooltip: 'Tiny volcanic islands in the Caribbean. They have beautiful beaches and active volcanoes, which is a fun combination.' },
+        { country: 'Saint Lucia', hint: 'Twin peaks, luxury resorts.', tooltip: 'Twin volcanic peaks and luxury resorts. They have the Pitons (famous mountains) and lots of honeymooners.' },
+        { country: 'Dominica', hint: 'Nature island, hurricane magnet.', tooltip: 'Nature island with rainforests and waterfalls. Also a hurricane magnet, which makes tourism interesting.' },
+        { country: 'Antigua and Barbuda', hint: '365 beaches, one for each day.', tooltip: '365 beaches, one for each day of the year. They have beautiful beaches and a British colonial past.' },
+        { country: 'Montenegro', hint: 'Tiny Balkan country, mountain beauty.', tooltip: 'Tiny Balkan country that gained independence from Serbia in 2006. Mountains, beaches, and a name that means "Black Mountain."' },
+        { country: 'North Korea', hint: 'Hermit kingdom, nuclear threats.', tooltip: 'Hermit kingdom ruled by a family of dictators. They have nukes, no internet, and think their leader can control the weather.' },
+        { country: 'United Arab Emirates', hint: 'Oil wealth, Dubai skyscrapers.', tooltip: 'Federation of seven emirates, home to Dubai\'s skyscrapers and Abu Dhabi\'s oil money. They built cities in the desert because they could.' },
+        { country: 'Sri Lanka', hint: 'Tea island, civil war scars.', tooltip: 'Tea island that suffered through decades of civil war. Beautiful beaches, ancient temples, and a history of ethnic conflict.' },
+        { country: 'Nepal', hint: 'Himalayas, Mount Everest.', tooltip: 'Land of the Himalayas and Mount Everest. They have the world\'s highest mountain but also some of the world\'s poorest people.' },
+        { country: 'Bhutan', hint: 'Happiness index, Gross National Happiness.', tooltip: 'Tiny Himalayan kingdom that measures Gross National Happiness instead of GDP. They\'re happy because they don\'t know what they\'re missing.' },
+        { country: 'Maldives', hint: 'Sinking paradise, luxury resorts.', tooltip: 'Sinking paradise made up of 1,200 tiny islands. Luxury resorts for tourists, rising sea levels for locals. Climate change will erase them first.' }
+      ],
+      hard: [
+        { country: 'Kosovo', hint: 'Baby country, messy family drama in EU.', tooltip: 'Baby country still arguing with Serbia about existing. Half the world recognizes them, the other half says \'new phone, who dis?\'' },
+        { country: 'Moldova', hint: 'Wine strong, wallet empty.', tooltip: 'Wine is cheap, life is cheaper. Europe\'s poorest country with the personality of a forgotten Soviet fridge.' },
+        { country: 'Georgia', hint: 'Khachapuri kings, Russia\'s chew toy, interesting names.', tooltip: 'Khachapuri kings stuck between Russia and obscurity. Half of their fame is just people confusing them with the US state.' },
+        { country: 'Armenia', hint: 'First Christian, claims map, can\'t manage itself.', tooltip: 'First Christian country, now just stuck fighting over maps with Azerbaijan. Exports: diaspora and genocide arguments.' },
+        { country: 'Azerbaijan', hint: 'Oil rich, freedom dead, CEO of ___ Technology.', tooltip: 'Oil-rich, democracy-poor. Calls itself the \'Land of Fire\' because corruption burns brighter than freedom.' },
+        { country: 'Kyrgyzstan', hint: 'Nomads with TikTok WiFi in Asia.', tooltip: 'Nomads with WiFi. Everyone knows it only because the name is impossible to spell.' },
+        { country: 'Tajikistan', hint: 'Mountains high, spirits low, turkic.', tooltip: 'Mountains taller than their GDP. Borderline forgotten even by Google Maps.' },
+        { country: 'Turkmenistan', hint: 'Gas rich, brainwashed poor.', tooltip: 'North Korea with gas. Their dictator built a golden statue of himself that rotates with the sun. Enough said.' },
+        { country: 'Afghanistan', hint: 'Empire graveyard, Taliban DLC.', tooltip: 'Empire graveyard. Every superpower shows up, gets wrecked, and leaves. Taliban DLC keeps auto-renewing.' },
+        { country: 'Yemen', hint: 'Coffee invented, war perfected.', tooltip: 'Invented coffee, now stuck in endless war. International community: \'who?\'' },
+        { country: 'Oman', hint: 'Old sultan, tourist mirage.', tooltip: 'Desert, castles, and an old sultan who ran it like a personal hotel. Nobody actually vacations here on purpose.' },
+        { country: 'Qatar', hint: 'Gas towers, slave floors.', tooltip: 'Tiny gas-rich monarchy that bought the World Cup just to flex. Basically Dubai\'s less fun cousin.' },
+        { country: 'Bahrain', hint: 'Oil fumes, F1 zooms.', tooltip: 'Oil fumes, F1 zooms. If Saudi Arabia sneezes, Bahrain catches pneumonia.' },
+        { country: 'Kuwait', hint: 'Oil first, people second.', tooltip: 'Once invaded by Iraq, now just another oil stop with fancy malls. Personality: none.' },
+        { country: 'Jordan', hint: 'Surrounded chaos, broke but chill.', tooltip: 'Surrounded by chaos, somehow still chill. Tourism = Petra, economy = praying for aid.' },
+        { country: 'Syria', hint: 'History bombed to dust.', tooltip: 'Used to be the cradle of civilization, now just rubble and refugees. History bombed into dust.' },
+        { country: 'Lebanon', hint: 'Beirut boom, economy kaboom.', tooltip: 'Once called \'Paris of the Middle East,\' now bankrupt with weekly explosions. Exports: despair and good hummus.' },
+        { country: 'Palestine', hint: 'Forever occupied loading screen.', tooltip: 'Forever buffering statehood. Stuck in the world\'s longest loading screen.' },
+        { country: 'Solomon Islands', hint: 'WWII relics, now forgotten.', tooltip: 'WWII museum disguised as a country. Nobody visits except historians and lost Australians.' },
+        { country: 'Vanuatu', hint: 'Paradise drowning, nobody cares.', tooltip: 'Paradise drowning in rising seas. Their economy = postcards and coconuts.' },
+        { country: 'New Caledonia', hint: 'French colony, broke locals.', tooltip: 'French colony pretending to be independent. Half the locals want out, half just want better WiFi.' },
+        { country: 'Samoa', hint: 'First sunrise, late progress.', tooltip: 'First to see the sunrise, last to fix the roads. National sport: rugby and obesity.' },
+        { country: 'Tonga', hint: 'Fat monarchy cosplay.', tooltip: 'Tiny monarchy where half the population looks like rugby forwards. Internet is slower than their economy.' },
+        { country: 'Tuvalu', hint: 'Sinking into WiFi cables.', tooltip: 'Sinking island nation. Their .tv domain makes more money than the actual country.' },
+        { country: 'Kiribati', hint: 'First millennium, last relevance.', tooltip: 'First to greet the new year, first to be erased by climate change.' },
+        { country: 'Marshall Islands', hint: 'Nuked then ignored.', tooltip: 'America nuked them, then forgot about them. Their tourism slogan should be \'glow in the dark\'.' },
+        { country: 'Micronesia', hint: 'Tiny dots, tinier clout.', tooltip: 'Just dots in the Pacific. Nobody could point it out on a map, not even locals.' },
+        { country: 'Palau', hint: 'Sharks > citizens.', tooltip: 'Population smaller than a football stadium. Known only for sharks and tourists who think they\'re explorers.' },
+        { country: 'Nauru', hint: 'Ate phosphate, now obese + broke.', tooltip: 'Ate all its phosphate money, now obese and broke. Whole country is basically a cautionary tale.' },
+        { country: 'Cook Islands', hint: 'Holiday flex, poor reality.', tooltip: 'Technically New Zealand\'s side hustle. Pretty beaches, empty wallets.' },
+        { country: 'Niue', hint: '.nu domain > GDP.', tooltip: 'Nobody lives there but their internet domain .nu is worth more than their GDP.' },
+        { country: 'Burkina Faso', hint: 'Land of poor, and poor.', tooltip: 'The name sounds exotic, the reality is poverty and coups on loop.' },
+        { country: 'Niger', hint: 'Desert, coup speedruns.', tooltip: 'Desert wasteland that speedruns coups. Famous only because their name is a meme.' },
+        { country: 'Chad', hint: 'Meme name, worse life.', tooltip: 'The ultimate meme country: funny name, tragic everything else.' },
+        { country: 'Cameroon', hint: 'Africa mini-map, max corruption.', tooltip: 'Africa in miniature: diverse, chaotic, corrupt. Football is their only coping mechanism.' },
+        { country: 'Central African Republic', hint: 'Diamonds everywhere, poverty everywhere.', tooltip: 'Rich in diamonds, poor in everything else. Basically an RPG loot cave with no happy ending.' },
+        { country: 'Democratic Republic of the Congo', hint: 'Richest ground, poorest people.', tooltip: 'Richest ground on Earth, poorest people alive. Civil war forever DLC installed.' },
+        { country: 'Republic of the Congo', hint: 'Budget DRC.', tooltip: 'Budget version of DRC. Even the name admits it.' },
+        { country: 'Gabon', hint: 'Oil wealth, people broke. Rich forests, rich corruption.', tooltip: 'Oil wealth, forest beauty, and corruption thick enough to choke you.' },
+        { country: 'Equatorial Guinea', hint: 'One of Africa\'s richest in oil, poorest in life. Dictator runs it like his piggy bank.', tooltip: 'Oil-rich, population-poor. Dictator treats it like his personal credit card.' },
+        { country: 'São Tomé and Príncipe', hint: 'Chocolate, bitter ending.', tooltip: 'Chocolate islands nobody cares about. Sweet exports, bitter poverty.' },
+        { country: 'Angola', hint: 'Diamonds stolen, people starving.', tooltip: 'Diamonds stolen, people starving. Civil war still lingers like bad WiFi.' },
+        { country: 'Zambia', hint: 'Copper gone, dreams gone.', tooltip: 'Once had copper, now just has nostalgia. Victoria Falls is their only flex.' },
+        { country: 'Zimbabwe', hint: 'Breadbasket → basket case.', tooltip: 'From breadbasket to basket case. Currency inflation broke calculators.' },
+        { country: 'Botswana', hint: 'Diamonds done right (rare dub).', tooltip: 'One of Africa\'s rare success stories. Diamonds managed right, but still mostly desert and wildlife documentaries.' },
+        { country: 'Namibia', hint: 'Desert wallpaper nation.', tooltip: 'Looks like a Windows wallpaper: endless desert, nobody living there.' },
+        { country: 'Lesotho', hint: 'South Africa\'s hat.', tooltip: 'A mountain hat awkwardly worn by South Africa. That\'s it, that\'s the country.' },
+        { country: 'Eswatini', hint: 'King rich, subjects dying.', tooltip: 'Name change didn\'t hide the fact it\'s a kingdom where the king eats while the people starve.' },
+        { country: 'Madagascar', hint: 'Lemurs happy, people hungry.', tooltip: 'Cute lemurs, terrible everything else. Cartoon movie more famous than the actual island.' },
+        { country: 'Mauritius', hint: 'Honeymoon spot, broke locals.', tooltip: 'Honeymoon paradise for tourists, reality nightmare for locals. Sugar exports keep them sweet but broke.' },
+        { country: 'Seychelles', hint: 'Tourists luxury, natives struggle.', tooltip: 'Luxury resorts for the rich, scraps for the natives. Paradise with price tags.' },
+        { country: 'Comoros', hint: 'Island coups every week.', tooltip: 'Has more coups than functioning airports. Nobody outside Africa can spell it.' },
+        { country: 'Mayotte', hint: 'French passport, African reality.', tooltip: 'Technically France, practically broke. African island with European taxes.' },
+        { country: 'Réunion', hint: 'Volcano + French tax zone.', tooltip: 'Volcanic island + French bureaucracy. Paradise with paperwork.' },
+        { country: 'South Sudan', hint: 'Baby country, already bleeding.', tooltip: 'Newest country on Earth, already speedran civil war DLC. Independence didn\'t last long.' },
+        { country: 'Eritrea', hint: 'Africa\'s North Korea DLC.', tooltip: 'Africa\'s North Korea: dictatorship cosplay, zero freedom. Tourists don\'t exist here.' },
+        { country: 'Djibouti', hint: 'Global military parking lot.', tooltip: 'A literal parking lot for foreign armies. Strategic location, zero personality.' },
+        { country: 'Somalia', hint: 'Pirates, famine, failed state.', tooltip: 'Pirates, famine, failed state simulator. Somehow still afloat.' },
+        { country: 'Somaliland', hint: 'Stable but invisible', tooltip: 'Stable, functional, but invisible to the world. The underdog that doesn\'t get invited to the UN party.' },
+        { country: 'Kazakhstan', hint: 'Borat\'s homeland, space launch site.', tooltip: 'Largest landlocked country, home to Baikonur spaceport. Borat put them on the map, but they\'re still trying to figure out if that was good or bad.' },
+        { country: 'Ukraine', hint: 'Breadbasket of Europe, war zone.', tooltip: 'Europe\'s breadbasket turned battlefield. They grow the world\'s wheat and fight Russia\'s tanks. Zelensky went from comedian to wartime president.' },
+        { country: 'Belarus', hint: 'Europe\'s last dictatorship, Russia\'s puppet.', tooltip: 'Europe\'s last dictatorship, basically Russia\'s little brother who does whatever Putin says. Lukashenko has been president since dinosaurs roamed the earth.' },
+        { country: 'Uzbekistan', hint: 'Silk Road heart, cotton slavery.', tooltip: 'Heart of the ancient Silk Road, now famous for cotton slavery and authoritarian rule. Tashkent looks nice until you check the human rights report.' },
+        { country: 'Mongolia', hint: 'Genghis Khan\'s empire, now empty.', tooltip: 'Once ruled half the world, now just empty steppes and yurts. Genghis Khan would be disappointed to see what became of his empire.' },
+        { country: 'Myanmar', hint: 'Military junta, Aung San Suu Kyi jailed.', tooltip: 'Military dictatorship that jailed their Nobel Peace Prize winner. Democracy lasted about 5 minutes before the generals took over again.' },
+        { country: 'Cambodia', hint: 'Killing Fields, Angkor Wat.', tooltip: 'Home to the magnificent Angkor Wat and the horrific Killing Fields. Pol Pot killed a quarter of the population, now they just want tourists.' },
+        { country: 'Laos', hint: 'Landlocked, communist, forgotten.', tooltip: 'Landlocked communist country that everyone forgets exists. They have mountains, jungles, and zero coastline. Basically Vietnam\'s quiet neighbor.' },
+        { country: 'Brunei', hint: 'Oil sultanate, sharia law.', tooltip: 'Tiny oil-rich sultanate with strict sharia law. The sultan lives in a palace with 1,788 rooms while his subjects follow medieval rules.' },
+        { country: 'East Timor', hint: 'Youngest Asian country, oil rich.', tooltip: 'Asia\'s youngest country, gained independence from Indonesia in 2002. Has oil but still poor, basically the story of every oil country.' },
+        { country: 'Papua New Guinea', hint: 'Tribal diversity, resource curse.', tooltip: '800+ languages, tribal warfare, and resource companies destroying everything. Most diverse country on Earth, also one of the most chaotic.' },
+        { country: 'Fiji', hint: 'Tourist paradise, coup history.', tooltip: 'Tourist paradise with a history of military coups. Beautiful beaches, friendly people, and politicians who can\'t stop overthrowing each other.' },
+        { country: 'Guam', hint: 'US territory, strategic military base.', tooltip: 'US territory in the Pacific, basically America\'s unsinkable aircraft carrier. Locals are US citizens but can\'t vote for president.' },
+        { country: 'Northern Mariana Islands', hint: 'US territory, garment factories.', tooltip: 'US territory known for sweatshops and beautiful beaches. They make your clothes and you probably don\'t know they exist.' },
+        { country: 'American Samoa', hint: 'US territory, football players.', tooltip: 'US territory that produces NFL players like it\'s a factory. They\'re American but can\'t vote, perfect example of US colonialism.' },
+        { country: 'French Polynesia', hint: 'French colony, nuclear testing.', tooltip: 'French colony where they tested nuclear bombs. Beautiful islands, but the French turned them into a radioactive playground.' },
+        { country: 'Wallis and Futuna', hint: 'French colony, tiny population.', tooltip: 'French colony with population smaller than a high school. They have their own king but France runs everything important.' },
+        { country: 'Tokelau', hint: 'New Zealand territory, .tk domain.', tooltip: 'New Zealand territory that makes money from their .tk internet domain. Population: 1,500, internet fame: worldwide.' },
+        { country: 'Pitcairn Islands', hint: 'British colony, mutiny descendants.', tooltip: 'British colony populated by descendants of the Bounty mutineers. Tiny population, big history, and yes, they\'re all related.' },
+        { country: 'Montenegro', hint: 'Tiny Balkan country, mountain beauty.', tooltip: 'Tiny Balkan country that gained independence from Serbia in 2006. Mountains, beaches, and a name that means "Black Mountain."' },
+        { country: 'North Korea', hint: 'Hermit kingdom, nuclear threats.', tooltip: 'Hermit kingdom ruled by a family of dictators. They have nukes, no internet, and think their leader can control the weather.' },
+        { country: 'United Arab Emirates', hint: 'Oil wealth, Dubai skyscrapers.', tooltip: 'Federation of seven emirates, home to Dubai\'s skyscrapers and Abu Dhabi\'s oil money. They built cities in the desert because they could.' },
+        { country: 'Sri Lanka', hint: 'Tea island, civil war scars.', tooltip: 'Tea island that suffered through decades of civil war. Beautiful beaches, ancient temples, and a history of ethnic conflict.' },
+        { country: 'Nepal', hint: 'Himalayas, Mount Everest.', tooltip: 'Land of the Himalayas and Mount Everest. They have the world\'s highest mountain but also some of the world\'s poorest people.' },
+        { country: 'Bhutan', hint: 'Happiness index, Gross National Happiness.', tooltip: 'Tiny Himalayan kingdom that measures Gross National Happiness instead of GDP. They\'re happy because they don\'t know what they\'re missing.' },
+        { country: 'Maldives', hint: 'Sinking paradise, luxury resorts.', tooltip: 'Sinking paradise made up of 1,200 tiny islands. Luxury resorts for tourists, rising sea levels for locals. Climate change will erase them first.' }
+      ]
+    };
+    
+    // Function to find tooltip for a country
+    function findTooltip(countryName) {
+      // Search through all difficulty levels
+      for (const difficulty of ['easy', 'normal', 'hard']) {
+        const countryHint = countryHints[difficulty].find(hintObj => hintObj.country === countryName);
+        if (countryHint && countryHint.tooltip) {
+          return countryHint.tooltip;
+        }
+      }
+      return null;
+    }
+
+    // Custom tooltip system for hint text
+    let currentTooltip = null;
+
+    function createTooltip(text, element) {
+      // Remove existing tooltip
+      if (currentTooltip) {
+        currentTooltip.remove();
+        currentTooltip = null;
+      }
+
+      // Create new tooltip
+      const tooltip = document.createElement('div');
+      tooltip.className = 'hint-tooltip';
+      tooltip.textContent = text;
+      
+      // Position tooltip above the hint text
+      const rect = element.getBoundingClientRect();
+      const tooltipWidth = 350; // max-width from CSS
+      const tooltipHeight = 100; // approximate height
+      
+      // Calculate position to center tooltip above hint text
+      let left = rect.left + (rect.width / 2) - (tooltipWidth / 2);
+      let top = rect.top - tooltipHeight - 20;
+      
+      // Ensure tooltip doesn't go off-screen
+      if (left < 10) left = 10;
+      if (left + tooltipWidth > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipWidth - 10;
+      }
+      if (top < 10) {
+        // If not enough space above, show below
+        top = rect.bottom + 20;
+        tooltip.classList.add('below');
+      }
+      
+      tooltip.style.left = left + 'px';
+      tooltip.style.top = top + 'px';
+      
+      // Add to body
+      document.body.appendChild(tooltip);
+      
+      // Show tooltip with animation
+      setTimeout(() => tooltip.classList.add('show'), 10);
+      
+      currentTooltip = tooltip;
+    }
+
+    function hideTooltip() {
+      if (currentTooltip) {
+        currentTooltip.classList.remove('show');
+        setTimeout(() => {
+          if (currentTooltip) {
+            currentTooltip.remove();
+            currentTooltip = null;
+          }
+        }, 200);
+      }
+    }
+
+    function setupHintTooltip(hintElement, tooltipText) {
+      if (!tooltipText) return;
+      
+      hintElement.addEventListener('mouseenter', () => {
+        createTooltip(tooltipText, hintElement);
+      });
+      
+      hintElement.addEventListener('mouseleave', () => {
+        hideTooltip();
+      });
+    }
+
+    function filterCountriesByDifficulty(difficulty) {
+      if (difficulty === 'extreme') {
+        // For extreme difficulty, combine all three tiers
+        const allHintCountries = [
+          ...countryHints.easy.map(hintObj => hintObj.country),
+          ...countryHints.normal.map(hintObj => hintObj.country),
+          ...countryHints.hard.map(hintObj => hintObj.country)
+        ];
+        
+        // Filter to only show countries that have hints
+        state.features = state.allFeatures.filter(feature => {
+          const countryName = pickName(feature.properties);
+          return allHintCountries.includes(countryName);
+        });
+      } else {
+        // Filter countries based on difficulty using hints
+        const allowedCountries = countryHints[difficulty].map(hintObj => hintObj.country);
+        state.features = state.allFeatures.filter(feature => {
+          const countryName = pickName(feature.properties);
+          return allowedCountries.includes(countryName);
+        });
+      }
+      
+      // Rebuild the layer with filtered countries
+      if (state.layer) {
+        state.layer.remove();
+      }
+      
+      state.layer = L.geoJSON(state.features, {
+        filter: keep,
+        style: baseStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(feature, e.target)
+          });
+        }
+      }).addTo(map);
+      
+      console.log(`Loaded ${state.features.length} countries for ${difficulty} difficulty`);
+    }
+
+    function toggleTheme() {
+      const root = document.documentElement;
+      const currentTheme = root.getAttribute('data-theme');
+      const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      
+      root.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      
+      // Update map tiles and background for light/dark theme
+      if (newTheme === 'light') {
+        // Light theme: light map tiles, light background
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Update map background and page background
+        document.documentElement.style.setProperty('--page-bg', '#f8fafc');
+        document.documentElement.style.setProperty('--map-bg', '#f8fafc');
+        
+        toast('☀️ Light mode enabled');
+      } else {
+        // Dark theme: dark map tiles, dark background
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Update map background and page background
+        document.documentElement.style.setProperty('--page-bg', '#0b1020');
+        document.documentElement.style.setProperty('--map-bg', '#0b1020');
+        
+        toast('🌙 Dark mode enabled');
+      }
+    }
+
+    function toggleMapMinimize() {
+      const mapElement = document.getElementById('map');
+      const mapToggle = document.getElementById('mapToggle');
+      
+      if (state.isMapMinimized) {
+        // Maximize map
+        mapElement.classList.remove('minimized');
+        mapToggle.classList.remove('active');
+        state.isMapMinimized = false;
+        toast('🗺️ Map maximized');
+        
+        // Refresh map view
+        setTimeout(() => {
+          map.invalidateSize();
+          map.setView([20, 0], 2);
+        }, 400);
+      } else {
+        // Minimize map
+        mapElement.classList.add('minimized');
+        mapToggle.classList.add('active');
+        state.isMapMinimized = true;
+        toast('🗺️ Map minimized');
+        
+        // Center the minimized map
+        setTimeout(() => {
+          map.invalidateSize();
+          map.setView([20, 0], 2);
+        }, 400);
+      }
+    }
+
+    function toggleAllCountries() {
+      if (state.showAllCountries) {
+        // Show only difficulty-based countries
+        state.showAllCountries = false;
+        filterCountriesByDifficulty(state.difficulty);
+        // Restore completed countries styling
+        if (state.layer) {
+          state.layer.eachLayer(layer => {
+            const countryName = pickName(layer.feature.properties);
+            if (state.completedCountries.has(countryName)) {
+              layer.setStyle(okStyle);
+              layer.off('click');
+              layer.off('mouseover');
+              layer.off('mouseout');
+            }
+          });
+        }
+        toast('🎯 Difficulty mode: Only selected difficulty countries visible');
+      } else {
+        // Show all countries
+        state.showAllCountries = true;
+        state.features = [...state.allFeatures];
+        // Rebuild the map layer with all countries
+        if (state.layer) {
+          state.layer.remove();
+        }
+        state.layer = L.geoJSON({ type: 'FeatureCollection', features: state.features }, {
+          filter: keep,
+          style: baseStyle,
+          onEachFeature: (feature, layer) => {
+            layer.on({
+              mouseover: (e) => e.target.setStyle(hoverStyle),
+              mouseout: (e) => state.layer.resetStyle(e.target),
+              click: (e) => onCountryClick(feature, e.target)
+            });
+          }
+        }).addTo(map);
+        // Restore completed countries styling
+        state.layer.eachLayer(layer => {
+          const countryName = pickName(layer.feature.properties);
+          if (state.completedCountries.has(countryName)) {
+            layer.setStyle(okStyle);
+            layer.off('click');
+            layer.off('mouseover');
+            layer.off('mouseout');
+          }
+        });
+        toast('🌍 All countries mode: All countries are now clickable');
+      }
+      
+      // Update the toggle button visual state
+      const allCountriesToggle = document.getElementById('allCountriesToggle');
+      allCountriesToggle.classList.toggle('active', state.showAllCountries);
+    }
+
+    function showSettings() {
+      // Update toggle states
+      const themeToggle = document.getElementById('themeToggle');
+      const mapToggle = document.getElementById('mapToggle');
+      const allCountriesToggle = document.getElementById('allCountriesToggle');
+      
+      // Set theme toggle state
+      const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+      themeToggle.classList.toggle('active', currentTheme === 'light');
+      
+      // Set map toggle state
+      mapToggle.classList.toggle('active', state.isMapMinimized);
+      
+      // Hide "Show All Countries" toggle if difficulty is extreme (already shows all countries)
+      if (state.difficulty === 'extreme') {
+        allCountriesToggle.style.display = 'none';
+        // Also hide the parent setting item
+        allCountriesToggle.closest('.setting-item').style.display = 'none';
+      } else {
+        allCountriesToggle.style.display = 'block';
+        allCountriesToggle.closest('.setting-item').style.display = 'flex';
+        // Set all countries toggle state (ON = show all, OFF = show difficulty only)
+        allCountriesToggle.classList.toggle('active', state.showAllCountries);
+      }
+      
+      // Show modal
+      document.getElementById('settingsModal').style.display = 'flex';
+    }
+
+    function hideSettings() {
+      document.getElementById('settingsModal').style.display = 'none';
+    }
+
+    function startGame() {
+      // Show difficulty selection modal instead of starting immediately
+      showDifficultySelection();
+    }
+    
+    function showDifficultySelection() {
+      $('difficultyModal').style.display = 'flex';
+    }
+    
+    function hideDifficultySelection() {
+      $('difficultyModal').style.display = 'none';
+    }
+    
+    function startGameWithDifficulty(difficulty) {
+      // Hide difficulty modal
+      hideDifficultySelection();
+      
+      // Set difficulty in state
+      state.difficulty = difficulty;
+      
+      // Filter countries based on difficulty
+      filterCountriesByDifficulty(difficulty);
+      
+      // Show game info and hide start button
+      document.getElementById('gameInfo').style.display = 'block';
+      document.getElementById('startBtn').style.display = 'none';
+      
+      // Show game buttons (pause, skip, settings, stats, and reset)
+      document.getElementById('pauseBtn').style.display = 'flex';
+      document.getElementById('skipBtn').style.display = 'flex';
+      document.getElementById('settingsBtn').style.display = 'flex';
+      document.getElementById('statsBtn').style.display = 'flex';
+      document.getElementById('resetBtn').style.display = 'flex';
+      
+      // Reset pause state and ensure pause button shows pause icon
+      state.isPaused = false;
+      state.pauseStartTime = null;
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      `;
+      
+      // Start the timer
+      startTimer();
+      
+      // Set initial target
+      setTargetRandom();
+    }
+
+    function startTimer() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.gameStartTime = Date.now();
+      state.timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (!state.gameStartTime) return;
+      const elapsed = Math.floor((Date.now() - state.gameStartTime) / 1000);
+      const minutes = Math.floor(elapsed / 60);
+      const seconds = elapsed % 60;
+      $('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    function pauseGame() {
+      state.isPaused = true;
+      state.pauseStartTime = Date.now();
+      
+      // Stop the timer
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+      
+      // Disable country clicking by removing the layer temporarily
+      if (state.layer) {
+        state.layer.remove();
+      }
+      
+      // Change pause button to play icon
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
+      `;
+      
+      toast('⏸️ Game Paused');
+    }
+
+    function resumeGame() {
+      state.isPaused = false;
+      
+      // Resume the timer by adjusting the start time
+      if (state.pauseStartTime) {
+        const pauseDuration = Date.now() - state.pauseStartTime;
+        state.gameStartTime += pauseDuration;
+        state.pauseStartTime = null;
+      }
+      
+      // Restart the timer
+      startTimer();
+      
+      // Re-enable country clicking by adding the layer back
+      if (state.layer) {
+        state.layer.addTo(map);
+      }
+      
+      // Change play button back to pause icon
+      const pauseBtn = document.getElementById('pauseBtn');
+      pauseBtn.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+        </svg>
+      `;
+      
+      toast('▶️ Game Resumed');
+    }
+
+    function setTargetRandom() {
+      if (!state.features || state.features.length === 0) {
+        console.warn('No features available for target selection');
+        return;
+      }
+      
+      // Filter out completed countries
+      const availableCountries = state.features.filter(feature => {
+        const countryName = pickName(feature.properties);
+        return !state.completedCountries.has(countryName);
+      });
+      
+      // Check if there are any countries left to guess
+      if (availableCountries.length === 0) {
+        // All countries completed!
+        $('target').textContent = '🎉 ALL COUNTRIES COMPLETED!';
+        toast('🎉 Congratulations! You\'ve completed all countries in this difficulty!', 'ok');
+        
+        // Stop the timer
+        stopTimer();
+        
+        // Trigger confetti celebration
+        triggerConfetti();
+        
+        // Automatically open statistics after a short delay
+        setTimeout(() => {
+          showStats();
+        }, 1500);
+        
+        return;
+      }
+      
+      // Select random target from available countries
+      state.target = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+      if (state.target && state.target.properties) {
+        const countryName = pickName(state.target.properties);
+        // Find the hint for this country
+        let hint = 'Find this country...';
+        let tooltip = null;
+        
+        if (state.difficulty && state.difficulty !== 'extreme') {
+          const hintObj = countryHints[state.difficulty].find(h => h.country === countryName);
+          if (hintObj) {
+            hint = hintObj.hint;
+            tooltip = hintObj.tooltip;
+          }
+        } else if (state.difficulty === 'extreme') {
+          // For extreme difficulty, try to find hints from all difficulty tiers
+          let foundHint = null;
+          
+          // Check easy tier first
+          if (countryHints.easy) {
+            foundHint = countryHints.easy.find(h => h.country === countryName);
+          }
+          
+          // If not found in easy, check normal tier
+          if (!foundHint && countryHints.normal) {
+            foundHint = countryHints.normal.find(h => h.country === countryName);
+          }
+          
+          // If not found in normal, check hard tier
+          if (!foundHint && countryHints.hard) {
+            foundHint = countryHints.hard.find(h => h.country === countryName);
+          }
+          
+          // If we found a hint, use it; otherwise show country name
+          if (foundHint) {
+            hint = foundHint.hint;
+            tooltip = foundHint.tooltip;
+          } else {
+            hint = `Find: ${countryName}`;
+          }
+        }
+        
+        // Create interactive hint element with tooltip
+        if (tooltip) {
+          $('target').innerHTML = `<span class="hint-text">${hint}</span>`;
+          // Setup tooltip after DOM update
+          setTimeout(() => {
+            const hintElement = $('target').querySelector('.hint-text');
+            if (hintElement) {
+              setupHintTooltip(hintElement, tooltip);
+            }
+          }, 0);
+        } else {
+          $('target').textContent = hint;
+        }
+      } else {
+        console.warn('Invalid target feature');
+      }
+    }
+
+    function updateStreak(delta) {
+      state.streak = Math.max(0, state.streak + delta);
+      $('streak').textContent = state.streak;
+    }
+
+    function buildLayer(geojson) {
+      if (state.layer) state.layer.remove();
+
+      state.layer = L.geoJSON(geojson, {
+        filter: keep,
+        style: baseStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(feature, e.target)
+          });
+        }
+      }).addTo(map);
+
+      // Store all features for difficulty filtering
+      state.allFeatures = state.layer.toGeoJSON().features;
+      state.features = [...state.allFeatures];
+      
+      // Validate that we have features before setting target
+      if (state.features && state.features.length > 0) {
+        console.log(`Loaded ${state.features.length} features`);
+        // Don't start game automatically - wait for user to click start
+      } else {
+        console.error('No features loaded from GeoJSON');
+        throw new Error('No features loaded from GeoJSON');
+      }
+    }
+
+    function onCountryClick(feature, layer) {
+      const clicked = norm(pickName(feature.properties));
+      const target = norm(pickName(state.target.properties));
+      const countryName = pickName(feature.properties);
+
+      // Hide any existing tooltips
+      hideTooltip();
+
+      if (clicked === target) {
+        // Make country permanently green and unclickable
+        layer.setStyle(okStyle);
+        layer.off('click'); // Remove click event
+        layer.off('mouseover'); // Remove hover events
+        layer.off('mouseout');
+        
+        // Store that this country is completed
+        if (!state.completedCountries) state.completedCountries = new Set();
+        state.completedCountries.add(countryName);
+        
+        toast('✅ Correct: ' + countryName, 'ok');
+        updateStreak(+1);
+        // Track statistics
+        state.stats.correct++;
+        state.stats.countriesClicked.push({
+          name: countryName,
+          result: 'correct',
+          timestamp: new Date().toLocaleTimeString()
+        });
+        try { map.fitBounds(layer.getBounds(), { maxZoom: 4, animate: true }); } catch {}
+        setTimeout(() => setTargetRandom(), 650);
+      } else {
+        layer.setStyle(badStyle);
+        toast('❌ Wrong. That was ' + countryName, 'err');
+        updateStreak(-1);
+        // Track statistics
+        state.stats.wrong++;
+        state.stats.countriesClicked.push({
+          name: countryName,
+          result: 'wrong',
+          timestamp: new Date().toLocaleTimeString()
+        });
+      }
+    }
+
+    function findLayerByName(name) {
+      let found = null;
+      state.layer.eachLayer(l => {
+        const nm = pickName(l.feature.properties);
+        if (!found && nm === name) found = l;
+      });
+      return found;
+    }
+
+    // Event listeners
+    $('startBtn').addEventListener('click', startGame);
+    
+    $('pauseBtn').addEventListener('click', () => {
+      if (!state.isPaused) {
+        // Pause the game
+        pauseGame();
+      } else {
+        // Resume the game
+        resumeGame();
+      }
+      // Hide any existing tooltips
+      hideTooltip();
+    });
+    
+    $('settingsBtn').addEventListener('click', () => {
+      showSettings();
+      // Hide any existing tooltips
+      hideTooltip();
+    });
+    
+    $('skipBtn').addEventListener('click', () => {
+      // Get the current target country name before skipping
+      const skippedCountryName = pickName(state.target.properties);
+      
+      toast('⏭️ Skipped: ' + skippedCountryName);
+      state.stats.skipped++;
+      
+      // Add the skipped country to the statistics
+      state.stats.countriesClicked.push({
+        name: skippedCountryName,
+        result: 'skipped',
+        timestamp: new Date().toLocaleTimeString()
+      });
+      
+      // Hide any existing tooltips
+      hideTooltip();
+      setTargetRandom();
+    });
+    
+    $('resetBtn').addEventListener('click', () => {
+      state.streak = 0; $('streak').textContent = '0';
+      if (state.layer) state.layer.setStyle(baseStyle);
+      
+      // Hide any existing tooltips
+      hideTooltip();
+      
+      // Reset game state
+      document.getElementById('gameInfo').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'flex';
+      
+      // Hide game buttons
+      document.getElementById('pauseBtn').style.display = 'none';
+      document.getElementById('skipBtn').style.display = 'none';
+      document.getElementById('settingsBtn').style.display = 'none';
+      document.getElementById('statsBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+      
+      // Reset timer
+      stopTimer();
+      $('timer').textContent = '00:00';
+      
+      // Clear target
+      $('target').textContent = '…';
+      
+      // Clear all statistics
+      state.stats.correct = 0;
+      state.stats.wrong = 0;
+      state.stats.skipped = 0;
+      state.stats.countriesClicked = [];
+      
+      // Reset pause state
+      state.isPaused = false;
+      
+      // Reset completed countries
+      state.completedCountries = new Set();
+      
+      // Reset map to full size
+      const mapElement = document.getElementById('map');
+      mapElement.classList.remove('minimized');
+      state.isMapMinimized = false;
+      
+      // Reset to difficulty-based countries only
+      state.showAllCountries = false;
+      
+      // Reset layer style
+      if (state.layer) {
+        state.layer.setStyle(baseStyle);
+      }
+      
+      toast('🔄 Game Reset');
+    });
+
+    // Statistics button event listener
+    $('statsBtn').addEventListener('click', showStats);
+    
+    // Close statistics modal
+    $('closeStats').addEventListener('click', hideStats);
+    
+    // Close modal when clicking outside
+    $('statsModal').addEventListener('click', (e) => {
+      if (e.target === $('statsModal')) {
+        hideStats();
+      }
+    });
+
+    // Settings modal event listeners
+    $('closeSettings').addEventListener('click', hideSettings);
+    
+    // Close settings modal when clicking outside
+    $('settingsModal').addEventListener('click', (e) => {
+      if (e.target === $('settingsModal')) {
+        hideSettings();
+      }
+    });
+
+    // Toggle button event listeners
+    $('themeToggle').addEventListener('click', () => {
+      toggleTheme();
+      // Update toggle state after theme change
+      setTimeout(() => {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        $('themeToggle').classList.toggle('active', currentTheme === 'light');
+      }, 100);
+    });
+
+    $('mapToggle').addEventListener('click', () => {
+      toggleMapMinimize();
+    });
+
+    $('allCountriesToggle').addEventListener('click', () => {
+      toggleAllCountries();
+    });
+    
+    // Difficulty button event listeners
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const difficulty = btn.getAttribute('data-difficulty');
+        startGameWithDifficulty(difficulty);
+      });
+    });
+    
+    // Close difficulty modal when clicking outside
+    $('difficultyModal').addEventListener('click', (e) => {
+      if (e.target === $('difficultyModal')) {
+        hideDifficultySelection();
+      }
+    });
+
+    // Statistics functions
+    function showStats() {
+      const statsModal = document.getElementById('statsModal');
+      if (statsModal) {
+        statsModal.style.display = 'flex';
+        updateStatsDisplay();
+      }
+    }
+
+    // Update statistics display
+    function updateStatsDisplay() {
+      $('statsCorrect').textContent = state.stats.correct;
+      $('statsWrong').textContent = state.stats.wrong;
+      $('statsSkipped').textContent = state.stats.skipped;
+      
+      const total = state.stats.correct + state.stats.wrong;
+      const accuracy = total > 0 ? Math.round((state.stats.correct / total) * 100) : 0;
+      $('statsAccuracy').textContent = accuracy + '%';
+      
+      // Update countries list
+      const countriesList = $('countriesList');
+      if (state.stats.countriesClicked.length === 0) {
+        countriesList.innerHTML = '<p class="no-countries">No countries clicked yet</p>';
+      } else {
+        countriesList.innerHTML = state.stats.countriesClicked.map(country => {
+          let resultClass = country.result;
+          let resultText = country.result;
+          
+          // Customize display for different result types
+          if (country.result === 'correct') {
+            resultText = '✅ Correct';
+          } else if (country.result === 'wrong') {
+            resultText = '❌ Wrong';
+          } else if (country.result === 'skipped') {
+            resultText = '⏭️ Skipped';
+          }
+          
+          return `
+            <div class="country-item ${resultClass}">
+              <span class="country-name">${country.name}</span>
+              <span class="country-result ${resultClass}">${resultText}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function hideStats() {
+      $('statsModal').style.display = 'none';
+    }
+
+    // Confetti celebration function
+    function triggerConfetti() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800', '#8800ff'];
+      const confettiCount = 200;
+      
+      for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.style.position = 'fixed';
+          confetti.style.left = Math.random() * window.innerWidth + 'px';
+          confetti.style.top = '-10px';
+          confetti.style.width = '10px';
+          confetti.style.height = '10px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.borderRadius = '50%';
+          confetti.style.pointerEvents = 'none';
+          confetti.style.zIndex = '9999';
+          confetti.style.animation = 'confettiFall 3s linear forwards';
+          
+          document.body.appendChild(confetti);
+          
+          // Remove confetti after animation
+          setTimeout(() => {
+            if (confetti.parentNode) {
+              confetti.parentNode.removeChild(confetti);
+            }
+          }, 3000);
+        }, i * 10);
+      }
+    }
+
+    // Initialize theme
+    function initTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+      
+      // Set initial map tiles and background based on theme
+      if (savedTheme === 'light') {
+        map.removeLayer(tileLayer);
+        const newTileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+          maxZoom: 6,
+          minZoom: 2,
+          attribution: '&copy; OpenStreetMap & Carto',
+          subdomains: 'abcd'
+        }).addTo(map);
+        
+        // Set light theme background
+        document.documentElement.style.setProperty('--page-bg', '#f8fafc');
+        document.documentElement.style.setProperty('--map-bg', '#f8fafc');
+      } else {
+        // Dark theme: set dark background
+        document.documentElement.style.setProperty('--page-bg', '#0b1020');
+        document.documentElement.style.setProperty('--map-bg', '#0b1020');
+      }
+    }
+
+    // Load lightweight world countries (Natural Earth 110m)
+    const SOURCES = [
+      './countries.geojson',
+      'countries.geojson',
+      '/countries.geojson',
+      'countries.geojson',
+      'https://datahub.io/core/geo-countries/r/0.geojson',
+      'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
+    ];
+    
+    async function fetchJSONFlexible(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      console.log(`[${url}] Raw response length:`, text.length);
+      console.log(`[${url}] First 200 chars:`, text.substring(0, 200));
+      const data = JSON.parse(text.replace(/^\uFEFF/, ''));
+      console.log(`[${url}] Parsed data:`, data);
+      if (data && data.features) {
+        console.log(`[${url}] Features count:`, data.features.length);
+        if (data.features.length > 0) {
+          console.log(`[${url}] First feature:`, data.features[0]);
+        }
+      }
+      return data;
+    }
+
+    (async function loadBoundaries() {
+      // Initialize theme first
+      initTheme();
+      
+      for (const url of SOURCES) {
+        try {
+          console.log('[countries] trying', url);
+          const data = await fetchJSONFlexible(url);
+          if (!data || !Array.isArray(data.features)) throw new Error('Not a GeoJSON FeatureCollection');
+          buildLayer(data); toast('Loaded country boundaries'); return;
+        } catch (err) { console.warn('Boundary source failed:', url, err); }
+      }
+      alert('Failed to load country boundaries from all sources. Make sure "countries.geojson" is in the SAME folder as index.html, and that your server root is that folder. Try visiting your /countries.geojson directly to confirm it serves raw JSON.');
+    })();
+
+    // Improve mobile playability: two-finger pan
+    map.touchZoom.enable();
+    map.dragging.enable();
+    map.on('touchstart', (e) => { if (e.touches && e.touches.length === 1) { map.dragging.disable(); } });
+    map.on('touchend', () => map.dragging.enable());
+  </script>
+</body>
+</html>

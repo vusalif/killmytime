@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Country Guesser - Duel Mode</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#0b1020;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#ffffff;--modal-border:#e5e7eb;--modal-text:#333333;--modal-text-secondary:#6b7280;
+      --modal-card-bg:#f9fafb;--modal-divider:#f3f4f6;
+      --page-bg:#0b1020;
+      --player1-color:#ef4444;--player2-color:#3b82f6;
+    }
+    
+    :root[data-theme="light"]{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#f8fafc;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#1f2937;--modal-border:#374151;--modal-text:#f9fafb;--modal-text-secondary:#d1d5db;
+      --modal-card-bg:#111827;--modal-divider:#1f2937;
+      --page-bg:#f8fafc;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: var(--page-bg);
+      color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      transition: background-color 0.3s ease;
+    }
+    
+    #app {
+      height: 100%;
+      position: relative;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+      background: var(--page-bg);
+      transition: all 0.4s ease, background-color 0.3s ease;
+    }
+    
+    .leaflet-container {
+      background: var(--page-bg);
+    }
+    
+    .hud {
+      position: absolute;
+      z-index: 1000;
+      left: 50%;
+      bottom: 80px;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(1px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 15px 20px;
+      min-width: 300px;
+      text-align: center;
+    }
+    
+    .game-controls {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .control-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1f2937;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+      border-radius: 8px;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      font-weight: 500;
+    }
+    
+    .control-btn:hover {
+      background: #374151;
+      border-color: #4b5563;
+      transform: translateY(-1px);
+    }
+    
+    .control-btn:active {
+      transform: translateY(0);
+    }
+    
+    .start-btn {
+      background: #059669;
+      border-color: #10b981;
+      color: #d1fae5;
+    }
+    
+    .start-btn:hover {
+      background: #047857;
+      border-color: #059669;
+    }
+    
+    .icon-btn {
+      background: #1f2937;
+      border-color: #374151;
+      color: #9ca3af;
+      min-width: 44px;
+      justify-content: center;
+    }
+    
+    .icon-btn:hover {
+      background: #374151;
+      border-color: #4b5563;
+    }
+    
+    .game-info {
+      display: none;
+    }
+    
+    .players-container {
+      display: flex;
+      gap: 20px;
+      justify-content: center;
+      margin-bottom: 15px;
+    }
+    
+    .player-card {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+    }
+    
+    .player-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+    
+    .player-card.player1 {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--player1-color);
+    }
+    
+    .player-card.player2 {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--player2-color);
+    }
+    
+    .player-name {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    
+    .player1 .player-name {
+      color: var(--player1-color);
+    }
+    
+    .player2 .player-name {
+      color: var(--player2-color);
+    }
+    
+    .player-score {
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+    
+    .player-target {
+      font-size: 14px;
+      color: var(--muted);
+      min-height: 20px;
+    }
+    
+    .game-status {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    
+    .timer {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    .timer.warning {
+      color: #f59e0b;
+    }
+    
+    .timer.danger {
+      color: var(--danger);
+    }
+    
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    
+    .k {
+      color: #94a3b8;
+    }
+    
+    .v {
+      font-weight: 700;
+    }
+    
+    .toast {
+      position: absolute;
+      right: 12px;
+      top: 64px;
+      z-index: 700;
+      background: #111827;
+      border: 1px solid #1f293b;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: none;
+    }
+    
+    .toast.ok {
+      border-color: #14532d;
+    }
+    
+    .toast.err {
+      border-color: #4c0519;
+    }
+    
+    /* Game Over Modal */
+    .game-over-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 2000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .game-over-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      text-align: center;
+    }
+    
+    .game-over-header {
+      padding: 30px 20px 20px 20px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .game-over-header h3 {
+      margin: 0;
+      color: var(--fg);
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    
+    .winner-announcement {
+      font-size: 18px;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    
+    .game-over-body {
+      padding: 20px;
+    }
+    
+    .final-scores {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 25px;
+    }
+    
+    .final-score-card {
+      padding: 20px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+    }
+    
+    .final-score-card.player1 {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--player1-color);
+    }
+    
+    .final-score-card.player2 {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--player2-color);
+    }
+    
+    .final-score-name {
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    
+    .final-score-value {
+      font-size: 32px;
+      font-weight: 900;
+    }
+    
+    .player1 .final-score-name,
+    .player1 .final-score-value {
+      color: var(--player1-color);
+    }
+    
+    .player2 .final-score-name,
+    .player2 .final-score-value {
+      color: var(--player2-color);
+    }
+    
+    .play-again-btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 20px;
+    }
+    
+    .play-again-btn:hover {
+      background: #16a34a;
+      transform: translateY(-2px);
+    }
+    
+    /* Confetti animation */
+    @keyframes confettiFall {
+      0% {
+        transform: translateY(-10px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .card {
+        max-width: 90svw;
+        min-width: 280px;
+      }
+      
+      .players-container {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .game-over-content {
+        width: 95%;
+        margin: 20px;
+      }
+      
+      .final-scores {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="map"></div>
+    
+    <div class="hud">
+      <div class="card">
+        <div class="game-controls">
+          <button id="startBtn" class="control-btn start-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Start Duel
+          </button>
+          <button id="resetBtn" class="control-btn icon-btn" style="display: none;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+            </svg>
+          </button>
+        </div>
+        
+        <div id="gameInfo" class="game-info">
+          <div class="game-status">
+            <div id="timer" class="timer">01:00</div>
+            <div id="currentPlayer" class="current-player">Player 1's Turn</div>
+          </div>
+          
+          <div class="players-container">
+            <div id="player1Card" class="player-card player1 active">
+              <div class="player-name">Player 1</div>
+              <div id="player1Score" class="player-score">0</div>
+              <div id="player1Target" class="player-target">Waiting...</div>
+            </div>
+            
+            <div id="player2Card" class="player-card player2">
+              <div class="player-name">Player 2</div>
+              <div id="player2Score" class="player-score">0</div>
+              <div id="player2Target" class="player-target">Waiting...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div id="toast" class="toast">…</div>
+    
+    <!-- Game Over Modal -->
+    <div id="gameOverModal" class="game-over-modal" style="display: none;">
+      <div class="game-over-content">
+        <div class="game-over-header">
+          <h3>🏆 Duel Complete!</h3>
+          <div id="winnerAnnouncement" class="winner-announcement">Player 1 Wins!</div>
+        </div>
+        <div class="game-over-body">
+          <div class="final-scores">
+            <div class="final-score-card player1">
+              <div class="final-score-name">Player 1</div>
+              <div id="finalScore1" class="final-score-value">0</div>
+            </div>
+            <div class="final-score-card player2">
+              <div class="final-score-name">Player 2</div>
+              <div id="finalScore2" class="final-score-value">0</div>
+            </div>
+          </div>
+          <button id="playAgainBtn" class="play-again-btn">Play Again</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    // --- Map setup ---
+    console.log('Initializing map...');
+    const map = L.map('map', {
+      worldCopyJump: true,
+      preferCanvas: false,
+      zoomSnap: 0.5,
+      zoomDelta: 0.5,
+    }).setView([20, 0], 2);
+    console.log('Map initialized:', map);
+
+    console.log('Adding tile layer...');
+    const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+      maxZoom: 6,
+      minZoom: 2,
+      attribution: '&copy; OpenStreetMap & Carto',
+      subdomains: 'abcd'
+    }).addTo(map);
+    console.log('Tile layer added:', tileLayer);
+
+    // --- Game state ---
+    const state = {
+      features: [],
+      layer: null,
+      gameStartTime: null,
+      timerInterval: null,
+      isGameOver: false,
+      allFeatures: [],
+      completedCountries: new Set(),
+      
+      // Duel specific state
+      currentPlayer: 1, // 1 or 2
+      player1Countries: [],
+      player2Countries: [],
+      player1Score: 0,
+      player2Score: 0,
+      player1Target: null,
+      player2Target: null,
+      timeLimit: 60, // 1 minute in seconds
+      timeLeft: 60,
+      
+      // Statistics
+      stats: {
+        player1: { correct: 0, wrong: 0, countriesClicked: [] },
+        player2: { correct: 0, wrong: 0, countriesClicked: [] }
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const toast = (msg, kind = 'ok') => {
+      const el = $('toast');
+      el.className = 'toast ' + (kind === 'ok' ? 'ok' : 'err');
+      el.textContent = msg;
+      el.style.display = 'block';
+      clearTimeout(el._t);
+      el._t = setTimeout(() => { el.style.display = 'none'; }, 1200);
+    };
+
+    // Normalize country names for comparison
+    const norm = (s) => (s || '')
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, ' ').trim();
+
+    // Choose display name from NE props
+    const pickName = (p) => p.name || p.ADMIN || p.NAME_LONG || p.NAME || p.SOVEREIGNT || p.BRK_NAME;
+
+    // Avoid Antarctica and disputed water polygons
+    const keep = (f) => {
+      if (!f || !f.properties) {
+        console.warn('Feature missing properties:', f);
+        return false;
+      }
+      const n = pickName(f.properties);
+      if (!n) {
+        console.warn('Feature has no valid name:', f.properties);
+        return false;
+      }
+      const bad = ['Antarctica'];
+      return !bad.includes(n);
+    };
+
+    // Styling
+    const baseStyle = { color: '#2c3e50', weight: 1, fillColor: '#60a5fa', fillOpacity: 0.08 };
+    const hoverStyle = { weight: 2, fillOpacity: 0.25 };
+    const player1Style = { fillColor: '#ef4444', fillOpacity: 0.35 };
+    const player2Style = { fillColor: '#3b82f6', fillOpacity: 0.35 };
+    const wrongStyle = { fillColor: '#f59e0b', fillOpacity: 0.35 };
+
+    function startDuel() {
+      // Hide start button and show game info
+      document.getElementById('startBtn').style.display = 'none';
+      document.getElementById('gameInfo').style.display = 'block';
+      document.getElementById('resetBtn').style.display = 'flex';
+      
+      // Reset game state
+      state.currentPlayer = 1;
+      state.player1Score = 0;
+      state.player2Score = 0;
+      state.timeLeft = state.timeLimit;
+      state.isGameOver = false;
+      state.completedCountries.clear();
+      
+      // Update display
+      updatePlayerDisplay();
+      updateTimerDisplay();
+      
+      // Assign random countries to each player
+      assignCountriesToPlayers();
+      
+      // Set initial targets
+      setPlayerTargets();
+      
+      // Start timer
+      startTimer();
+      
+      toast('⚔️ Duel started! Player 1 goes first!', 'ok');
+    }
+
+    function assignCountriesToPlayers() {
+      // Get all available countries
+      const allCountries = state.features.filter(feature => {
+        const countryName = pickName(feature.properties);
+        return countryName && !['Antarctica'].includes(countryName);
+      });
+      
+      // Shuffle countries
+      const shuffled = allCountries.sort(() => Math.random() - 0.5);
+      
+      // Split countries between players (each gets half)
+      const half = Math.floor(shuffled.length / 2);
+      state.player1Countries = shuffled.slice(0, half);
+      state.player2Countries = shuffled.slice(half);
+      
+      console.log(`Player 1 gets ${state.player1Countries.length} countries`);
+      console.log(`Player 2 gets ${state.player2Countries.length} countries`);
+    }
+
+    function setPlayerTargets() {
+      // Set target for current player
+      if (state.currentPlayer === 1) {
+        state.player1Target = getRandomTarget(state.player1Countries);
+        $('player1Target').textContent = pickName(state.player1Target.properties);
+        $('player2Target').textContent = 'Waiting...';
+      } else {
+        state.player2Target = getRandomTarget(state.player2Countries);
+        $('player2Target').textContent = pickName(state.player2Target.properties);
+        $('player1Target').textContent = 'Waiting...';
+      }
+    }
+
+    function getRandomTarget(countries) {
+      // Filter out completed countries
+      const availableCountries = countries.filter(country => {
+        const countryName = pickName(country.properties);
+        return !state.completedCountries.has(countryName);
+      });
+      
+      if (availableCountries.length === 0) {
+        return null; // No more countries for this player
+      }
+      
+      return availableCountries[Math.floor(Math.random() * availableCountries.length)];
+    }
+
+    function startTimer() {
+      if (state.timerInterval) clearInterval(state.timerInterval);
+      state.gameStartTime = Date.now();
+      state.timeLeft = state.timeLimit;
+      state.timerInterval = setInterval(updateTimer, 1000);
+    }
+
+    function updateTimer() {
+      if (state.isGameOver) return;
+      
+      // Calculate time left
+      const elapsed = Math.floor((Date.now() - state.gameStartTime) / 1000);
+      state.timeLeft = Math.max(0, state.timeLimit - elapsed);
+      
+      // Update display
+      updateTimerDisplay();
+      
+      // Check if time is up
+      if (state.timeLeft <= 0) {
+        gameOver();
+      }
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(state.timeLeft / 60);
+      const seconds = state.timeLeft % 60;
+      const timerElement = $('timer');
+      timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      
+      // Visual feedback for low time
+      timerElement.className = 'timer';
+      if (state.timeLeft <= 10) {
+        timerElement.classList.add('danger');
+      } else if (state.timeLeft <= 30) {
+        timerElement.classList.add('warning');
+      }
+    }
+
+    function updatePlayerDisplay() {
+      $('player1Score').textContent = state.player1Score;
+      $('player2Score').textContent = state.player2Score;
+      
+      // Update current player indicator
+      $('player1Card').classList.toggle('active', state.currentPlayer === 1);
+      $('player2Card').classList.toggle('active', state.currentPlayer === 2);
+      
+      $('currentPlayer').textContent = `Player ${state.currentPlayer}'s Turn`;
+    }
+
+    function onCountryClick(feature, layer) {
+      if (state.isGameOver) return;
+      
+      const clickedCountryName = pickName(feature.properties);
+      const currentTarget = state.currentPlayer === 1 ? state.player1Target : state.player2Target;
+      
+      if (!currentTarget) {
+        toast('❌ No more countries for this player!', 'err');
+        return;
+      }
+      
+      const targetCountryName = pickName(currentTarget.properties);
+      
+      if (clickedCountryName === targetCountryName) {
+        // Correct guess!
+        const playerKey = `player${state.currentPlayer}`;
+        state[playerKey + 'Score']++;
+        
+        // Style the country based on player
+        if (state.currentPlayer === 1) {
+          layer.setStyle(player1Style);
+        } else {
+          layer.setStyle(player2Style);
+        }
+        
+        // Remove click events
+        layer.off('click');
+        layer.off('mouseover');
+        layer.off('mouseout');
+        
+        // Mark as completed
+        state.completedCountries.add(clickedCountryName);
+        
+        // Track statistics
+        state.stats[playerKey].correct++;
+        state.stats[playerKey].countriesClicked.push({
+          name: clickedCountryName,
+          result: 'correct',
+          timestamp: new Date().toLocaleTimeString()
+        });
+        
+        toast(`✅ Player ${state.currentPlayer} correctly identified ${clickedCountryName}!`, 'ok');
+        
+        // Check if player has completed all their countries
+        if (state.currentPlayer === 1) {
+          state.player1Countries = state.player1Countries.filter(c => 
+            pickName(c.properties) !== clickedCountryName
+          );
+        } else {
+          state.player2Countries = state.player2Countries.filter(c => 
+            pickName(c.properties) !== clickedCountryName
+          );
+        }
+        
+        // Switch players
+        switchPlayer();
+        
+      } else {
+        // Wrong guess
+        layer.setStyle(wrongStyle);
+        
+        // Track statistics
+        const playerKey = `player${state.currentPlayer}`;
+        state.stats[playerKey].wrong++;
+        state.stats[playerKey].countriesClicked.push({
+          name: clickedCountryName,
+          result: 'wrong',
+          timestamp: new Date().toLocaleTimeString()
+        });
+        
+        toast(`❌ Wrong! That was ${clickedCountryName}`, 'err');
+        
+        // Switch players after wrong guess
+        switchPlayer();
+      }
+      
+      // Update display
+      updatePlayerDisplay();
+    }
+
+    function switchPlayer() {
+      // Switch to other player
+      state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+      
+      // Set new target for current player
+      setPlayerTargets();
+      
+      // Check if game should end
+      checkGameEnd();
+    }
+
+    function checkGameEnd() {
+      // Check if either player has completed all their countries
+      const player1Done = state.player1Countries.length === 0;
+      const player2Done = state.player2Countries.length === 0;
+      
+      if (player1Done || player2Done) {
+        // Game ends when one player completes all their countries
+        gameOver();
+      }
+    }
+
+    function gameOver() {
+      state.isGameOver = true;
+      stopTimer();
+      
+      // Determine winner
+      let winner, winnerScore, loserScore;
+      if (state.player1Score > state.player2Score) {
+        winner = 1;
+        winnerScore = state.player1Score;
+        loserScore = state.player2Score;
+      } else if (state.player2Score > state.player1Score) {
+        winner = 2;
+        winnerScore = state.player2Score;
+        loserScore = state.player1Score;
+      } else {
+        winner = 'tie';
+        winnerScore = state.player1Score;
+        loserScore = state.player2Score;
+      }
+      
+      // Show game over modal
+      showGameOverModal(winner, winnerScore, loserScore);
+      
+      // Trigger confetti for winner
+      if (winner !== 'tie') {
+        triggerConfetti();
+      }
+    }
+
+    function stopTimer() {
+      if (state.timerInterval) {
+        clearInterval(state.timerInterval);
+        state.timerInterval = null;
+      }
+    }
+
+    function showGameOverModal(winner, winnerScore, loserScore) {
+      // Update modal content
+      if (winner === 'tie') {
+        $('winnerAnnouncement').textContent = "It's a Tie!";
+      } else {
+        $('winnerAnnouncement').textContent = `Player ${winner} Wins!`;
+      }
+      
+      $('finalScore1').textContent = state.player1Score;
+      $('finalScore2').textContent = state.player2Score;
+      
+      // Show modal
+      $('gameOverModal').style.display = 'flex';
+    }
+
+    function hideGameOverModal() {
+      $('gameOverModal').style.display = 'none';
+    }
+
+    function resetGame() {
+      // Hide game info and show start button
+      document.getElementById('gameInfo').style.display = 'none';
+      document.getElementById('startBtn').style.display = 'flex';
+      document.getElementById('resetBtn').style.display = 'none';
+      
+      // Stop timer
+      stopTimer();
+      
+      // Reset map styling
+      if (state.layer) {
+        state.layer.eachLayer(layer => {
+          layer.setStyle(baseStyle);
+          // Re-enable events
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(layer.feature, e.target)
+          });
+        });
+      }
+      
+      // Reset timer display
+      $('timer').textContent = '01:00';
+      $('timer').className = 'timer';
+      
+      // Reset player targets
+      $('player1Target').textContent = 'Waiting...';
+      $('player2Target').textContent = 'Waiting...';
+      
+      toast('🔄 Game reset', 'ok');
+    }
+
+    function buildLayer(geojson) {
+      if (state.layer) state.layer.remove();
+
+      state.layer = L.geoJSON(geojson, {
+        filter: keep,
+        style: baseStyle,
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: (e) => e.target.setStyle(hoverStyle),
+            mouseout: (e) => state.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(feature, e.target)
+          });
+        }
+      }).addTo(map);
+
+      // Store all features
+      state.allFeatures = state.layer.toGeoJSON().features;
+      state.features = [...state.allFeatures];
+      
+      console.log(`Loaded ${state.features.length} features`);
+    }
+
+    // Confetti celebration function
+    function triggerConfetti() {
+      const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff8800', '#8800ff'];
+      const confettiCount = 200;
+      
+      for (let i = 0; i < confettiCount; i++) {
+        setTimeout(() => {
+          const confetti = document.createElement('div');
+          confetti.style.position = 'fixed';
+          confetti.style.left = Math.random() * window.innerWidth + 'px';
+          confetti.style.top = '-10px';
+          confetti.style.width = '10px';
+          confetti.style.height = '10px';
+          confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+          confetti.style.borderRadius = '50%';
+          confetti.style.pointerEvents = 'none';
+          confetti.style.zIndex = '9999';
+          confetti.style.animation = 'confettiFall 3s linear forwards';
+          
+          document.body.appendChild(confetti);
+          
+          // Remove confetti after animation
+          setTimeout(() => {
+            if (confetti.parentNode) {
+              confetti.parentNode.removeChild(confetti);
+            }
+          }, 3000);
+        }, i * 10);
+      }
+    }
+
+    // Event listeners
+    $('startBtn').addEventListener('click', startDuel);
+    $('resetBtn').addEventListener('click', resetGame);
+    $('playAgainBtn').addEventListener('click', () => {
+      hideGameOverModal();
+      resetGame();
+    });
+
+    // Load lightweight world countries (Natural Earth 110m)
+    const SOURCES = [
+      './countries.geojson',
+      'countries.geojson',
+      '/countries.geojson',
+      'countries.geojson',
+      'https://datahub.io/core/geo-countries/r/0.geojson',
+      'https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json'
+    ];
+    
+    async function fetchJSONFlexible(url) {
+      const res = await fetch(url, { cache: 'no-store' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const text = await res.text();
+      console.log(`[${url}] Raw response length:`, text.length);
+      const data = JSON.parse(text.replace(/^\uFEFF/, ''));
+      console.log(`[${url}] Parsed data:`, data);
+      if (data && data.features) {
+        console.log(`[${url}] Features count:`, data.features.length);
+      }
+      return data;
+    }
+
+    (async function loadBoundaries() {
+      for (const url of SOURCES) {
+        try {
+          console.log('[countries] trying', url);
+          const data = await fetchJSONFlexible(url);
+          if (!data || !Array.isArray(data.features)) throw new Error('Not a GeoJSON FeatureCollection');
+          buildLayer(data); 
+          toast('Loaded country boundaries'); 
+          return;
+        } catch (err) { 
+          console.warn('Boundary source failed:', url, err); 
+        }
+      }
+      alert('Failed to load country boundaries from all sources. Make sure "countries.geojson" is in the SAME folder as index.html, and that your server root is that folder.');
+    })();
+
+    // Improve mobile playability: two-finger pan
+    map.touchZoom.enable();
+    map.dragging.enable();
+    map.on('touchstart', (e) => { if (e.touches && e.touches.length === 1) { map.dragging.disable(); } });
+    map.on('touchend', () => map.dragging.enable());
+  </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+United Kingdom – Manchester United, Liverpool, Chelsea
+Spain – Real Madrid, Barcelona, Atlético Madrid
+Germany – Bayern Munich, Borussia Dortmund, RB Leipzig
+Italy – Juventus, AC Milan, Inter Milan
+France – Paris Saint-Germain, Olympique de Marseille, Lyon
+Portugal – FC Porto, Benfica, Sporting CP
+Netherlands – Ajax, PSV Eindhoven, Feyenoord
+Belgium – Club Brugge
+Switzerland – FC Basel
+Austria – Red Bull Salzburg
+Czech Republic – Slavia Prague
+Poland – Legia Warsaw
+Croatia – Dinamo Zagreb
+Serbia – Red Star Belgrade
+Greece – Olympiacos
+Turkey – Galatasaray, Fenerbahçe, Beşiktaş
+Russia – Zenit St. Petersburg, CSKA Moscow, Spartak Moscow
+Ukraine – Dynamo Kyiv, Shakhtar Donetsk
+Denmark – FC Copenhagen
+Sweden – Malmö FF
+Norway – Rosenborg BK
+Finland – HJK Helsinki
+Hungary – Ferencváros
+Romania – FCSB (Steaua București)
+Bulgaria – Ludogorets Razgrad
+Slovakia – Slovan Bratislava
+Slovenia – NK Maribor
+Ireland – Shamrock Rovers
+Azerbaijan – Qarabağ FK
+
+Argentina – Boca Juniors, River Plate, Independiente
+Brazil – Flamengo, Palmeiras, São Paulo
+Uruguay – Peñarol
+Chile – Colo-Colo
+Paraguay – Olimpia
+Bolivia – The Strongest
+Peru – Alianza Lima
+
+Ghana – Asante Kotoko
+Cameroon – Coton Sport
+Senegal – Génération Foot
+Morocco – Wydad Casablanca, Raja Casablanca
+Tunisia – Espérance de Tunis
+Egypt – Al Ahly, Zamalek
+South Africa – Kaizer Chiefs, Orlando Pirates, Mamelodi Sundowns
+Zambia – ZESCO United
+
+Japan – Urawa Red Diamonds, Kawasaki Frontale
+South Korea – Jeonbuk Hyundai Motors, FC Seoul
+China – Guangzhou Evergrande, Shanghai SIPG
+India – Mohun Bagan SG, Bengaluru FC
+Iran – Persepolis, Esteghlal
+Saudi Arabia – Al Hilal, Al Nassr
+Qatar – Al Sadd
+United Arab Emirates – Al Ain
+Uzbekistan – Pakhtakor Tashkent
+Kazakhstan – Kairat Almaty
+
+Australia – Sydney FC, Melbourne Victory
+New Zealand – Auckland City
+
+United States of America – LA Galaxy, New York City FC, Inter Miami
+Mexico – Club América
+Canada – Toronto FC
