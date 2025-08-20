@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Atlas - Multiplayer Duel Mode</title>
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+  <style>
+    :root{
+      --bg:#0f172a;--fg:#e2e8f0;--muted:#94a3b8;--accent:#22c55e;--danger:#ef4444;--panel:#111827;
+      --map-bg:#0b1020;--card-bg:rgba(17,24,39,.84);--border-color:#0b1225;
+      --modal-bg:#ffffff;--modal-border:#e5e7eb;--modal-text:#333333;--modal-text-secondary:#6b7280;
+      --modal-card-bg:#f9fafb;--modal-divider:#f3f4f6;
+      --page-bg:#0b1020;
+      --player1-color:#ef4444;--player2-color:#3b82f6;
+    }
+    
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      background: var(--page-bg);
+      color: var(--fg);
+      font: 14px/1.4 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+    
+    #app {
+      height: 100%;
+      position: relative;
+    }
+    
+    #map {
+      height: 100%;
+      width: 100%;
+      background: var(--map-bg);
+    }
+    
+    .leaflet-container {
+      background: var(--map-bg);
+    }
+    
+    /* Multiplayer UI */
+    .multiplayer-ui {
+      position: absolute;
+      z-index: 1000;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .room-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 300px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .room-panel h3 {
+      margin: 0 0 15px 0;
+      color: var(--accent);
+      font-size: 18px;
+    }
+    
+    .room-info {
+      background: var(--bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    
+    .room-id {
+      font-family: monospace;
+      background: var(--border-color);
+      padding: 5px 10px;
+      border-radius: 4px;
+      color: var(--accent);
+      font-weight: bold;
+        }
+    
+    .player-list {
+      margin: 15px 0;
+    }
+    
+    .player-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      background: var(--bg);
+      border-radius: 6px;
+      margin-bottom: 5px;
+    }
+    
+    .player-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    
+    .player-status {
+      width: 8px;
+      height: 8px;
+          border-radius: 50%;
+    }
+    
+    .player-status.online {
+      background: var(--accent);
+    }
+    
+    .player-status.ready {
+      background: #f59e0b;
+    }
+    
+    .player-status.playing {
+      background: var(--danger);
+    }
+    
+    .game-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 300px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .game-status {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .timer {
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    
+    .current-player {
+      font-size: 16px;
+      color: var(--muted);
+    }
+    
+    .players-container {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .player-card {
+      flex: 1;
+      padding: 15px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+    
+    .player-card.active {
+      border-color: var(--accent);
+      box-shadow: 0 0 20px rgba(34, 197, 94, 0.3);
+    }
+    
+    .player-card.player1 {
+      background: rgba(239, 68, 68, 0.1);
+      border-color: var(--player1-color);
+    }
+    
+    .player-card.player2 {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: var(--player2-color);
+    }
+    
+    .player-name {
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .player1 .player-name {
+      color: var(--player1-color);
+    }
+    
+    .player2 .player-name {
+      color: var(--player2-color);
+    }
+    
+    .player-score {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    
+    .player-target {
+      font-size: 12px;
+      color: var(--muted);
+      min-height: 16px;
+    }
+    
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    
+    .btn:hover {
+      background: #16a34a;
+      transform: translateY(-1px);
+    }
+    
+    .btn.secondary {
+      background: var(--muted);
+    }
+    
+    .btn.secondary:hover {
+      background: #6b7280;
+    }
+    
+    .btn.danger {
+      background: var(--danger);
+    }
+    
+    .btn.danger:hover {
+      background: #dc2626;
+    }
+    
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .input-group {
+      margin-bottom: 15px;
+    }
+    
+    .input-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    
+    .input-group input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--fg);
+      font-size: 14px;
+    }
+    
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    
+    .status-message {
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .status-message.success {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+    }
+    
+    .status-message.error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+    
+    .status-message.info {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid var(--player2-color);
+      color: var(--player2-color);
+    }
+    
+    .chat-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      min-width: 300px;
+      backdrop-filter: blur(10px);
+    }
+    
+    .chat-messages {
+      height: 200px;
+      overflow-y: auto;
+      background: var(--bg);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .chat-message {
+      margin-bottom: 8px;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    
+    .chat-message.system {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--player2-color);
+      font-style: italic;
+    }
+    
+    .chat-message.player {
+      background: rgba(34, 197, 94, 0.1);
+      color: var(--accent);
+    }
+    
+    .chat-input {
+      display: flex;
+      gap: 10px;
+    }
+    
+    .chat-input input {
+      flex: 1;
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      background: var(--bg);
+      color: var(--fg);
+    }
+    
+    .chat-input button {
+      padding: 8px 16px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .multiplayer-ui {
+        flex-direction: column;
+        top: 10px;
+        left: 10px;
+        right: 10px;
+      }
+      
+      .room-panel,
+      .game-panel,
+      .chat-panel {
+        min-width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="map"></div>
+    
+    <div class="multiplayer-ui">
+      <!-- Room Management Panel -->
+      <div class="room-panel">
+        <h3>🏠 Room Management</h3>
+        
+        <div id="roomCreation" class="input-group">
+          <label>Your Name:</label>
+          <input type="text" id="playerName" placeholder="Enter your name" maxlength="20">
+        </div>
+        
+        <div class="controls">
+          <button id="createRoomBtn" class="btn">Create Room</button>
+          <button id="joinRoomBtn" class="btn secondary">Join Room</button>
+        </div>
+        
+        <div id="joinRoomInput" class="input-group" style="display: none;">
+          <label>Room ID:</label>
+          <input type="text" id="roomIdInput" placeholder="Enter room ID">
+          <button id="joinRoomConfirmBtn" class="btn" style="margin-top: 10px;">Join</button>
+        </div>
+        
+        <div id="roomInfo" class="room-info" style="display: none;">
+          <div><strong>Room ID:</strong> <span id="roomId" class="room-id"></span></div>
+          <div><strong>Status:</strong> <span id="roomStatus">Waiting for players...</span></div>
+          <div class="player-list" id="playerList"></div>
+          <button id="startGameBtn" class="btn" disabled>Start Game</button>
+          <button id="leaveRoomBtn" class="btn danger">Leave Room</button>
+        </div>
+        
+        <div id="statusMessage"></div>
+      </div>
+      
+      <!-- Game Panel -->
+      <div class="game-panel" id="gamePanel" style="display: none;">
+        <h3>🎮 Game</h3>
+        
+        <div class="game-status">
+          <div id="gameTimer" class="timer">01:00</div>
+          <div id="currentPlayerDisplay" class="current-player">Waiting...</div>
+        </div>
+        
+        <div class="players-container">
+          <div id="player1Card" class="player-card player1">
+            <div class="player-name" id="player1Name">Player 1</div>
+            <div class="player-score" id="player1Score">0</div>
+            <div class="player-target" id="player1Target">Waiting...</div>
+          </div>
+          
+          <div id="player2Card" class="player-card player2">
+            <div class="player-name" id="player2Name">Player 2</div>
+            <div class="player-score" id="player2Score">0</div>
+            <div class="player-target" id="player2Target">Waiting...</div>
+          </div>
+        </div>
+        
+        <div class="controls">
+          <button id="readyBtn" class="btn">Ready</button>
+          <button id="pauseBtn" class="btn secondary" style="display: none;">Pause</button>
+          <button id="resumeBtn" class="btn secondary" style="display: none;">Resume</button>
+        </div>
+      </div>
+      
+      <!-- Chat Panel -->
+      <div class="chat-panel" id="chatPanel" style="display: none;">
+        <h3>💬 Chat</h3>
+        <div id="chatMessages" class="chat-messages"></div>
+        <div class="chat-input">
+          <input type="text" id="chatInput" placeholder="Type a message..." maxlength="100">
+          <button id="sendChatBtn">Send</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+    // Game state
+    const gameState = {
+      playerName: '',
+      roomId: null,
+      isHost: false,
+      players: [],
+      gameStarted: false,
+      currentPlayer: null,
+      scores: { player1: 0, player2: 0 },
+      targets: { player1: null, player2: null },
+      timeLeft: 60,
+      timer: null,
+      map: null,
+      layer: null,
+      features: [],
+      completedCountries: new Set()
+    };
+
+    // WebSocket connection (you'll need to set up a server)
+    let socket = null;
+    const SERVER_URL = 'wss://your-websocket-server.com'; // Replace with your actual server
+
+    // Initialize map
+    function initMap() {
+      gameState.map = L.map('map', {
+        worldCopyJump: true,
+        preferCanvas: false,
+        zoomSnap: 0.5,
+        zoomDelta: 0.5,
+      }).setView([20, 0], 2);
+
+      const tileLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+        maxZoom: 6,
+        minZoom: 2,
+        attribution: '&copy; OpenStreetMap & Carto',
+        subdomains: 'abcd'
+      }).addTo(gameState.map);
+
+      // Load countries
+      loadCountries();
+    }
+
+    // Load country data
+    async function loadCountries() {
+      try {
+        const response = await fetch('./countries.geojson');
+        const data = await response.json();
+        gameState.features = data.features.filter(f => {
+          const name = pickName(f.properties);
+          return name && !['Antarctica'].includes(name);
+        });
+        
+        buildMapLayer();
+        console.log(`Loaded ${gameState.features.length} countries`);
+      } catch (error) {
+        console.error('Failed to load countries:', error);
+        showStatus('Failed to load country data', 'error');
+      }
+    }
+
+    // Build map layer
+    function buildMapLayer() {
+      if (gameState.layer) gameState.layer.remove();
+
+      gameState.layer = L.geoJSON(gameState.features, {
+        style: { color: '#2c3e50', weight: 1, fillColor: '#60a5fa', fillOpacity: 0.08 },
+        onEachFeature: (feature, layer) => {
+          layer.on({
+            mouseover: (e) => e.target.setStyle({ weight: 2, fillOpacity: 0.25 }),
+            mouseout: (e) => gameState.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(feature, e.target)
+          });
+        }
+      }).addTo(gameState.map);
+    }
+
+    // Country click handler
+    function onCountryClick(feature, layer) {
+      if (!gameState.gameStarted || !gameState.currentPlayer) return;
+      
+      const clickedCountry = pickName(feature.properties);
+      const currentTarget = gameState.currentPlayer === 'player1' ? 
+        gameState.targets.player1 : gameState.targets.player2;
+      
+      if (!currentTarget) return;
+      
+      const targetCountry = pickName(currentTarget.properties);
+      
+      if (clickedCountry === targetCountry) {
+        // Correct guess
+        const playerKey = gameState.currentPlayer;
+        gameState.scores[playerKey]++;
+        
+        // Style the country
+        const style = playerKey === 'player1' ? 
+          { fillColor: '#ef4444', fillOpacity: 0.35 } : 
+          { fillColor: '#3b82f6', fillOpacity: 0.35 };
+        layer.setStyle(style);
+        
+        // Remove events
+        layer.off('click');
+        layer.off('mouseover');
+        layer.off('mouseout');
+        
+        // Mark as completed
+        gameState.completedCountries.add(clickedCountry);
+        
+        // Update display
+        updateScoreDisplay();
+        
+        // Send move to server
+        if (socket) {
+          socket.send(JSON.stringify({
+            type: 'correct_guess',
+            player: gameState.currentPlayer,
+            country: clickedCountry,
+            score: gameState.scores[playerKey]
+          }));
+        }
+        
+        // Switch players
+        switchPlayer();
+        
+      } else {
+        // Wrong guess
+        layer.setStyle({ fillColor: '#f59e0b', fillOpacity: 0.35 });
+        
+        // Send move to server
+        if (socket) {
+          socket.send(JSON.stringify({
+            type: 'wrong_guess',
+            player: gameState.currentPlayer,
+            country: clickedCountry
+          }));
+        }
+        
+        // Switch players
+        switchPlayer();
+      }
+    }
+
+    // Switch players
+    function switchPlayer() {
+      gameState.currentPlayer = gameState.currentPlayer === 'player1' ? 'player2' : 'player1';
+      updateCurrentPlayerDisplay();
+      setNewTarget();
+    }
+
+    // Set new target for current player
+    function setNewTarget() {
+      const playerKey = gameState.currentPlayer;
+      const availableCountries = gameState.features.filter(f => {
+        const name = pickName(f.properties);
+        return !gameState.completedCountries.has(name);
+      });
+      
+      if (availableCountries.length === 0) {
+        endGame();
+        return;
+      }
+      
+      const randomCountry = availableCountries[Math.floor(Math.random() * availableCountries.length)];
+      gameState.targets[playerKey] = randomCountry;
+      
+      // Update display
+      const targetElement = document.getElementById(`${playerKey}Target`);
+      if (targetElement) {
+        targetElement.textContent = pickName(randomCountry.properties);
+      }
+    }
+
+    // Update score display
+    function updateScoreDisplay() {
+      document.getElementById('player1Score').textContent = gameState.scores.player1;
+      document.getElementById('player2Score').textContent = gameState.scores.player2;
+    }
+
+    // Update current player display
+    function updateCurrentPlayerDisplay() {
+      const display = document.getElementById('currentPlayerDisplay');
+      const player1Card = document.getElementById('player1Card');
+      const player2Card = document.getElementById('player2Card');
+      
+      if (gameState.currentPlayer === 'player1') {
+        display.textContent = `${gameState.players.find(p => p.id === 'player1')?.name || 'Player 1'}'s Turn`;
+        player1Card.classList.add('active');
+        player2Card.classList.remove('active');
+      } else {
+        display.textContent = `${gameState.players.find(p => p.id === 'player2')?.name || 'Player 2'}'s Turn`;
+        player2Card.classList.add('active');
+        player1Card.classList.remove('active');
+      }
+    }
+
+    // Start game
+    function startGame() {
+      if (gameState.players.length < 2) {
+        showStatus('Need at least 2 players to start', 'error');
+        return;
+      }
+      
+      gameState.gameStarted = true;
+      gameState.currentPlayer = 'player1';
+      gameState.scores = { player1: 0, player2: 0 };
+      gameState.completedCountries.clear();
+      gameState.timeLeft = 60;
+      
+      // Reset map
+      if (gameState.layer) {
+        gameState.layer.eachLayer(layer => {
+          gameState.layer.resetStyle(layer);
+          layer.on({
+            mouseover: (e) => e.target.setStyle({ weight: 2, fillOpacity: 0.25 }),
+            mouseout: (e) => gameState.layer.resetStyle(e.target),
+            click: (e) => onCountryClick(layer.feature, e.target)
+          });
+        });
+      }
+      
+      // Set initial targets
+      setNewTarget();
+      switchPlayer();
+      setNewTarget();
+      
+      // Start timer
+      startTimer();
+      
+      // Update UI
+      document.getElementById('startGameBtn').disabled = true;
+      document.getElementById('gamePanel').style.display = 'block';
+      document.getElementById('chatPanel').style.display = 'block';
+      
+      showStatus('Game started!', 'success');
+      
+      // Send to server
+      if (socket) {
+        socket.send(JSON.stringify({
+          type: 'game_started',
+          roomId: gameState.roomId
+        }));
+      }
+    }
+
+    // Start timer
+    function startTimer() {
+      if (gameState.timer) clearInterval(gameState.timer);
+      
+      gameState.timer = setInterval(() => {
+        gameState.timeLeft--;
+        updateTimerDisplay();
+        
+        if (gameState.timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    // Update timer display
+    function updateTimerDisplay() {
+      const minutes = Math.floor(gameState.timeLeft / 60);
+      const seconds = gameState.timeLeft % 60;
+      document.getElementById('gameTimer').textContent = 
+        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    // End game
+    function endGame() {
+      if (gameState.timer) clearInterval(gameState.timer);
+      
+      gameState.gameStarted = false;
+      
+      // Determine winner
+      let winner = 'tie';
+      if (gameState.scores.player1 > gameState.scores.player2) {
+        winner = 'player1';
+      } else if (gameState.scores.player2 > gameState.scores.player1) {
+        winner = 'player2';
+      }
+      
+      const winnerName = winner === 'tie' ? 'Tie' : 
+        gameState.players.find(p => p.id === winner)?.name || winner;
+      
+      showStatus(`Game Over! Winner: ${winnerName}`, 'info');
+      
+      // Send to server
+      if (socket) {
+        socket.send(JSON.stringify({
+          type: 'game_ended',
+          roomId: gameState.roomId,
+          winner: winner,
+          scores: gameState.scores
+        }));
+      }
+    }
+
+    // Create room
+    function createRoom() {
+      const playerName = document.getElementById('playerName').value.trim();
+      if (!playerName) {
+        showStatus('Please enter your name', 'error');
+        return;
+      }
+      
+      gameState.playerName = playerName;
+      gameState.isHost = true;
+      
+      // Generate room ID
+      gameState.roomId = generateRoomId();
+      
+      // Add yourself as player 1
+      gameState.players = [{
+        id: 'player1',
+        name: playerName,
+        status: 'online',
+        isHost: true
+      }];
+      
+      // Update UI
+      document.getElementById('roomCreation').style.display = 'none';
+      document.getElementById('roomInfo').style.display = 'block';
+      document.getElementById('roomId').textContent = gameState.roomId;
+      updatePlayerList();
+      
+      showStatus('Room created! Share the Room ID with others', 'success');
+      
+      // Connect to server (if available)
+      connectToServer();
+    }
+
+    // Join room
+    function joinRoom() {
+      const playerName = document.getElementById('playerName').value.trim();
+      if (!playerName) {
+        showStatus('Please enter your name', 'error');
+        return;
+      }
+      
+      gameState.playerName = playerName;
+      document.getElementById('joinRoomInput').style.display = 'block';
+    }
+
+    // Confirm join room
+    function confirmJoinRoom() {
+      const roomId = document.getElementById('roomIdInput').value.trim();
+      if (!roomId) {
+        showStatus('Please enter room ID', 'error');
+        return;
+      }
+      
+      gameState.roomId = roomId;
+      gameState.isHost = false;
+      
+      // Add yourself as player 2
+      gameState.players = [{
+        id: 'player2',
+        name: gameState.playerName,
+        status: 'online',
+        isHost: false
+      }];
+      
+      // Update UI
+      document.getElementById('roomCreation').style.display = 'none';
+      document.getElementById('roomInfo').style.display = 'block';
+      document.getElementById('roomId').textContent = gameState.roomId;
+      updatePlayerList();
+      
+      showStatus('Joined room! Waiting for host to start...', 'success');
+      
+      // Connect to server (if available)
+      connectToServer();
+    }
+
+    // Generate room ID
+    function generateRoomId() {
+      return Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    // Update player list
+    function updatePlayerList() {
+      const playerList = document.getElementById('playerList');
+      playerList.innerHTML = '';
+      
+      gameState.players.forEach(player => {
+        const playerItem = document.createElement('div');
+        playerItem.className = 'player-item';
+        playerItem.innerHTML = `
+          <div class="player-avatar">${player.name.charAt(0).toUpperCase()}</div>
+          <span>${player.name}</span>
+          <div class="player-status ${player.status}"></div>
+          ${player.isHost ? '<span style="color: var(--accent);">👑</span>' : ''}
+        `;
+        playerList.appendChild(playerItem);
+      });
+      
+      // Update player names in game panel
+      if (gameState.players.length > 0) {
+        document.getElementById('player1Name').textContent = gameState.players[0].name;
+      }
+      if (gameState.players.length > 1) {
+        document.getElementById('player2Name').textContent = gameState.players[1].name;
+      }
+      
+      // Enable start button if host and 2 players
+      const startBtn = document.getElementById('startGameBtn');
+      if (startBtn) {
+        startBtn.disabled = !(gameState.isHost && gameState.players.length >= 2);
+      }
+    }
+
+    // Connect to server (placeholder for real WebSocket implementation)
+    function connectToServer() {
+      // This is where you'd implement real WebSocket connection
+      // For now, we'll simulate it
+      console.log('Connecting to server...');
+      
+      // Simulate server connection
+      setTimeout(() => {
+        if (gameState.isHost) {
+          // Simulate player 2 joining
+          gameState.players.push({
+            id: 'player2',
+            name: 'Player 2',
+            status: 'online',
+            isHost: false
+          });
+          updatePlayerList();
+          showStatus('Player 2 joined the room!', 'success');
+        }
+      }, 2000);
+    }
+
+    // Show status message
+    function showStatus(message, type = 'info') {
+      const statusDiv = document.getElementById('statusMessage');
+      statusDiv.className = `status-message ${type}`;
+      statusDiv.textContent = message;
+      
+      setTimeout(() => {
+        statusDiv.textContent = '';
+        statusDiv.className = 'status-message';
+      }, 5000);
+    }
+
+    // Utility functions
+    function pickName(properties) {
+      return properties.name || properties.ADMIN || properties.NAME_LONG || properties.NAME || properties.SOVEREIGNT || properties.BRK_NAME;
+    }
+
+    // Event listeners
+    document.getElementById('createRoomBtn').addEventListener('click', createRoom);
+    document.getElementById('joinRoomBtn').addEventListener('click', joinRoom);
+    document.getElementById('joinRoomConfirmBtn').addEventListener('click', confirmJoinRoom);
+    document.getElementById('startGameBtn').addEventListener('click', startGame);
+    document.getElementById('leaveRoomBtn').addEventListener('click', () => {
+      location.reload();
+    });
+
+    // Initialize
+    initMap();
+  </script>
+</body>
+</html>
